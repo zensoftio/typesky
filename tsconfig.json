@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es6", "es7", "dom"],
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react",
+    "rootDirs": ["./", "./src"],
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": false,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "webpack"
+  ],
+  "types": [
+    "typePatches"
+  ]
+}
