@@ -1,32 +1,32 @@
-import * as React from 'react';
-import {Switch, Route, Router} from 'react-router-dom';
-import createBrowserHistory from 'history/createBrowserHistory';
+import * as React from 'react'
+import {Route, Router, Switch} from 'react-router-dom'
+import createBrowserHistory from 'history/createBrowserHistory'
 
-import {NotFoundScene} from "./scenes/NotFoundScene/index";
+import {NotFoundScene} from './scenes/NotFoundScene/index'
 import {TestScene} from './scenes/TestScene/index'
 
-const history = createBrowserHistory();
+const history = createBrowserHistory()
 
-export namespace App {
+export namespace AppNS {
   export interface Props {
     /* empty */
   }
-
+  
   export interface State {
     /* empty */
   }
 }
 
-export default class App extends React.Component<App.Props, App.State> {
-
+export default class App extends React.Component<AppNS.Props, AppNS.State> {
+  
   render() {
     return (
-    <Router history={history}>
-      <Switch>
-        <Route path="/" exact component={TestScene}/>
-        <Route path="/error" component={NotFoundScene}/>
-      </Switch>
-    </Router>
+      <Router history={history}>
+        <Switch>
+          <Route path="/" exact component={TestScene}/>
+          <Route path="/error" component={NotFoundScene}/>
+        </Switch>
+      </Router>
     )
   }
 }

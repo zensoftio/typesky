@@ -1,16 +1,6 @@
 import * as React from 'react';
 
-export namespace NotFoundSceneNS {
-  export interface Props {
-    /* empty */
-  }
-
-  export interface State {
-    /* empty */
-  }
-}
-
-export class NotFoundScene extends React.Component<NotFoundSceneNS.Props, NotFoundSceneNS.State> {
+export class NotFoundScene extends React.Component<{}, {}> {
 
   render() {
     return (

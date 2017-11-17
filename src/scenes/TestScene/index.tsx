@@ -1,25 +1,22 @@
-import * as React from 'react';
-import './index.css';
-import { Link } from 'react-router-dom';
+import * as React from 'react'
+import './index.css'
+import {Link} from 'react-router-dom'
+import TodoListView from '../../components/todo-list'
 
-export namespace TestSceneNS {
-  export interface Props {
-    history: any,
-    location: any,
-    match: any
-  }
-  export interface State {
-    /* empty */
-  }
+interface Props {
+  history: History
+  location: any
+  match: any
 }
-export class TestScene extends React.Component<TestSceneNS.Props, TestSceneNS.State> {
 
+export class TestScene extends React.Component<Props, {}> {
   render() {
     return (
       <header>
         <h1>Hello World</h1>
+        <TodoListView/>
         <Link to="/error">Error</Link>
       </header>
-    );
+    )
   }
 }
