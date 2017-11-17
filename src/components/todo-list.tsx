@@ -11,16 +11,10 @@ export default class TodoListView extends React.Component<{}, {}> {
   
   // fields
   
-  private todoService: TodoService
-  private todoStore: TodoStore
+  private todoService: TodoService = instanceRegistry.get('TodoService')
+  private todoStore: TodoStore = instanceRegistry.get('TodoStore')
   
   // constructor
-  
-  constructor(props: {}, context?: any) {
-    super(props, context)
-    this.todoService = instanceRegistry.get('TodoService')
-    this.todoStore = instanceRegistry.get('TodoStore')
-  }
   
   // life circle
   
