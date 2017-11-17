@@ -1,14 +1,13 @@
 import {computed} from 'mobx'
 import {TodoStore} from '../index'
 import {TodoRepository} from '../../repositories/index'
-import {defaultTodoRepository} from '../../repositories/impl/todo'
+import {injectable, injectOnProperty} from '../../annotations/common'
 
+@injectable('TodoStore')
 export default class DefaultTodoStore implements TodoStore {
   
-  private repository: TodoRepository
-  
-  constructor() {
-    this.repository = defaultTodoRepository
+  constructor(@injectOnProperty('TodoRepository') private repository: TodoRepository) {
+    console.log(this.repository)
   }
   
   @computed
@@ -21,9 +20,8 @@ export default class DefaultTodoStore implements TodoStore {
     return this.all.filter(todo => !todo.finished).length
   }
   
-  lastOne() {
+  @computed
+  get lastOne() {
     return this.all[this.all.length - 1]
   }
 }
-
-export const todoStore = new DefaultTodoStore()

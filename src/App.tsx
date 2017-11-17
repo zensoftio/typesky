@@ -7,17 +7,20 @@ import {TestScene} from './scenes/TestScene/index'
 
 const history = createBrowserHistory()
 
-export namespace AppNS {
-  export interface Props {
-    /* empty */
-  }
-  
-  export interface State {
-    /* empty */
-  }
+export interface Props {
+  /* empty */
 }
 
-export default class App extends React.Component<AppNS.Props, AppNS.State> {
+export interface State {
+  /* empty */
+}
+
+export default class App extends React.Component<Props, State> {
+  
+  constructor(props: Props, context?: any) {
+    super(props, context)
+    console.log('react started render')
+  }
   
   render() {
     return (

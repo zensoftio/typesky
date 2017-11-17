@@ -1,7 +1,8 @@
 import {BaseRepository} from '../../index'
 import {action, observable} from 'mobx'
+import BaseModel from '../../../models/base/model'
 
-export default class DefaultBaseRepository<T> implements BaseRepository<T> {
+export default class DefaultBaseRepository<T extends BaseModel> implements BaseRepository<T> {
   
   @observable
   list: T[] = []

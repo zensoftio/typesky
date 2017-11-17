@@ -1,11 +1,10 @@
 import TodoView from './todo'
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import {todoService} from '../services/impl/todo'
-import {todoStore} from '../stores/impl/todo'
 import TodoModel from '../models/todo'
 import {TodoService} from '../services/index'
 import {TodoStore} from '../stores/index'
+import {instanceRegistry} from '../annotations/common'
 
 @observer
 export default class TodoListView extends React.Component<{}, {}> {
@@ -19,8 +18,8 @@ export default class TodoListView extends React.Component<{}, {}> {
   
   constructor(props: {}, context?: any) {
     super(props, context)
-    this.todoService = todoService
-    this.todoStore = todoStore
+    this.todoService = instanceRegistry.get('TodoService')
+    this.todoStore = instanceRegistry.get('TodoStore')
   }
   
   // life circle
@@ -38,7 +37,7 @@ export default class TodoListView extends React.Component<{}, {}> {
   // render
   
   render() {
-    const todoLast: TodoModel = this.todoStore.lastOne()
+    const todoLast: TodoModel = this.todoStore.lastOne
     return (
       <div>
         <button onClick={this.onCreateNewButtonClick}>create new</button>

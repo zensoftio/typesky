@@ -1,13 +1,12 @@
 import {TodoService} from '../index'
 import TodoModel from '../../models/todo'
 import {TodoRepository} from '../../repositories/index'
-import {defaultTodoRepository} from '../../repositories/impl/todo'
+import {injectable, injectOnProperty} from '../../annotations/common'
 
+@injectable('TodoService')
 export default class DefaultTodoService implements TodoService {
-  private repository: TodoRepository
   
-  constructor() {
-    this.repository = defaultTodoRepository
+  constructor(@injectOnProperty('TodoRepository') private repository: TodoRepository) {
   }
   
   createNew() {
@@ -21,4 +20,3 @@ export default class DefaultTodoService implements TodoService {
   }
   
 }
-export const todoService = new DefaultTodoService()
