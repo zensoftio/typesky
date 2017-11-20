@@ -23,8 +23,7 @@ export default class DefaultTodoService implements TodoService {
   }
   
   toggleTodo(todo: TodoModel) {
-    // update model
-    todo.fromJson({finished: !todo.finished})
+    this.repository.toggleTodo(todo)
   }
   
 }
