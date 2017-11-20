@@ -1,7 +1,7 @@
 import {TodoService} from '../index'
 import TodoModel from '../../models/todo'
 import {TodoRepository} from '../../repositories/index'
-import {injectable, injectOnProperty} from '../../annotations/common'
+import {injectable, injectOnProperty} from '../../common/annotations/common'
 
 @injectable('TodoService')
 export default class DefaultTodoService implements TodoService {
@@ -10,13 +10,20 @@ export default class DefaultTodoService implements TodoService {
   }
   
   createNew() {
-    const name = Math.random()
-                     .toString()
-    this.repository.add(new TodoModel(name))
+    const name = Math.random().toString()
+    const todo = new TodoModel(name)
+    
+    // simple add for sync operations
+    this.repository.add('lastTodo', todo)
+    
+    // container doesn't guarantee result for existence
+    const all = this.repository.get('all')
+    all.loadResult(all.result ? [...all.result, todo] : [])
   }
   
   toggleTodo(todo: TodoModel) {
-    this.repository.update(todo, {finished: !todo.finished})
+    // update model
+    todo.fromJson({...todo.toJson(), finished: !todo.finished})
   }
   
 }
