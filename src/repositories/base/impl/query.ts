@@ -1,21 +1,28 @@
 import {action, observable} from 'mobx'
 import ResultSet from '../../../common/result'
+import {QueryRepository} from '../index'
+import {BaseMapping} from '../../../mappings/base/index'
 
-export default class QueryBaseRepository {
+export default class QueryBaseRepository<T extends BaseMapping> implements QueryRepository<T> {
   
   @observable
   map: Map<string, ResultSet<any>> = new Map()
   
   @action
-  get(queryName: string) {
+  get<K extends keyof T>(queryName: K): T[K] {
     if (!this.map.has(queryName)) {
       this.map.set(queryName, new ResultSet())
     }
-    return this.map.get(queryName) as ResultSet<any>
+    const resultSet = this.map.get(queryName)
+    if (!resultSet) {
+      throw new Error(`there is no ResultSet for ${queryName}`)
+    }
+    
+    return resultSet
   }
   
   @action
-  add(queryName: string, result?: any) {
+  add<K extends keyof T>(queryName: K, result?: any): T[K] {
     if (!this.map.has(queryName)) {
       this.map.set(queryName, new ResultSet())
     }

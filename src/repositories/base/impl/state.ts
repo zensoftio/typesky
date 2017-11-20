@@ -1,21 +1,24 @@
 import {action, observable} from 'mobx'
+import {StateRepository} from '../index'
+import {BaseMapping} from '../../../mappings/base/index'
 
-export default class StateBaseRepository {
+export default class StateBaseRepository<T extends BaseMapping> implements StateRepository<T> {
   
   @observable
   map: Map<string, Object> = new Map()
   
   @action
-  getWithDefault(stateName: string, defaultState: Object) {
+  getWithDefault<K extends keyof T>(stateName: K, defaultState?: any): T[K] {
     if (!this.map.has(stateName)) {
       this.map.set(stateName, defaultState)
     }
-    return this.map.get(stateName) as any
+    return this.map.get(stateName)
   }
   
   @action
-  add(stateName: string, state: Object) {
+  add<K extends keyof T>(stateName: K, state: any): T[K] {
     this.map.set(stateName, state)
+    return this.map.get(stateName)
   }
   
   @action

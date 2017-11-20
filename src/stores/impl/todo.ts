@@ -22,7 +22,6 @@ export default class DefaultTodoStore implements TodoStore {
   
   @computed
   get lastOne() {
-    const lastTodo = this.repository.get('lastTodo')
-    return lastTodo.result
+    return this.repository.get('lastTodo').result
   }
 }
