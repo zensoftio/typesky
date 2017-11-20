@@ -1,9 +1,8 @@
 import {action, observable} from 'mobx'
 import ResultSet from '../../../common/result'
 import {QueryRepository} from '../index'
-import {BaseMapping} from '../../../mappings/base/index'
 
-export default class QueryBaseRepository<T extends BaseMapping> implements QueryRepository<T> {
+export default class QueryBaseRepository<T> implements QueryRepository<T> {
   
   @observable
   map: Map<string, ResultSet<any>> = new Map()
@@ -18,7 +17,7 @@ export default class QueryBaseRepository<T extends BaseMapping> implements Query
       throw new Error(`there is no ResultSet for ${queryName}`)
     }
     
-    return resultSet
+    return resultSet as any
   }
   
   @action
@@ -38,7 +37,7 @@ export default class QueryBaseRepository<T extends BaseMapping> implements Query
       resultSet.loading = true
     }
     
-    return resultSet
+    return resultSet as any
   }
   
   @action

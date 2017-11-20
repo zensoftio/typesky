@@ -1,8 +1,7 @@
 import {action, observable} from 'mobx'
 import {StateRepository} from '../index'
-import {BaseMapping} from '../../../mappings/base/index'
 
-export default class StateBaseRepository<T extends BaseMapping> implements StateRepository<T> {
+export default class StateBaseRepository<T> implements StateRepository<T> {
   
   @observable
   map: Map<string, Object> = new Map()
@@ -12,13 +11,13 @@ export default class StateBaseRepository<T extends BaseMapping> implements State
     if (!this.map.has(stateName)) {
       this.map.set(stateName, defaultState)
     }
-    return this.map.get(stateName)
+    return this.map.get(stateName) as any
   }
   
   @action
   add<K extends keyof T>(stateName: K, state: any): T[K] {
     this.map.set(stateName, state)
-    return this.map.get(stateName)
+    return this.map.get(stateName) as any
   }
   
   @action

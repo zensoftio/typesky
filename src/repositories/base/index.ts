@@ -1,8 +1,7 @@
 import ResultSet from '../../common/result'
-import {BaseMapping, ResultBaseMapping} from '../../mappings/base/index'
 
 
-export interface StateRepository<T extends BaseMapping> {
+export interface StateRepository<T> {
   map: Map<string, Object>
   
   getWithDefault<K extends keyof T>(stateName: K, defaultState?: any): T[K]
@@ -14,7 +13,7 @@ export interface StateRepository<T extends BaseMapping> {
   removeAll(): this
 }
 
-export interface QueryRepository<T extends ResultBaseMapping> {
+export interface QueryRepository<T> {
   map: Map<string, ResultSet<any>>
   
   get<K extends keyof T>(queryName: K): T[K]
