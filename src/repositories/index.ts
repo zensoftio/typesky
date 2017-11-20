@@ -1,9 +1,9 @@
 import TodoModel from '../models/todo'
-import BaseModel from '../models/base/model'
+import SimpleBaseModel from '../models/base/simple'
 
 export * from './impl/todo'
 
-export interface BaseRepository<T extends BaseModel> {
+export interface BaseRepository<T extends SimpleBaseModel> {
   list: T[]
   
   add(model: T): this

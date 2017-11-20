@@ -1,8 +1,7 @@
 import {observable} from 'mobx'
-import BaseModel from './base/model'
+import UniqBaseModel from './base/uniq'
 
-export default class TodoModel extends BaseModel {
-  id = Math.random()
+export default class TodoModel extends UniqBaseModel {
   
   @observable
   title = ''
