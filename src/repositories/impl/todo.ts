@@ -4,6 +4,7 @@ import QueryBaseRepository from '../base/impl/query'
 import {TodoMapping} from '../../mappings/index'
 import TodoModel from '../../models/todo'
 import {action} from 'mobx'
+import {patch} from '../../common/utils'
 
 @injectable('TodoRepository')
 export class DefaultTodoRepository extends QueryBaseRepository<TodoMapping> implements TodoRepository {
@@ -11,6 +12,6 @@ export class DefaultTodoRepository extends QueryBaseRepository<TodoMapping> impl
   @action
   toggleTodo(todo: TodoModel) {
     // update model
-    todo.fromJson({finished: !todo.finished})
+    patch(todo, {finished: !todo.finished})
   }
 }
