@@ -19,7 +19,7 @@ export default class App extends React.Component<Props, State> {
   
   constructor(props: Props, context?: any) {
     super(props, context)
-    console.log('react started render')
+    console.info('react started render')
   }
   
   render() {

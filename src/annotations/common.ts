@@ -2,7 +2,35 @@ const METHOD_INJECTIONS = Symbol('method_injections')
 const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 
 const constructorRegistry: Map<string, any> = new Map()
-export const instanceRegistry: Map<string, any> = new Map()
+
+class InstanceRegistry {
+  
+  map: Map<string, any> = new Map()
+  
+  get(key: string) {
+    const value = this.map.get(key)
+    
+    if (!value) {
+      throw new Error(`There is no instance for ${key}!`)
+    }
+    
+    return value
+  }
+  
+  set(key: string, value: any) {
+    if (this.map.has(key)) {
+      throw new Error(`Double implementation for ${key}`)
+    }
+    
+    this.map.set(key, value)
+  }
+  
+  forEach(callbackFn: (value: any, key: string, map: Map<string, any>) => void, thisArg?: any) {
+    this.map.forEach(callbackFn, thisArg)
+  }
+}
+
+export const instanceRegistry = new InstanceRegistry()
 
 class MethodInjectionRecord {
   constructor(public qualifier: string, public setter: string) {

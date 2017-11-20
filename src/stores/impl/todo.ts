@@ -7,7 +7,7 @@ import {injectable, injectOnProperty} from '../../annotations/common'
 export default class DefaultTodoStore implements TodoStore {
   
   constructor(@injectOnProperty('TodoRepository') private repository: TodoRepository) {
-    console.log(this.repository)
+  
   }
   
   @computed
