@@ -8,7 +8,7 @@ export default class DefaultPostService implements PostService {
   }
   
   async loadPost(postId: number) {
-    // prepare result container
+    // prepare result container for async operations
     const resultSet = this.repository.add('postById')
     
     // delay execution for showcase

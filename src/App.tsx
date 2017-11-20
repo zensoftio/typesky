@@ -7,17 +7,9 @@ import {TestScene} from './scenes/TestScene/index'
 
 const history = createBrowserHistory()
 
-export interface Props {
-  /* empty */
-}
-
-export interface State {
-  /* empty */
-}
-
-export default class App extends React.Component<Props, State> {
+export default class App extends React.Component<{}, {}> {
   
-  constructor(props: Props, context?: any) {
+  constructor(props: {}, context?: any) {
     super(props, context)
     console.info('react started render')
   }
