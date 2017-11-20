@@ -10,7 +10,8 @@ export default class DefaultTodoService implements TodoService {
   }
   
   createNew() {
-    const name = Math.random().toString()
+    const name = Math.random()
+                     .toString()
     const todo = new TodoModel(name)
     
     // simple add for sync operations
@@ -23,7 +24,7 @@ export default class DefaultTodoService implements TodoService {
   
   toggleTodo(todo: TodoModel) {
     // update model
-    todo.fromJson({...todo.toJson(), finished: !todo.finished})
+    todo.fromJson({finished: !todo.finished})
   }
   
 }
