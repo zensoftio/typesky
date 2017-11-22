@@ -1,7 +1,7 @@
-import ResultSet from '../../common/result'
+import ResultSet from '../../results/base/result'
 
 
-export interface StateRepository<T> {
+export interface SimpleStore<T> {
   map: Map<string, Object>
   
   getWithDefault<K extends keyof T>(stateName: K, defaultState?: any): T[K]
@@ -13,7 +13,7 @@ export interface StateRepository<T> {
   removeAll(): this
 }
 
-export interface QueryRepository<T> {
+export interface ResultStore<T> {
   map: Map<string, ResultSet<any>>
   
   get<K extends keyof T>(queryName: K): T[K]

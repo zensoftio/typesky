@@ -1,12 +1,12 @@
 import {TodoService} from '../index'
 import TodoModel from '../../models/todo'
-import {TodoRepository} from '../../repositories/index'
+import {TodoStore} from '../../stores/index'
 import {injectable, injectOnProperty} from '../../common/annotations/common'
 
 @injectable('TodoService')
 export default class DefaultTodoService implements TodoService {
   
-  constructor(@injectOnProperty('TodoRepository') private repository: TodoRepository) {
+  constructor(@injectOnProperty('TodoStore') private repository: TodoStore) {
   }
   
   createNew() {
@@ -19,7 +19,7 @@ export default class DefaultTodoService implements TodoService {
     
     // container doesn't guarantee result for existence
     const all = this.repository.get('all')
-    all.loadResult(all.result ? [...all.result, todo] : [])
+    this.repository.add('all', all.result ? [...all.result, todo] : [])
   }
   
   toggleTodo(todo: TodoModel) {

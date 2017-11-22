@@ -2,7 +2,7 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 import TodoModel from '../models/todo'
 
-const TodoView = ({todo, onClick}: { todo: TodoModel, onClick: () => void }) => (
+const TodoView = observer(({todo, onClick}: { todo: TodoModel, onClick: () => void }) => (
   <li>
     <input
       type="checkbox"
@@ -11,6 +11,6 @@ const TodoView = ({todo, onClick}: { todo: TodoModel, onClick: () => void }) => 
       readOnly={true}
     />{todo.title}
   </li>
-)
+))
 
-export default observer(TodoView)
+export default TodoView

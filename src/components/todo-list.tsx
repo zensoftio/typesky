@@ -3,7 +3,7 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 import TodoModel from '../models/todo'
 import {PostService, TodoService} from '../services/index'
-import {PostStore, TodoStore} from '../stores/index'
+import {PostMapper, TodoMapper} from '../mappers/index'
 import {instanceRegistry} from '../common/annotations/common'
 
 @observer
@@ -15,8 +15,8 @@ export default class TodoListView extends React.Component<{}, {}> {
   
   private todoService: TodoService = instanceRegistry.get('TodoService')
   private postService: PostService = instanceRegistry.get('PostService')
-  private todoStore: TodoStore = instanceRegistry.get('TodoStore')
-  private postStore: PostStore = instanceRegistry.get('PostStore')
+  private todoStore: TodoMapper = instanceRegistry.get('TodoMapper')
+  private postStore: PostMapper = instanceRegistry.get('PostMapper')
   
   // constructor
   

@@ -1,17 +1,9 @@
 import {PostStore} from '../index'
-import {PostRepository} from '../../repositories/index'
-import {injectable, injectOnProperty} from '../../common/annotations/common'
-import {computed} from 'mobx'
+import {injectable} from '../../common/annotations/common'
+import BaseResultStore from '../base/impl/result'
+import {PostResults} from '../../results/index'
 
 @injectable('PostStore')
-export default class DefaultPostStore implements PostStore {
-  
-  constructor(@injectOnProperty('PostRepository') protected repository: PostRepository) {
-  
-  }
-  
-  @computed
-  get postById() {
-    return this.repository.get('postById')
-  }
+export class DefaultPostStore extends BaseResultStore<PostResults> implements PostStore {
+
 }

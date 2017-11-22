@@ -1,7 +1,7 @@
 import {action, observable} from 'mobx'
-import {StateRepository} from '../index'
+import {SimpleStore} from '../index'
 
-export default class StateBaseRepository<T> implements StateRepository<T> {
+export default class BaseSimpleStore<T> implements SimpleStore<T> {
   
   @observable
   map: Map<string, Object> = new Map()

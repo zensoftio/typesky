@@ -1,4 +1,4 @@
-import {action, observable} from 'mobx'
+import {observable} from 'mobx'
 
 export default class ResultSet<T> {
   
@@ -8,9 +8,13 @@ export default class ResultSet<T> {
   @observable
   result?: T
   
-  @action
   loadResult(result: T) {
     this.loading = false
     this.result = result
+  }
+  
+  clearResult() {
+    this.loading = true
+    this.result = undefined
   }
 }

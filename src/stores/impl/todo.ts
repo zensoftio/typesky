@@ -1,27 +1,17 @@
-import {computed} from 'mobx'
 import {TodoStore} from '../index'
-import {TodoRepository} from '../../repositories/index'
-import {injectable, injectOnProperty} from '../../common/annotations/common'
+import {injectable} from '../../common/annotations/common'
+import BaseResultStore from '../base/impl/result'
+import {TodoResults} from '../../results/index'
 import TodoModel from '../../models/todo'
+import {action} from 'mobx'
+import {patch} from '../../common/utils/common'
 
 @injectable('TodoStore')
-export default class DefaultTodoStore implements TodoStore {
-  constructor(@injectOnProperty('TodoRepository') protected repository: TodoRepository) {
+export class DefaultTodoStore extends BaseResultStore<TodoResults> implements TodoStore {
   
-  }
-  
-  @computed
-  get all(): TodoModel[] {
-    return this.repository.get('all').result || []
-  }
-  
-  @computed
-  get unfinishedTodoCount(): number {
-    return this.all.filter(it => !it.finished).length
-  }
-  
-  @computed
-  get lastOne() {
-    return this.repository.get('lastTodo').result
+  @action
+  toggleTodo(todo: TodoModel) {
+    // update model
+    patch(todo, {finished: !todo.finished})
   }
 }

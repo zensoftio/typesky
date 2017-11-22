@@ -1,8 +1,8 @@
 import {action, observable} from 'mobx'
-import ResultSet from '../../../common/result'
-import {QueryRepository} from '../index'
+import ResultSet from '../../../results/base/result'
+import {ResultStore} from '../index'
 
-export default class QueryBaseRepository<T> implements QueryRepository<T> {
+export default class BaseResultStore<T> implements ResultStore<T> {
   
   @observable
   map: Map<string, ResultSet<any>> = new Map()
@@ -34,7 +34,7 @@ export default class QueryBaseRepository<T> implements QueryRepository<T> {
     if (result) {
       resultSet.loadResult(result)
     } else {
-      resultSet.loading = true
+      resultSet.clearResult()
     }
     
     return resultSet as any

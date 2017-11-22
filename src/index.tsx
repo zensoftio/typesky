@@ -6,9 +6,9 @@ import * as mobx from 'mobx'
 import App from './App'
 import {disposeInjection} from './common/annotations/common'
 
-require('./stores/index')
+require('./mappers/index')
 require('./services/index')
-require('./repositories/index')
+require('./stores/index')
 
 mobx.useStrict(true)
 
