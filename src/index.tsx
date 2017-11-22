@@ -9,6 +9,7 @@ import {disposeInjection} from './common/annotations/common'
 require('./mappers/index')
 require('./services/index')
 require('./stores/index')
+require('./fetchers/index')
 
 mobx.useStrict(true)
 

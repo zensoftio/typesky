@@ -2,7 +2,12 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 import TodoModel from '../models/todo'
 
-const TodoView = observer(({todo, onClick}: { todo: TodoModel, onClick: () => void }) => (
+interface Props {
+  todo: TodoModel,
+  onClick: () => void
+}
+
+const TodoView = observer(({todo, onClick}: Props) => (
   <li>
     <input
       type="checkbox"
