@@ -22,14 +22,13 @@ export default class DefaultPostService implements PostService {
     this.repository.prepare('postById')
     
     // delay execution for showcase
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // await new Promise(resolve => setTimeout(resolve, 1000))
     
     // make response
     const response = await this.fetcher.get(Pathes.Post.byId(postId))
     const post = await response.json()
     
-    const allPosts = await fetch(Pathes.Post.all)
-    console.log(await allPosts.json())
+    await this.fetcher.get('http://localhost:8081/api/account', {id: 1})
     
     // load results into container
     this.repository.load('postById', post)

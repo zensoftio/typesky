@@ -1,5 +1,6 @@
-import {injectable} from '../../common/annotations/common'
+import {injectable, injectOnMethod} from '../../common/annotations/common'
 import {Fetcher} from '../index'
+import {AuthService} from '../../services/index'
 
 interface HeadersContainer {
   [key: string]: string
@@ -8,13 +9,21 @@ interface HeadersContainer {
 @injectable('Fetcher')
 export default class DefaultFetcher implements Fetcher {
   
+  private authService: AuthService
+  
   private headersRaw: HeadersContainer = {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
   }
   
   private get headers() {
     return new Headers(this.headersRaw)
+  }
+  
+  @injectOnMethod('AuthService')
+  setFetcher(authService: AuthService) {
+    this.authService = authService
   }
   
   addHeader(name: string, value: string) {
@@ -27,33 +36,47 @@ export default class DefaultFetcher implements Fetcher {
                          .map(prop => [prop, body[prop]].join('='))
                          .join('&')
     
-    return fetch(`${url}?${params}`, {
-      method: 'get',
-      headers: this.headers
-    })
+    return this.fetch(`${url}?${params}`, this.defaultRequestInit('get'))
   }
   
   post(url: string, body: any = {}) {
-    return fetch(`${url}`, {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: this.headers
+    return this.fetch(`${url}`, {
+      ...this.defaultRequestInit('post'),
+      body: JSON.stringify(body)
     })
   }
   
   put(url: string, body: any = {}) {
-    return fetch(`${url}`, {
-      method: 'put',
-      body: JSON.stringify(body),
-      headers: this.headers
+    return this.fetch(`${url}`, {
+      ...this.defaultRequestInit('put'),
+      body: JSON.stringify(body)
     })
   }
   
   'delete'(url: string, body: any = {}) {
-    return fetch(`${url}`, {
-      method: 'delete',
-      body: JSON.stringify(body),
-      headers: this.headers
+    return this.fetch(`${url}`, {
+      ...this.defaultRequestInit('delete'),
+      body: JSON.stringify(body)
     })
+  }
+  
+  private defaultRequestInit(method: string): RequestInit {
+    return {
+      method,
+      headers: this.headers
+    }
+  }
+  
+  private fetch(input: RequestInfo, init?: RequestInit, counter: number = 0): Promise<Response> {
+    return fetch(input, init)
+      .then(this.handleResponse(input, init, counter))
+  }
+  
+  private handleResponse = (input: RequestInfo, init?: RequestInit, counter: number = 0) => async (res: Response) => {
+    if (res.status === 401 && counter < 1) {
+      await this.authService.checkToken()
+      return this.fetch(input, {...init, headers: this.headers}, counter + 1)
+    }
+    return res
   }
 }

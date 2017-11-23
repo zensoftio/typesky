@@ -85,7 +85,7 @@ export const injectOnProperty = (qualifier: string) => (constructor: any, _: any
          .push(new ConstructorInjectionRecord(qualifier, index))
 }
 
-export const disposeInjection = () => {
+export const disposeInjection = async () => {
   constructorRegistry.forEach((constructor: any, qualifier: string) => {
     instanceRegistry.set(qualifier, new constructor(instanceRegistry))
   })
@@ -97,4 +97,7 @@ export const disposeInjection = () => {
       ))
     }
   })
+  const promises: any[] = []
+  instanceRegistry.forEach(target => promises.push(target['postConstructor'] ? target['postConstructor']() : null))
+  return Promise.all(promises)
 }
