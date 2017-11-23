@@ -15,8 +15,8 @@ export default class TodoListView extends React.Component<{}, {}> {
   
   private todoService: TodoService = instanceRegistry.get('TodoService')
   private postService: PostService = instanceRegistry.get('PostService')
-  private todoStore: TodoMapper = instanceRegistry.get('TodoMapper')
-  private postStore: PostMapper = instanceRegistry.get('PostMapper')
+  private todoMapper: TodoMapper = instanceRegistry.get('TodoMapper')
+  private postMapper: PostMapper = instanceRegistry.get('PostMapper')
   
   // constructor
   
@@ -43,8 +43,8 @@ export default class TodoListView extends React.Component<{}, {}> {
   // render
   
   render() {
-    const todoLast = this.todoStore.lastOne
-    const resultSingle = this.postStore.postById
+    const todoLast = this.todoMapper.lastOne
+    const resultSingle = this.postMapper.postById
     return (
       <div>
         <button onClick={this.onCreateNewButtonClick}>create new</button>
@@ -59,14 +59,14 @@ export default class TodoListView extends React.Component<{}, {}> {
             </div>
           )}
           
-          {this.todoStore.all.map(todo =>
+          {this.todoMapper.all.map(todo =>
                                     <TodoView todo={todo} key={todo.id} onClick={() => this.onTodoCheckboxClick(todo)}/>
           )}
           
           {todoLast && <TodoView todo={todoLast} key={todoLast.id} onClick={() => this.onTodoCheckboxClick(todoLast)}/>}
         
         </ul>
-        Tasks left: {this.todoStore.unfinishedTodoCount}
+        Tasks left: {this.todoMapper.unfinishedTodoCount}
       </div>
     )
   }

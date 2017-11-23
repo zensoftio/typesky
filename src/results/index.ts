@@ -3,10 +3,10 @@ import PostModel from '../models/post'
 import TodoModel from '../models/todo'
 
 export interface PostResults {
-  postById: ResultSet<PostModel>
+  postById: ResultSet<PostModel, any>
 }
 
 export interface TodoResults {
-  lastTodo: ResultSet<TodoModel | undefined>
-  all: ResultSet<TodoModel[]>
+  lastTodo: ResultSet<TodoModel | undefined, any>
+  all: ResultSet<TodoModel[], any>
 }

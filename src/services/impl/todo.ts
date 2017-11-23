@@ -14,12 +14,12 @@ export default class DefaultTodoService implements TodoService {
                      .toString()
     const todo = new TodoModel(name)
     
-    // simple add for sync operations
-    this.repository.add('lastTodo', todo)
+    // simple load for sync operations
+    this.repository.load('lastTodo', todo)
     
     // container doesn't guarantee result for existence
     const all = this.repository.get('all')
-    this.repository.add('all', all.result ? [...all.result, todo] : [])
+    this.repository.load('all', all.result ? [...all.result, todo] : [])
   }
   
   toggleTodo(todo: TodoModel) {

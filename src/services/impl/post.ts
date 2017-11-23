@@ -19,7 +19,7 @@ export default class DefaultPostService implements PostService {
   
   async loadPost(postId: number) {
     // prepare result container for async operations
-    this.repository.add('postById')
+    this.repository.prepare('postById')
     
     // delay execution for showcase
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -32,7 +32,7 @@ export default class DefaultPostService implements PostService {
     console.log(await allPosts.json())
     
     // load results into container
-    this.repository.add('postById', post)
+    this.repository.load('postById', post)
   }
   
 }
