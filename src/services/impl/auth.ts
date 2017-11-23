@@ -4,6 +4,7 @@ import {injectable, injectOnMethod} from '../../common/annotations/common'
 import * as jwt from 'jwt-client'
 import {Maybe} from '../../common/types'
 import {configuration} from '../../configs/index'
+import BaseService from '../base/base'
 
 interface TokenContainer {
   token: Maybe<string>,
@@ -16,12 +17,13 @@ enum JWT_STORAGE_NAMES {
 }
 
 @injectable('AuthService')
-export default class DefaultAuthService implements AuthService {
+export default class DefaultAuthService extends BaseService implements AuthService {
   
   private fetcher: Fetcher
   private tokenContainer: TokenContainer
   
   constructor() {
+    super()
     this.tokenContainer = DefaultAuthService.loadTokenContainer()
   }
   

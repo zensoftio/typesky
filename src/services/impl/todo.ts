@@ -2,11 +2,13 @@ import {TodoService} from '../index'
 import TodoModel from '../../models/todo'
 import {TodoStore} from '../../stores/index'
 import {injectable, injectOnProperty} from '../../common/annotations/common'
+import BaseService from '../base/base'
 
 @injectable('TodoService')
-export default class DefaultTodoService implements TodoService {
+export default class DefaultTodoService extends BaseService implements TodoService {
   
   constructor(@injectOnProperty('TodoStore') private repository: TodoStore) {
+    super()
   }
   
   createNew() {

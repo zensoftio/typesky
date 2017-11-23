@@ -3,13 +3,15 @@ import {PostStore} from '../../stores/index'
 import {injectable, injectOnMethod, injectOnProperty} from '../../common/annotations/common'
 import Pathes from '../../dicts/pathes'
 import {Fetcher} from '../../fetchers/index'
+import BaseService from '../base/base'
 
 @injectable('PostService')
-export default class DefaultPostService implements PostService {
+export default class DefaultPostService extends BaseService implements PostService {
   
   private fetcher: Fetcher
   
   constructor(@injectOnProperty('PostStore') private repository: PostStore) {
+    super()
   }
   
   @injectOnMethod('Fetcher')

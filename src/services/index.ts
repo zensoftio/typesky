@@ -1,21 +1,22 @@
 import TodoModel from '../models/todo'
+import BaseService from './base/base'
 
 // here we need to list all implementations
 export * from './impl/todo'
 export * from './impl/post'
 export * from './impl/auth'
 
-export interface TodoService {
+export interface TodoService extends BaseService {
   createNew(): void
   
   toggleTodo(todo: TodoModel): void
 }
 
-export interface PostService {
+export interface PostService extends BaseService {
   loadPost(postId: number): void
 }
 
-export interface AuthService {
+export interface AuthService extends BaseService {
   login(username: string, password: string): void
   
   checkToken(): Promise<void>
