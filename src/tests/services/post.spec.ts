@@ -1,9 +1,9 @@
 import 'mocha'
-import DefaultPostService from '../services/impl/post'
-import {DefaultPostStore} from '../stores/impl/post'
-import DefaultFetcher from '../fetchers/impl/fetch'
+import DefaultPostService from '../../services/impl/post'
+import {DefaultPostStore} from '../../stores/impl/post'
+import DefaultFetcher from '../../fetchers/impl/fetch'
 import {instance, mock, verify, when} from 'ts-mockito'
-import Pathes from '../dicts/pathes'
+import Pathes from '../../dicts/pathes'
 
 const genResponse = (value: any) => Promise.resolve({json: () => Promise.resolve(value)}) as any
 
