@@ -7,9 +7,9 @@ import Pathes from '../dicts/pathes'
 
 const genResponse = (value: any) => Promise.resolve({json: () => Promise.resolve(value)}) as any
 
-describe('Hello function', () => {
+describe('PostStore', () => {
   
-  it('should return hello world', async () => {
+  it('::loadPost', async () => {
     
     const MockedPostStore = mock(DefaultPostStore)
     const MockedFetcher = mock(DefaultFetcher)
