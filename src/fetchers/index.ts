@@ -1,5 +1,3 @@
-export * from './impl/fetch'
-
 export interface Fetcher {
   addHeader(name: string, value: string): void
   

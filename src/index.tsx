@@ -6,15 +6,12 @@ import * as mobx from 'mobx'
 import App from './App'
 import {disposeInjection} from './common/annotations/common'
 import {translationReady} from './common/translate'
-
-require('./mappers/index')
-require('./services/index')
-require('./stores/index')
-require('./fetchers/index')
+import {classLoader} from './common/class-loader'
 
 mobx.useStrict(true)
 
-disposeInjection()
+classLoader()
+  .then(() => disposeInjection())
   .then(() => translationReady)
   .then(() => ReactDOM.render(
     <App/>,

@@ -23,7 +23,8 @@ module.exports = {
   output: {
     path: outPath,
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
+    chunkFilename: '[name].bundle.js'
   },
   target: 'web',
   resolve: {
