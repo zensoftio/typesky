@@ -26,7 +26,9 @@
     "typeRoots": [
       "node_modules/@types",
       "src/common/types"
-    ]
+    ],
+    "strict": true,
+    "locale": "ru"
   },
   "exclude": [
     "node_modules",

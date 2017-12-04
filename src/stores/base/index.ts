@@ -1,5 +1,4 @@
-import ResultSet from '../../results/base/result'
-
+import ResultSet from '../../results/base/props'
 
 export interface SimpleStore<T> {
   map: Map<string, Object>

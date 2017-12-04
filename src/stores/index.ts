@@ -1,5 +1,5 @@
-import {PostResults, TodoResults} from '../results/index'
-import {ResultStore} from './base/index'
+import {PostResults, TodoResults} from '../results'
+import {ResultStore} from './base'
 import TodoModel from '../models/todo'
 
 export interface TodoStore extends ResultStore<TodoResults> {

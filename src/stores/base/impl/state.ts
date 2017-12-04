@@ -1,7 +1,8 @@
 import {action, observable} from 'mobx'
 import {SimpleStore} from '../index'
+import InjectableLifecycle from '../../../common/injectable-lifecycle'
 
-export default class BaseSimpleStore<T> implements SimpleStore<T> {
+export default class BaseSimpleStore<T> implements SimpleStore<T>, InjectableLifecycle {
   
   @observable
   map: Map<string, Object> = new Map()
@@ -30,5 +31,13 @@ export default class BaseSimpleStore<T> implements SimpleStore<T> {
   removeAll() {
     this.map.clear()
     return this
+  }
+  
+  postConstructor() {
+    return Promise.resolve()
+  }
+  
+  onReady() {
+    return Promise.resolve()
   }
 }

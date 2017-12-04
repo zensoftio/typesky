@@ -1,7 +1,9 @@
 import {observable} from 'mobx'
 import {Maybe} from '../../common/types'
+import ResultSet from './props'
+import ResultSetWriter from './methods'
 
-export default class ResultSet<T, K> {
+export default class BaseResultSet<T, K> implements ResultSet<T, K>, ResultSetWriter<T, K> {
   
   @observable
   loading: boolean = true

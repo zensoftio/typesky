@@ -1,4 +1,3 @@
-
 const Webpack = require('webpack');
 const Path = require('path');
 
@@ -39,8 +38,8 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: isProduction
-                ? 'awesome-typescript-loader?module=es6'
-                : [
+          ? 'awesome-typescript-loader?module=es6'
+          : [
             'react-hot-loader/webpack',
             'awesome-typescript-loader'
           ]
@@ -63,11 +62,31 @@ module.exports = {
           ]
         })
       },
+      {
+        test: /\.scss$/,
+        use: [
+          require.resolve('style-loader'),
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              importLoaders: 1,
+            },
+          },
+          require.resolve('sass-loader')
+        ],
+      },
       // static assets
-      { test: /\.html$/, use: 'html-loader' },
-      { test: /\.json$/, use: 'html-loader' },
-      { test: /\.png$/, use: 'url-loader?limit=10000' },
-      { test: /\.jpg$/, use: 'file-loader' },
+      {test: /\.(html|json)$/, use: 'html-loader'},
+      {
+        test: /\.(jpg|png|svg)$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 25000,
+            name: "[path][name].[hash].[ext]",
+          },
+        },
+      },
     ],
   },
   plugins: [

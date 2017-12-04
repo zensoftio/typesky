@@ -1,8 +1,10 @@
 import {action, observable} from 'mobx'
-import ResultSet from '../../../results/base/result'
 import {ResultStore} from '../index'
+import ResultSet from '../../../results/base/props'
+import BaseResultSet from '../../../results/base/result'
+import InjectableLifecycle from '../../../common/injectable-lifecycle'
 
-export default class BaseResultStore<T> implements ResultStore<T> {
+export default class BaseResultStore<T> implements ResultStore<T>, InjectableLifecycle {
   @observable
   map: Map<string, ResultSet<any, any>> = new Map()
   
@@ -42,16 +44,24 @@ export default class BaseResultStore<T> implements ResultStore<T> {
     return this
   }
   
+  postConstructor() {
+    return Promise.resolve()
+  }
+  
+  onReady() {
+    return Promise.resolve()
+  }
+  
   @action
-  private getByName<K extends keyof T>(queryName: K): ResultSet<any, any> {
+  private getByName<K extends keyof T>(queryName: K): BaseResultSet<any, any> {
     if (!this.map.has(queryName)) {
-      this.map.set(queryName, new ResultSet())
+      this.map.set(queryName, new BaseResultSet())
     }
     
     const resultSet = this.map.get(queryName)
     if (!resultSet) {
       throw new Error(`there is no ResultSet for ${queryName}`)
     }
-    return resultSet
+    return resultSet as BaseResultSet<any, any>
   }
 }

@@ -97,7 +97,12 @@ export const disposeInjection = async () => {
       ))
     }
   })
-  const promises: any[] = []
-  instanceRegistry.forEach(target => promises.push(target['postConstructor'] ? target['postConstructor']() : null))
-  return Promise.all(promises)
+  
+  const postConstructorWaiter: any[] = []
+  instanceRegistry.forEach(target => postConstructorWaiter.push(target['postConstructor'] ? target['postConstructor']() : null))
+  await Promise.all(postConstructorWaiter)
+  
+  const onReadyWaiter: any[] = []
+  instanceRegistry.forEach(target => onReadyWaiter.push(target['onReady'] ? target['onReady']() : null))
+  return Promise.all(onReadyWaiter)
 }
