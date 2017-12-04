@@ -1,13 +1,14 @@
 import {injectable, injectOnMethod} from '../../common/annotations/common'
 import {Fetcher} from '../index'
-import {AuthService} from '../../services/index'
+import InjectableLifecycle from '../../common/injectable-lifecycle'
+import {AuthService} from '../../services'
 
 interface HeadersContainer {
   [key: string]: string
 }
 
 @injectable('Fetcher')
-export default class DefaultFetcher implements Fetcher {
+export default class DefaultFetcher implements Fetcher, InjectableLifecycle {
   
   private authService: AuthService
   
@@ -60,10 +61,19 @@ export default class DefaultFetcher implements Fetcher {
     })
   }
   
+  postConstructor() {
+    return Promise.resolve()
+  }
+  
+  onReady() {
+    return Promise.resolve()
+  }
+  
   private defaultRequestInit(method: string): RequestInit {
     return {
       method,
-      headers: this.headers
+      headers: this.headers,
+      credentials: 'include'
     }
   }
   
@@ -73,10 +83,14 @@ export default class DefaultFetcher implements Fetcher {
   }
   
   private handleResponse = (input: RequestInfo, init?: RequestInit, counter: number = 0) => async (res: Response) => {
+    if (res.status === 200) {
+      return res.json()
+    }
     if (res.status === 401 && counter < 1) {
       await this.authService.checkToken()
       return this.fetch(input, {...init, headers: this.headers}, counter + 1)
+      // window.location.reload()
     }
-    return res
+    throw res
   }
 }

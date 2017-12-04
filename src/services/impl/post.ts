@@ -28,12 +28,9 @@ export default class DefaultPostService extends BaseService implements PostServi
     
     // make response
     const response = await this.fetcher.get(Pathes.Post.byId(postId))
-    const post = await response.json()
-    
-    await this.fetcher.get('http://localhost:8081/api/account', {id: 1})
     
     // load results into container
-    this.repository.load('postById', post)
+    this.repository.load('postById', response)
   }
   
 }

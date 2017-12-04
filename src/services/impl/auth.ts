@@ -32,9 +32,9 @@ export default class DefaultAuthService extends BaseService implements AuthServi
     this.fetcher = fetch
   }
   
-  postConstructor() {
-    return this.checkToken()
-  }
+  // postConstructor() {
+  //   return this.checkToken()
+  // }
   
   async checkToken() {
     if (this.validateToken(this.tokenContainer.token)) {
@@ -48,12 +48,10 @@ export default class DefaultAuthService extends BaseService implements AuthServi
   }
   
   async login(username: string, password: string) {
-    const responseRaw = await this.fetcher.post(configuration.tokenApi, {
+    const tokenContainer: TokenContainer = await this.fetcher.post(configuration.tokenApi, {
       username,
       password
     })
-    
-    const tokenContainer: TokenContainer = await responseRaw.json()
     
     if (this.validateToken(tokenContainer.token)) {
       this.persistTokenContainer(tokenContainer)
@@ -77,11 +75,9 @@ export default class DefaultAuthService extends BaseService implements AuthServi
   }
   
   private async refresh(refreshToken: Maybe<string> = this.tokenContainer.refreshToken) {
-    const responseRaw = await this.fetcher.post(configuration.refreshTokenApi, {
+    const tokenContainer: TokenContainer = await this.fetcher.post(configuration.refreshTokenApi, {
       refreshToken
     })
-    
-    const tokenContainer: TokenContainer = await responseRaw.json()
     
     if (this.validateToken(tokenContainer.token)) {
       this.persistTokenContainer(tokenContainer)

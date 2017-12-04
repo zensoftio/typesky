@@ -9,8 +9,9 @@ export default class TodoModel extends UniqBaseModel {
   @observable
   finished = false
   
-  constructor(title: string) {
+  constructor(id: number) {
     super()
-    this.title = title
+    this.id = id
+    this.title = id.toString()
   }
 }

@@ -1,6 +1,6 @@
 import {computed} from 'mobx'
 import {TodoMapper} from '../index'
-import {TodoStore} from '../../stores/index'
+import {TodoStore} from '../../stores'
 import {injectable, injectOnProperty} from '../../common/annotations/common'
 import TodoModel from '../../models/todo'
 
@@ -12,7 +12,8 @@ export default class DefaultTodoMapper implements TodoMapper {
   
   @computed
   get all(): TodoModel[] {
-    return this.repository.get('all').result || []
+    const result = this.repository.get('all').result
+    return result ? result.list : []
   }
   
   @computed
