@@ -1,9 +1,9 @@
 import {PostResults, TodoResults} from '../results'
 import {ResultStore} from './base'
-import TodoModel from '../models/todo'
+import Todo from '../models/todo'
 
 export interface TodoStore extends ResultStore<TodoResults> {
-  toggleTodo(todo: TodoModel): void
+  toggleTodo(todo: Todo.Model): void
 }
 
 export interface PostStore extends ResultStore<PostResults> {

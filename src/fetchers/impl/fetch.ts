@@ -2,6 +2,7 @@ import {injectable, injectOnMethod} from '../../common/annotations/common'
 import {Fetcher} from '../index'
 import InjectableLifecycle from '../../common/injectable-lifecycle'
 import {AuthService} from '../../services'
+import {checkJson} from '../../common/annotations/model'
 
 interface HeadersContainer {
   [key: string]: string
@@ -31,34 +32,34 @@ export default class DefaultFetcher implements Fetcher, InjectableLifecycle {
     this.headersRaw[name] = value
   }
   
-  get(url: string, body: any = {}) {
+  get(url: string, body: any = {}, schema?: Function) {
     
     const params = Object.keys(body)
                          .map(prop => [prop, body[prop]].join('='))
                          .join('&')
     
-    return this.fetch(`${url}?${params}`, this.defaultRequestInit('get'))
+    return this.fetch(`${url}?${params}`, this.defaultRequestInit('get'), schema)
   }
   
-  post(url: string, body: any = {}) {
+  post(url: string, body: any = {}, schema?: Function) {
     return this.fetch(`${url}`, {
       ...this.defaultRequestInit('post'),
       body: JSON.stringify(body)
-    })
+    }, schema)
   }
   
-  put(url: string, body: any = {}) {
+  put(url: string, body: any = {}, schema?: Function) {
     return this.fetch(`${url}`, {
       ...this.defaultRequestInit('put'),
       body: JSON.stringify(body)
-    })
+    }, schema)
   }
   
-  'delete'(url: string, body: any = {}) {
+  'delete'(url: string, body: any = {}, schema?: Function) {
     return this.fetch(`${url}`, {
       ...this.defaultRequestInit('delete'),
       body: JSON.stringify(body)
-    })
+    }, schema)
   }
   
   postConstructor() {
@@ -77,18 +78,22 @@ export default class DefaultFetcher implements Fetcher, InjectableLifecycle {
     }
   }
   
-  private fetch(input: RequestInfo, init?: RequestInit, counter: number = 0): Promise<Response> {
+  private fetch(input: RequestInfo, init?: RequestInit, schema?: Function, counter: number = 0): Promise<Response> {
     return fetch(input, init)
-      .then(this.handleResponse(input, init, counter))
+      .then(this.handleResponse(input, init, schema, counter))
+      .then(it => {
+        schema && checkJson(it, schema)
+        return it
+      })
   }
   
-  private handleResponse = (input: RequestInfo, init?: RequestInit, counter: number = 0) => async (res: Response) => {
+  private handleResponse = (input: RequestInfo, init?: RequestInit, schema?: Function, counter: number = 0) => async (res: Response) => {
     if (res.status === 200) {
       return res.json()
     }
     if (res.status === 401 && counter < 1) {
       await this.authService.checkToken()
-      return this.fetch(input, {...init, headers: this.headers}, counter + 1)
+      return this.fetch(input, {...init, headers: this.headers}, schema, counter + 1)
       // window.location.reload()
     }
     throw res

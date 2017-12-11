@@ -1,17 +1,27 @@
 import {observable} from 'mobx'
-import UniqBaseModel from './base/uniq'
+import {attr} from '../common/annotations/model'
 
-export default class TodoModel extends UniqBaseModel {
-  
-  @observable
-  title = ''
-  
-  @observable
-  finished = false
-  
-  constructor(id: number) {
-    super()
-    this.id = id
-    this.title = id.toString()
+namespace Todo {
+  export class Model {
+    @attr()
+    @observable
+    id: number
+    
+    @attr()
+    @observable
+    title = ''
+    
+    @attr()
+    @observable
+    finished = false
+    
+    static of(id: number) {
+      const model = new Model()
+      model.id = id
+      model.title = id.toString()
+      return model
+    }
   }
 }
+
+export default Todo

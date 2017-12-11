@@ -1,9 +1,9 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import TodoModel from '../models/todo'
+import Todo from '../models/todo'
 
 interface Props {
-  todo: TodoModel,
+  todo: Todo.Model,
   onClick: () => void
 }
 

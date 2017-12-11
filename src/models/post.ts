@@ -1,20 +1,24 @@
 import {observable} from 'mobx'
-import UniqBaseModel from './base/uniq'
+import {attr} from '../common/annotations/model'
 
-export default class PostModel extends UniqBaseModel {
-  
-  @observable
-  userId: number
-  
-  @observable
-  title: string
-  
-  @observable
-  body: string
-  
-  constructor(title: string, body: string) {
-    super()
-    this.title = title
-    this.body = body
+namespace Post {
+  export class Model {
+    @attr()
+    @observable
+    id: number
+    
+    @attr()
+    @observable
+    userId: number
+    
+    @attr()
+    @observable
+    title: string
+    
+    @attr()
+    @observable
+    body: string
   }
 }
+
+export default Post

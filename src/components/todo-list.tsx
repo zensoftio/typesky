@@ -1,9 +1,9 @@
 import TodoView from './todo'
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import TodoModel from '../models/todo'
-import {PostService, TodoService} from '../services/index'
-import {PostMapper, TodoMapper} from '../mappers/index'
+import Todo from '../models/todo'
+import {PostService, TodoService} from '../services'
+import {PostMapper, TodoMapper} from '../mappers'
 import {instanceRegistry} from '../common/annotations/common'
 
 @observer
@@ -32,7 +32,7 @@ export default class TodoListView extends React.Component<{}, {}> {
     this.create()
   }
   
-  onTodoCheckboxClick = (todo: TodoModel) => {
+  onTodoCheckboxClick = (todo: Todo.Model) => {
     this.toggleCheckbox(todo)
   }
   
@@ -77,7 +77,7 @@ export default class TodoListView extends React.Component<{}, {}> {
     this.todoService.createNew()
   }
   
-  private toggleCheckbox(todo: TodoModel) {
+  private toggleCheckbox(todo: Todo.Model) {
     this.todoService.toggleTodo(todo)
   }
   

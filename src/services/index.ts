@@ -1,10 +1,10 @@
-import TodoModel from '../models/todo'
+import Todo from '../models/todo'
 import BaseService from './base/base'
 
 export interface TodoService extends BaseService {
   createNew(): void
   
-  toggleTodo(todo: TodoModel): void
+  toggleTodo(todo: Todo.Model): void
 }
 
 export interface PostService extends BaseService {

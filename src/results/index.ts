@@ -1,14 +1,14 @@
 import ResultSet from './base/result'
-import PostModel from '../models/post'
-import TodoModel from '../models/todo'
+import Post from '../models/post'
+import Todo from '../models/todo'
 import ResultList from './base/list'
 import {Maybe} from '../common/types'
 
 export interface PostResults {
-  postById: ResultSet<PostModel, any>
+  postById: ResultSet<Post.Model, any>
 }
 
 export interface TodoResults {
-  lastTodo: ResultSet<Maybe<TodoModel>, any>
-  all: ResultSet<ResultList<TodoModel>, any>
+  lastTodo: ResultSet<Maybe<Todo.Model>, any>
+  all: ResultSet<ResultList<Todo.Model>, any>
 }

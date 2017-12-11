@@ -1,18 +1,18 @@
-import TodoModel from '../models/todo'
-import PostModel from '../models/post'
+import Todo from '../models/todo'
+import Post from '../models/post'
 import ResultSet from '../results/base/result'
 import {Maybe} from '../common/types'
 
 export interface TodoMapper {
   
-  all: TodoModel[]
+  all: Todo.Model[]
   
   unfinishedTodoCount: number
   
-  lastOne: Maybe<TodoModel>
+  lastOne: Maybe<Todo.Model>
 }
 
 export interface PostMapper {
   
-  postById: ResultSet<PostModel, any>
+  postById: ResultSet<Post.Model, any>
 }
