@@ -68,7 +68,7 @@ export const injectableByClass = (constructor: any) => {
 }
 
 export const injectableDefault = (constructor: any) => {
-  singleton(constructor.name.replace('Default', ''))(constructor)
+  singleton(constructor.name.replace('Default', '').replace('Mock', ''))(constructor)
 }
 
 export const service = injectableDefault

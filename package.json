@@ -5,6 +5,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "webpack-dev-server --hot --inline --port 8080",
+    "dev:mock": "webpack-dev-server --hot --inline --port 8080 --define process.env.IS_MOCK",
     "build": "webpack",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
