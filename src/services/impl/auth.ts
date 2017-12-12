@@ -1,6 +1,6 @@
 import {AuthService} from '../index'
 import {Fetcher} from '../../fetchers'
-import {injectable, injectOnMethod} from '../../common/annotations/common'
+import {injectMethod, service} from '../../common/annotations/common'
 import * as jwt from 'jwt-client'
 import {Maybe} from '../../common/types'
 import {configuration} from '../../configs'
@@ -16,7 +16,7 @@ enum JWT_STORAGE_NAMES {
   refreshToken = 'JWT_REFRESH_TOKEN'
 }
 
-@injectable('AuthService')
+@service
 export default class DefaultAuthService extends BaseService implements AuthService {
   
   private fetcher: Fetcher
@@ -27,7 +27,7 @@ export default class DefaultAuthService extends BaseService implements AuthServi
     this.tokenContainer = DefaultAuthService.loadTokenContainer()
   }
   
-  @injectOnMethod('Fetcher')
+  @injectMethod('Fetcher')
   setFetcher(fetch: Fetcher) {
     this.fetcher = fetch
   }

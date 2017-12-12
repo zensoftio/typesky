@@ -67,17 +67,25 @@ export const injectableByClass = (constructor: any) => {
   singleton(constructor.name)(constructor)
 }
 
+export const injectableDefault = (constructor: any) => {
+  singleton(constructor.name.replace('Default', ''))(constructor)
+}
+
+export const service = injectableDefault
+export const storage = injectableDefault
+export const mapper = injectableDefault
+
 export const injectable = singleton
 
-export const injectOnMethod = (qualifier: string) => ({constructor}: any, setterName: string) => {
-  if (!Reflect.has(constructor, METHOD_INJECTIONS)) {
-    Reflect.set(constructor, METHOD_INJECTIONS, [])
+export const injectMethod = (qualifier: string) => (target: any, setterName: string) => {
+  if (!Reflect.has(target.constructor, METHOD_INJECTIONS)) {
+    Reflect.set(target.constructor, METHOD_INJECTIONS, [])
   }
-  Reflect.get(constructor, METHOD_INJECTIONS)
+  Reflect.get(target.constructor, METHOD_INJECTIONS)
          .push(new MethodInjectionRecord(qualifier, setterName))
 }
 
-export const injectOnProperty = (qualifier: string) => (constructor: any, _: any, index: number) => {
+export const injectConst = (qualifier: string) => (constructor: any, _: any, index: number) => {
   if (!Reflect.has(constructor, CONSTRUCTOR_INJECTIONS)) {
     Reflect.set(constructor, CONSTRUCTOR_INJECTIONS, [])
   }

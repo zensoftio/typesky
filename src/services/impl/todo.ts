@@ -1,13 +1,13 @@
 import {TodoService} from '../index'
 import Todo from '../../models/todo'
-import {injectable, injectOnProperty} from '../../common/annotations/common'
+import {injectConst, service} from '../../common/annotations/common'
 import BaseService from '../../common/services/base/base'
 import {TodoRecordStorage} from '../../storages'
 
-@injectable('TodoService')
+@service
 export default class DefaultTodoService extends BaseService implements TodoService {
   
-  constructor(@injectOnProperty('TodoRecordStorage') private store: TodoRecordStorage) {
+  constructor(@injectConst('TodoRecordStorage') private store: TodoRecordStorage) {
     super()
   }
   

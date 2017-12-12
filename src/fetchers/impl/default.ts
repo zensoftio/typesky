@@ -1,4 +1,4 @@
-import {injectable, injectOnMethod} from '../../common/annotations/common'
+import {injectable, injectMethod} from '../../common/annotations/common'
 import {Fetcher} from '../index'
 import InjectableLifecycle from '../../common/injectable-lifecycle'
 import {AuthService} from '../../services'
@@ -23,7 +23,7 @@ export default class DefaultFetcher implements Fetcher, InjectableLifecycle {
     return new Headers(this.headersRaw)
   }
   
-  @injectOnMethod('AuthService')
+  @injectMethod('AuthService')
   setFetcher(authService: AuthService) {
     this.authService = authService
   }
