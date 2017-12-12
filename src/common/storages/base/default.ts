@@ -1,12 +1,15 @@
 import {action, observable} from 'mobx'
 import {RecordStorage} from './index'
+import {instantiateJson} from '../../annotations/model'
 
 export class RecordContainer<T> {
   @observable
-  _?: T
+  _: T
   
   constructor(value?: T) {
-    this._ = value
+    if (value) {
+      this._ = value
+    }
   }
 }
 
@@ -16,8 +19,18 @@ export default class DefaultRecordStorage<T> implements RecordStorage<T> {
   private map: Map<string, RecordContainer<any>> = new Map()
   
   @action
-  get<K extends keyof T>(key: K, defaultValue?: T[K]): RecordContainer<T[K]> {
-    return this.getContainer(key, defaultValue)
+  get<K extends keyof T>(key: K, defaultValue?: T[K]): Partial<RecordContainer<T[K]>> {
+    return this.getContainer(key)
+  }
+  
+  @action
+  getWithDefault<K extends keyof T>(key: K, defaultValue: Partial<T[K]>, constructor: any): RecordContainer<T[K]> {
+    const container = this.getContainer(key)
+    const maybeValue = container._
+    if (!maybeValue) {
+      container._ = instantiateJson(defaultValue, constructor)
+    }
+    return container
   }
   
   @action
@@ -27,10 +40,11 @@ export default class DefaultRecordStorage<T> implements RecordStorage<T> {
     return this
   }
   
-  private getContainer<K extends keyof T>(key: K, defaultValue?: T[K]): RecordContainer<T[K]> {
+  @action
+  private getContainer<K extends keyof T>(key: K): RecordContainer<T[K]> {
     const maybeRecord = this.map.get(key)
     if (!maybeRecord) {
-      this.map.set(key, new RecordContainer(defaultValue))
+      this.map.set(key, new RecordContainer())
     }
     const record = this.map.get(key)
     if (!record) {

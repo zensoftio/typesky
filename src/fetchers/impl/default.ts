@@ -2,7 +2,7 @@ import {injectable, injectMethod} from '../../common/annotations/common'
 import {Fetcher} from '../index'
 import InjectableLifecycle from '../../common/injectable-lifecycle'
 import {AuthService} from '../../services'
-import {checkJson} from '../../common/annotations/model'
+import {checkJson, instantiateJson} from '../../common/annotations/model'
 
 interface HeadersContainer {
   [key: string]: string
@@ -85,6 +85,7 @@ export default class DefaultFetcher implements Fetcher, InjectableLifecycle {
         schema && checkJson(it, schema)
         return it
       })
+      .then(it => schema ? instantiateJson(it, schema) : it)
   }
   
   private handleResponse = (input: RequestInfo, init?: RequestInit, schema?: Function, counter: number = 0) => async (res: Response) => {

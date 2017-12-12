@@ -8,8 +8,10 @@ export interface TodoRecordStorage extends RecordStorage<Todo.Records> {
   toggleTodo(todo: Todo.Model): this
   
   addNewToAllList(todo: Todo.Model): this
+  
+  getAll(): Todo.ModelList
 }
 
 export interface PostRecordStorage extends RecordStorage<Post.Records> {
-  loadPost(postJson: any): this
+
 }

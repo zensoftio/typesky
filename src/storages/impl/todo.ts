@@ -3,15 +3,18 @@ import Todo from '../../models/todo'
 import DefaultRecordStorage from '../../common/storages/base/default'
 import {storage} from '../../common/annotations/common'
 import {action} from 'mobx'
-import {instantiateJson} from '../../common/annotations/model'
 
 @storage
 export default class DefaultTodoRecordStorage extends DefaultRecordStorage<Todo.Records> implements TodoRecordStorage {
   
   @action
+  getAll(): Todo.ModelList {
+    return this.getWithDefault('all', {}, Todo.ModelList)._
+  }
+  
+  @action
   addNewToAllList(todo: Todo.Model): this {
-    const maybeModelList = this.get('all')._
-    const modelList = maybeModelList || instantiateJson<Todo.ModelList>(maybeModelList, Todo.ModelList)
+    const modelList = this.getWithDefault('all', {}, Todo.ModelList)._
     this.set('all', modelList)
     
     modelList.list.push(todo)

@@ -12,8 +12,7 @@ export default class DefaultTodoMapper implements TodoMapper {
   
   @computed
   get all(): Todo.Model[] {
-    const modelList = this.store.get('all')._
-    return modelList ? modelList.list : []
+    return this.store.getAll().list
   }
   
   @computed
