@@ -1,6 +1,5 @@
 import Todo from '../models/todo'
 import Post from '../models/post'
-import ResultSet from '../results/base/result'
 import {Maybe} from '../common/types'
 
 export interface TodoMapper {
@@ -14,5 +13,5 @@ export interface TodoMapper {
 
 export interface PostMapper {
   
-  postById: ResultSet<Post.Model, any>
+  postById: Post.Model | undefined
 }

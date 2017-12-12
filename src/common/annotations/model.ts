@@ -83,7 +83,7 @@ const checkProperty = (json: any, attribute: AttributeDefinition, constructor: F
   return checkPropertyStrategy(json, attribute, constructor)
 }
 
-export const checkJson = (json: any, constructor: Function) => {
+export const checkJson = (json: any = {}, constructor: Function) => {
   const attributeList: AttributeDefinition[] = Reflect.get(constructor.prototype, ATTRIBUTE_LIST)
   return attributeList.map(attribute => checkProperty(json[attribute.name], attribute, constructor))
 }
@@ -97,7 +97,7 @@ const instantiateProperty = (json: any, attribute: AttributeDefinition, construc
   return checkPropertyStrategy(json, attribute, constructor)
 }
 
-export const instantiateJson = (json: any, constructor: any) => {
+export const instantiateJson = <T>(json: any = {}, constructor: any): T => {
   const attributeList: AttributeDefinition[] = Reflect.get(constructor.prototype, ATTRIBUTE_LIST)
   const instance = new constructor()
   attributeList.forEach(

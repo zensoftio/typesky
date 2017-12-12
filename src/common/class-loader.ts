@@ -17,8 +17,10 @@ const fetchersLoader = loader(it => import(`../fetchers/impl/${it}`))
 
 const mappersLoader = loader(it => import(`../mappers/impl/${it}`))
 
+const storagesLoader = loader(it => import(`../storages/impl/${it}`))
+
 const loadAll = [
-  storesLoader(layers), servicesLoader(layers), fetchersLoader(layers), mappersLoader(layers)
+  storesLoader(layers), servicesLoader(layers), fetchersLoader(layers), mappersLoader(layers), storagesLoader(layers)
 ]
 
 export const classLoader = () => Promise.all(loadAll)

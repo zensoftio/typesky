@@ -44,18 +44,18 @@ export default class TodoListView extends React.Component<{}, {}> {
   
   render() {
     const todoLast = this.todoMapper.lastOne
-    const resultSingle = this.postMapper.postById
+    const single = this.postMapper.postById
     return (
       <div>
         <button onClick={this.onCreateNewButtonClick}>create new</button>
         <button onClick={this.onReloadPostButtonClick}>reload post</button>
         <ul>
           
-          {resultSingle.loading ? 'loading' : resultSingle.result && (
-            <div key={resultSingle.result.id}>
-              <div>{resultSingle.result.title}</div>
-              <div>{resultSingle.result.body}</div>
-              <div>{resultSingle.result.userId}</div>
+          {single && (
+            <div key={single.id}>
+              <div>{single.title}</div>
+              <div>{single.body}</div>
+              <div>{single.userId}</div>
             </div>
           )}
           

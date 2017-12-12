@@ -19,6 +19,10 @@ namespace Post {
     @observable
     body: string
   }
+  
+  export interface Records {
+    postById: Post.Model
+  }
 }
 
 export default Post

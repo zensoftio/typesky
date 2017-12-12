@@ -1,19 +1,19 @@
 import {computed} from 'mobx'
 import {TodoMapper} from '../index'
-import {TodoStore} from '../../stores'
 import {injectable, injectOnProperty} from '../../common/annotations/common'
 import Todo from '../../models/todo'
+import {TodoRecordStorage} from '../../storages'
 
 @injectable('TodoMapper')
 export default class DefaultTodoMapper implements TodoMapper {
-  constructor(@injectOnProperty('TodoStore') protected repository: TodoStore) {
+  constructor(@injectOnProperty('TodoRecordStorage') protected store: TodoRecordStorage) {
   
   }
   
   @computed
   get all(): Todo.Model[] {
-    const result = this.repository.get('all').result
-    return result ? result.list : []
+    const modelList = this.store.get('all')._
+    return modelList ? modelList.list : []
   }
   
   @computed
@@ -23,6 +23,6 @@ export default class DefaultTodoMapper implements TodoMapper {
   
   @computed
   get lastOne() {
-    return this.repository.get('lastTodo').result
+    return this.store.get('lastTodo')._
   }
 }

@@ -11,9 +11,9 @@ namespace Todo {
     @observable
     title = ''
     
-    @attr()
+    @attr({defaultValue: false})
     @observable
-    finished = false
+    finished: boolean
     
     static of(id: number) {
       const model = new Model()
@@ -21,6 +21,17 @@ namespace Todo {
       model.title = id.toString()
       return model
     }
+  }
+  
+  export class ModelList {
+    @attr({type: Model, defaultValue: [], optional: true})
+    @observable
+    list: Model[]
+  }
+  
+  export interface Records {
+    lastTodo: Todo.Model
+    all: ModelList
   }
 }
 
