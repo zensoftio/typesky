@@ -4,7 +4,7 @@ import {injectable, injectOnMethod} from '../../common/annotations/common'
 import * as jwt from 'jwt-client'
 import {Maybe} from '../../common/types'
 import {configuration} from '../../configs'
-import BaseService from '../base/base'
+import BaseService from '../../common/services/base/base'
 
 interface TokenContainer {
   token: Maybe<string>,

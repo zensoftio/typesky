@@ -1,4 +1,4 @@
-import InjectableLifecycle from '../../common/injectable-lifecycle'
+import InjectableLifecycle from '../../injectable-lifecycle'
 
 export default class BaseService implements InjectableLifecycle {
   postConstructor() {

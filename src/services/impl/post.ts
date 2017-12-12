@@ -2,7 +2,7 @@ import {PostService} from '../index'
 import {injectable, injectOnMethod, injectOnProperty} from '../../common/annotations/common'
 import Pathes from '../../dicts/pathes'
 import {Fetcher} from '../../fetchers'
-import BaseService from '../base/base'
+import BaseService from '../../common/services/base/base'
 import Post from '../../models/post'
 import {PostRecordStorage} from '../../storages'
 

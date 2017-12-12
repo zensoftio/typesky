@@ -1,5 +1,9 @@
 import {layers} from '../layers'
 
+const systemLayers = ['fetch', 'default']
+
+const layerList = systemLayers.concat(layers)
+
 const loader = (f: (name: string) => Promise<any>) =>
   (className: string[]) => Promise.all(className.map(f)
                                                 .map(it => it.catch(() => Promise.resolve())))
@@ -8,8 +12,6 @@ const loader = (f: (name: string) => Promise<any>) =>
 /**
  * we need to hard code import pathes for webpack
  */
-
-const storesLoader = loader(it => import(`../stores/impl/${it}`))
 
 const servicesLoader = loader(it => import(`../services/impl/${it}`))
 
@@ -20,7 +22,7 @@ const mappersLoader = loader(it => import(`../mappers/impl/${it}`))
 const storagesLoader = loader(it => import(`../storages/impl/${it}`))
 
 const loadAll = [
-  storesLoader(layers), servicesLoader(layers), fetchersLoader(layers), mappersLoader(layers), storagesLoader(layers)
+  servicesLoader(layerList), fetchersLoader(layerList), mappersLoader(layerList), storagesLoader(layerList)
 ]
 
 export const classLoader = () => Promise.all(loadAll)

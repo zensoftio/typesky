@@ -1,7 +1,7 @@
 import {TodoService} from '../index'
 import Todo from '../../models/todo'
 import {injectable, injectOnProperty} from '../../common/annotations/common'
-import BaseService from '../base/base'
+import BaseService from '../../common/services/base/base'
 import {TodoRecordStorage} from '../../storages'
 
 @injectable('TodoService')

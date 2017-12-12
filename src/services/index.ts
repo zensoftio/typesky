@@ -1,5 +1,5 @@
 import Todo from '../models/todo'
-import BaseService from './base/base'
+import BaseService from '../common/services/base/base'
 
 export interface TodoService extends BaseService {
   createNew(): void

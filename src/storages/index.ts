@@ -1,5 +1,5 @@
 import Todo from '../models/todo'
-import {RecordStorage} from './base'
+import {RecordStorage} from '../common/storages/base'
 import Post from '../models/post'
 
 export interface TodoRecordStorage extends RecordStorage<Todo.Records> {

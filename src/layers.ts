@@ -1,1 +1,1 @@
-export const layers = ['post', 'todo', 'auth', 'fetch']
+export const layers = ['post', 'todo', 'auth']

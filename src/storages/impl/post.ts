@@ -1,6 +1,6 @@
 import {PostRecordStorage} from '../index'
 import Post from '../../models/post'
-import DefaultRecordStorage from '../base/default'
+import DefaultRecordStorage from '../../common/storages/base/default'
 import {injectable} from '../../common/annotations/common'
 import {instantiateJson} from '../../common/annotations/model'
 import {action} from 'mobx'
