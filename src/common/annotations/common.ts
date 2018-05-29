@@ -1,30 +1,32 @@
+import DefaultPostRecordStorage from "../../storages/post/default";
+
 const METHOD_INJECTIONS = Symbol('method_injections')
 const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 
 const constructorRegistry: Map<string, any> = new Map()
 
 class InstanceRegistry {
-  
+
   map: Map<string, any> = new Map()
-  
+
   get(key: string) {
     const value = this.map.get(key)
-    
+
     if (!value) {
       throw new Error(`There is no instance for ${key}!`)
     }
-    
+
     return value
   }
-  
+
   set(key: string, value: any) {
     if (this.map.has(key)) {
       throw new Error(`Double implementation for ${key}`)
     }
-    
+
     this.map.set(key, value)
   }
-  
+
   forEach(callbackFn: (value: any, key: string, map: Map<string, any>) => void, thisArg?: any) {
     this.map.forEach(callbackFn, thisArg)
   }
@@ -45,35 +47,27 @@ class ConstructorInjectionRecord {
 export const singleton = (qualifier: string) => (constructor: { new(a?: any, b?: any, c?: any, d?: any): any }) => {
   const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(constructor, CONSTRUCTOR_INJECTIONS)
   if (constructorInjectors) {
-    const [a, b, c, d] = constructorInjectors
     constructorRegistry.set(qualifier, class extends constructor {
       constructor(instanceRegistry: any) {
         super(
-          a ? instanceRegistry.get(a.qualifier) : undefined,
-          b ? instanceRegistry.get(b.qualifier) : undefined,
-          c ? instanceRegistry.get(c.qualifier) : undefined,
-          d ? instanceRegistry.get(d.qualifier) : undefined
+          ...constructorInjectors.map(it => it !== undefined ? instanceRegistry.get(it.qualifier) : undefined)
         )
       }
     })
   }
-  
+
   if (!constructorInjectors) {
     instanceRegistry.set(qualifier, new constructor())
   }
 }
 
-export const injectableByClass = (constructor: any) => {
-  singleton(constructor.name)(constructor)
+export const injectableDefault = (post = '', pre = '') => (name: string) => (constructor: any) => {
+  singleton(`${pre}${name}${post}`)(constructor)
 }
 
-export const injectableDefault = (constructor: any) => {
-  singleton(constructor.name.replace('Default', '').replace('Mock', ''))(constructor)
-}
-
-export const service = injectableDefault
-export const storage = injectableDefault
-export const mapper = injectableDefault
+export const service = injectableDefault('Service')
+export const storage = injectableDefault('RecordStorage')
+export const mapper = injectableDefault('Mapper')
 
 export const injectable = singleton
 
@@ -105,11 +99,11 @@ export const disposeInjection = async () => {
       ))
     }
   })
-  
+
   const postConstructorWaiter: any[] = []
   instanceRegistry.forEach(target => postConstructorWaiter.push(target['postConstructor'] ? target['postConstructor']() : null))
   await Promise.all(postConstructorWaiter)
-  
+
   const onReadyWaiter: any[] = []
   instanceRegistry.forEach(target => onReadyWaiter.push(target['onReady'] ? target['onReady']() : null))
   return Promise.all(onReadyWaiter)
