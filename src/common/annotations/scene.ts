@@ -1,4 +1,6 @@
 import 'reflect-metadata'
+import * as React from "react"
+import {BaseScene} from "../../scenes/BaseScene/index"
 
 export const SCENE_METADATA = Symbol('scene_metadata')
 
@@ -61,6 +63,28 @@ class SceneRegistry {
 
     return rootScenes
   }
+
+  public childScenesFor(component: BaseScene) {
+
+    let metadata = <SceneMetadata[]>Reflect.get(this, SCENE_METADATA) || []
+
+    let currentScene = metadata.find((meta) => {
+      return meta.navigationItem.link = component.props.match
+    })
+
+    if (!currentScene) { return [] }
+
+    let childScenes: SceneEntry[] =  []
+
+    sceneRegistry.forEach((registeredScene: SceneEntry) => {
+
+      if (currentScene && registeredScene.parentSceneName === currentScene.sceneName) {
+        childScenes.push(registeredScene)
+      }
+    })
+
+    return childScenes
+  }
 }
 
 // TODO: Think of a way to inject this instance into scenes
@@ -78,21 +102,6 @@ export const scene = (scene: SceneMetadata) => {
 
     Reflect.set(target, SCENE_METADATA, sceneMetadata)
     sceneRegistry.set(scene.sceneName, { ...scene, sceneComponent: target})
-
-    target.prototype.childScenes = () => {
-
-      let childScenes: SceneEntry[] =  []
-
-      sceneRegistry.forEach((registeredScene: SceneEntry) => {
-
-        if (registeredScene.parentSceneName === scene.sceneName) {
-          childScenes.push(registeredScene)
-        }
-      })
-
-      return childScenes
-    }
-
   }
 }
 

@@ -4,12 +4,7 @@ import {Link} from 'react-router-dom'
 import TodoListView from '../../components/todo-list'
 import i18n from '../../common/translate'
 import scene from "../../common/annotations/scene"
-
-interface Props {
-  history: History
-  location: any
-  match: any
-}
+import {BaseScene} from "../BaseScene/index"
 
 @scene({
   sceneName: 'RootScene',
@@ -33,7 +28,7 @@ interface Props {
     exact:      true
   }
 })
-export class TestScene extends React.Component<Props, {}> {
+export class TestScene extends BaseScene {
   render() {
     return (
       <header>

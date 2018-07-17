@@ -1,11 +1,6 @@
 import * as React from 'react'
 import scene from "../../common/annotations/scene"
-
-interface Props {
-  history: History
-  location: any
-  match: any
-}
+import {BaseScene} from "../BaseScene/index"
 
 @scene({
   sceneName: 'HomeScene',
@@ -18,7 +13,7 @@ interface Props {
     exact:      true
   }
 })
-export class HomeScene extends React.Component<Props, {}> {
+export class HomeScene extends BaseScene {
 
   render() {
     return (
