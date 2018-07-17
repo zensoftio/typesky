@@ -3,6 +3,7 @@ import './index.css'
 import {Link} from 'react-router-dom'
 import TodoListView from '../../components/todo-list'
 import i18n from '../../common/translate'
+import scene from "../../common/annotations/scene"
 
 interface Props {
   history: History
@@ -10,6 +11,28 @@ interface Props {
   match: any
 }
 
+@scene({
+  sceneName: 'RootScene',
+  parentSceneName: null,
+  requiredPermissions: [],
+  navigationItem: {
+    link:       '/',
+    route:      '/',
+    showInMenu: false,
+    exact:      true
+  }
+})
+@scene({
+  sceneName: 'TestScene',
+  parentSceneName: null,
+  requiredPermissions: [],
+  navigationItem: {
+    link:       '/test',
+    route:      'test',
+    showInMenu: false,
+    exact:      true
+  }
+})
 export class TestScene extends React.Component<Props, {}> {
   render() {
     return (
