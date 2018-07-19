@@ -1,4 +1,5 @@
 import {layers} from '../layers'
+import {Router} from "../scenes/router"
 
 const implementationName = process.env.IS_MOCK ? 'mock' : 'default'
 
@@ -29,3 +30,4 @@ const loadAll = [
 
 export const classLoader = () => Promise.all(loadAll)
                                         .then(it => it.reduce((acc, it) => acc.concat(it), []))
+                                        .then(() => { Router.loadScenes() })

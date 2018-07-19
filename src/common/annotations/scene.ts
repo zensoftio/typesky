@@ -1,5 +1,4 @@
 import 'reflect-metadata'
-import * as React from "react"
 import {BaseScene} from "../../scenes/BaseScene/index"
 
 export const SCENE_METADATA = Symbol('scene_metadata')
@@ -96,7 +95,7 @@ export const sceneRegistry: SceneRegistry = new SceneRegistry()
 export const scene = (scene: SceneMetadata) => {
 
   return (target: Function) => {
-    let sceneMetadata = Reflect.get(target, SCENE_METADATA) || []
+    let sceneMetadata = Reflect.getMetadata(SCENE_METADATA, target) || []
 
     sceneMetadata.push(scene)
 

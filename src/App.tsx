@@ -5,8 +5,6 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import {NotFoundScene} from './scenes/NotFoundScene/index'
 import {sceneRegistry} from './common/annotations/scene'
 
-import {ALL_SCENES} from './scenes/index'
-
 const history = createBrowserHistory()
 
 export default class App extends React.Component<{}, {}> {
@@ -14,7 +12,6 @@ export default class App extends React.Component<{}, {}> {
   constructor(props: {}, context?: any) {
     super(props, context)
     console.info('react started render')
-    console.info(ALL_SCENES)
   }
 
   render() {
