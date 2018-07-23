@@ -1,19 +1,33 @@
 export class NavigationItem {
-  link:       string          // Absolute link to use in LinkTo component
-  route:      string          // Relative route to the scene
-  showInMenu: boolean = false // Whether to show a menu item for the scene
-  className?: string          // Class name for navigation item
-  withIcon?:  boolean
-  exact?:     boolean
+  constructor(
+    public link: string,          // Absolute link to use in LinkTo component
+    public route: string,          // Relative route to the scene
+    public showInMenu: boolean = false, // Whether to show a menu item for the scene
+    public className?: string,          // Class name for navigation item
+    public withIcon?: boolean,
+    public exact?: boolean
+  ) {
+
+  }
 }
 
-export class SceneMetadata {
+export interface SceneMetadata {
   sceneName: string
-  parentSceneName: string | null = null
+  parentSceneName: string | null
+  authorized: boolean
   requiredPermissions: string[]
   navigationItem: NavigationItem
 }
 
-export class SceneEntry extends SceneMetadata {
-  sceneComponent: any
+export class SceneEntry implements SceneMetadata {
+  constructor(
+    public sceneName: string,
+    public sceneComponent: any,
+    public parentSceneName: string | null = null,
+    public navigationItem: NavigationItem,
+    public authorized: boolean = true,
+    public requiredPermissions: string[]
+  ) {
+
+  }
 }

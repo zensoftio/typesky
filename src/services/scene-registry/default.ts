@@ -10,42 +10,33 @@ import {TestScene} from "../../scenes/TestScene/index"
 const SCENE_METADATA = Symbol('scene_metadata')
 
 const SCENE_REGISTRY: SceneEntry[] = [
-  {
-    sceneComponent: TestScene,
-    sceneName: 'RootScene',
-    parentSceneName: null,
-    requiredPermissions: [],
-    navigationItem: {
-      link: '/',
-      route: '/',
-      showInMenu: false,
-      exact: true
-    }
-  },
-  {
-    sceneComponent: TestScene,
-    sceneName: 'TestScene',
-    parentSceneName: null,
-    requiredPermissions: [],
-    navigationItem: {
-      link: '/test',
-      route: 'test',
-      showInMenu: false,
-      exact: true
-    }
-  },
-  {
-    sceneComponent: HomeScene,
-    sceneName: 'HomeScene',
-    parentSceneName: null,
-    requiredPermissions: [],
-    navigationItem: {
-      link: '/home',
-      route: 'home',
-      showInMenu: false,
-      exact: true
-    }
-  }
+  new SceneEntry(
+    'RootScene',
+    TestScene,
+    null,
+    new NavigationItem(
+      '/',
+      '/'),
+    false,
+    []),
+
+  new SceneEntry('TestScene',
+    TestScene,
+    null,
+    new NavigationItem(
+      '/test',
+      'test'),
+    false,
+    []),
+
+  new SceneEntry('HomeScene',
+    HomeScene,
+    null,
+    new NavigationItem(
+      '/home',
+      'home'),
+    false,
+    [])
 ]
 
 @service('SceneRegistry')
@@ -53,7 +44,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
 
   constructor() {
     super()
-    
+
     this.registerScenes(SCENE_REGISTRY)
   }
 
@@ -116,9 +107,11 @@ export default class DefaultSceneRegistryService extends BaseService implements 
       return meta.navigationItem.link = scene.props.match
     })
 
-    if (!currentScene) { return [] }
+    if (!currentScene) {
+      return []
+    }
 
-    let childScenes: SceneEntry[] =  []
+    let childScenes: SceneEntry[] = []
 
     this.forEach((registeredScene: SceneEntry) => {
 
