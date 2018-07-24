@@ -1,3 +1,5 @@
+import {USER_PERMISSIONS} from '../../misc/permissions'
+
 export interface NavigationItemParams {
   link: string,         // Absolute link to use in LinkTo component
   route: string,        // Relative route to the scene
@@ -36,7 +38,7 @@ export interface SceneMetadata {
   readonly sceneName: string
   readonly parentSceneName: string | null
   readonly authorized: boolean
-  readonly requiredPermissions: string[]
+  readonly requiredPermissions: USER_PERMISSIONS[]
   readonly navigationItem: NavigationItem
 }
 
@@ -46,7 +48,7 @@ export interface SceneMetadataParams {
   parentSceneName?: string,
   navigationItem: NavigationItem,
   authorized?: boolean,
-  requiredPermissions: string[]
+  requiredPermissions: USER_PERMISSIONS[]
 }
 
 export class SceneEntry implements SceneMetadata {
@@ -56,7 +58,7 @@ export class SceneEntry implements SceneMetadata {
   readonly parentSceneName: string | null
   readonly navigationItem: NavigationItem
   readonly authorized: boolean
-  readonly requiredPermissions: string[]
+  readonly requiredPermissions: USER_PERMISSIONS[]
 
   constructor({
                 sceneName,
@@ -71,7 +73,7 @@ export class SceneEntry implements SceneMetadata {
     this.sceneComponent = sceneComponent
     this.parentSceneName = parentSceneName || null
     this.navigationItem = navigationItem
-    this.authorized = authorized || true
+    this.authorized = (authorized === undefined) ? true : authorized
     this.requiredPermissions = requiredPermissions
   }
 }
