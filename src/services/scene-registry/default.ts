@@ -4,50 +4,17 @@ import {service} from '../../common/annotations/common'
 import BaseService from '../../common/services/base/base'
 import {BaseScene} from "../../scenes/BaseScene/index"
 import {SceneMetadata, SceneEntry, NavigationItem} from "../../common/scenes/scenes"
-import {HomeScene} from "../../scenes/HomeScene/index"
-import {TestScene} from "../../scenes/TestScene/index"
+import SCENE_REGISTRY from "../../scenes"
 
 const SCENE_METADATA = Symbol('scene_metadata')
-
-const SCENE_REGISTRY: SceneEntry[] = [
-  new SceneEntry({
-    sceneName: 'RootScene',
-    sceneComponent: TestScene,
-    navigationItem: new NavigationItem({
-      link: '/',
-      route: '/'
-    }),
-    requiredPermissions: []
-  }),
-
-  new SceneEntry({
-    sceneName: 'TestScene',
-    sceneComponent: TestScene,
-    navigationItem: new NavigationItem({
-      link: '/test',
-      route: 'test'
-    }),
-    requiredPermissions: []
-  }),
-
-  new SceneEntry({
-    sceneName: 'HomeScene',
-    sceneComponent: HomeScene,
-    navigationItem: new NavigationItem({
-      link: '/home',
-      route: 'home'
-    }),
-    requiredPermissions: []
-  })
-]
 
 @service('SceneRegistry')
 export default class DefaultSceneRegistryService extends BaseService implements SceneRegistryService {
 
-  constructor() {
-    super()
-
+  postConstructor() {
     this.registerScenes(SCENE_REGISTRY)
+
+    return Promise.resolve()
   }
 
   map: Map<string, SceneEntry> = new Map()
@@ -57,7 +24,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
   }
 
   registerScene = (sceneEntry: SceneEntry) => {
-    let sceneMetadata = Reflect.getMetadata(SCENE_METADATA, sceneEntry.sceneComponent) || []
+    const sceneMetadata = Reflect.getMetadata(SCENE_METADATA, sceneEntry.sceneComponent) || []
 
     sceneMetadata.push(sceneEntry)
 
@@ -89,7 +56,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
 
   public rootScenes(): SceneEntry[] {
 
-    let rootScenes: SceneEntry[] = []
+    const rootScenes: SceneEntry[] = []
 
     this.forEach((registeredScene) => {
 
@@ -103,9 +70,9 @@ export default class DefaultSceneRegistryService extends BaseService implements 
 
   public childScenesFor(scene: BaseScene) {
 
-    let metadata = <SceneMetadata[]>Reflect.get(this, SCENE_METADATA) || []
+    const metadata = <SceneMetadata[]>Reflect.get(this, SCENE_METADATA) || []
 
-    let currentScene = metadata.find((meta) => {
+    const currentScene = metadata.find((meta) => {
       return meta.navigationItem.link === scene.props.match
     })
 
@@ -113,7 +80,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
       return []
     }
 
-    let childScenes: SceneEntry[] = []
+    const childScenes: SceneEntry[] = []
 
     this.forEach((registeredScene: SceneEntry) => {
 
