@@ -106,7 +106,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
     let metadata = <SceneMetadata[]>Reflect.get(this, SCENE_METADATA) || []
 
     let currentScene = metadata.find((meta) => {
-      return meta.navigationItem.link == scene.props.match
+      return meta.navigationItem.link === scene.props.match
     })
 
     if (!currentScene) {
