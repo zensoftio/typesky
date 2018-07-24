@@ -10,33 +10,35 @@ import {TestScene} from "../../scenes/TestScene/index"
 const SCENE_METADATA = Symbol('scene_metadata')
 
 const SCENE_REGISTRY: SceneEntry[] = [
-  new SceneEntry(
-    'RootScene',
-    TestScene,
-    null,
-    new NavigationItem(
-      '/',
-      '/'),
-    false,
-    []),
+  new SceneEntry({
+    sceneName: 'RootScene',
+    sceneComponent: TestScene,
+    navigationItem: new NavigationItem({
+      link: '/',
+      route: '/'
+    }),
+    requiredPermissions: []
+  }),
 
-  new SceneEntry('TestScene',
-    TestScene,
-    null,
-    new NavigationItem(
-      '/test',
-      'test'),
-    false,
-    []),
+  new SceneEntry({
+    sceneName: 'TestScene',
+    sceneComponent: TestScene,
+    navigationItem: new NavigationItem({
+      link: '/test',
+      route: 'test'
+    }),
+    requiredPermissions: []
+  }),
 
-  new SceneEntry('HomeScene',
-    HomeScene,
-    null,
-    new NavigationItem(
-      '/home',
-      'home'),
-    false,
-    [])
+  new SceneEntry({
+    sceneName: 'HomeScene',
+    sceneComponent: HomeScene,
+    navigationItem: new NavigationItem({
+      link: '/home',
+      route: 'home'
+    }),
+    requiredPermissions: []
+  })
 ]
 
 @service('SceneRegistry')
@@ -104,7 +106,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
     let metadata = <SceneMetadata[]>Reflect.get(this, SCENE_METADATA) || []
 
     let currentScene = metadata.find((meta) => {
-      return meta.navigationItem.link = scene.props.match
+      return meta.navigationItem.link == scene.props.match
     })
 
     if (!currentScene) {
