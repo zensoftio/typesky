@@ -70,7 +70,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
 
   public childScenesFor(scene: BaseScene) {
 
-    const metadata = <SceneMetadata[]>Reflect.get(this, SCENE_METADATA) || []
+    const metadata = <SceneMetadata[]>Reflect.get(scene.constructor, SCENE_METADATA) || []
 
     const currentScene = metadata.find((meta) => {
       return meta.navigationItem.link === scene.props.match
