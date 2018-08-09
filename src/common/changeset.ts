@@ -63,14 +63,14 @@ export namespace Changeset {
 
     private readonly hostObject: Host
 
-    constructor(hostObject: Host, rules: {[key in keyof Host]: ValidationRule<Host, key>}) {
+    constructor(hostObject: Host, rules: ValidationRules<Host>) {
 
       this.hostObject = hostObject
 
       for (const property in rules) {
         if (rules.hasOwnProperty(property) /* Duh */ && hostObject.hasOwnProperty(property)) {
 
-          this._fields[property] = observable(new DefaultChangesetField(hostObject[property], rules[property], property, this.valueChanged))
+          this._fields[property] = observable(new DefaultChangesetField(hostObject[property], rules[property]!, property, this.valueChanged))
         }
         else {
           throw new Error(`Property '${property}' is not present in host object!`)
