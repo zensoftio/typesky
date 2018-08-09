@@ -1,10 +1,10 @@
-import {action, computed, observable} from 'mobx'
+import {action, computed, observable, runInAction} from 'mobx'
 
 export namespace Changeset {
 
   export interface ChangesetField<ValueType> {
     value: ValueType | null,
-    fieldName: string
+    fieldName: string,
     error: string | null
   }
 
@@ -23,16 +23,20 @@ export namespace Changeset {
     }
 
     set value(v: Host[Key] | null) {
-      this._value = v
-      this.onChange()
+      // debugger
+      runInAction(() => {
+        this._value = v
+        this.onChange()
+      })
     }
 
+    @observable
     private _value: Host[Key] | null
 
     @observable
     error: string | null
 
-    validation: ValidationRule<Host, Key>
+    readonly validation: ValidationRule<Host, Key>
 
     private readonly onChange: () => void
 
@@ -54,6 +58,7 @@ export namespace Changeset {
       return this._fields
     }
 
+    @observable
     private _fields: {[Key in keyof Host]?: DefaultChangesetField<Host, Key>} = {}
 
     @observable
@@ -80,8 +85,9 @@ export namespace Changeset {
     }
 
     @action
-    valueChanged = () => {
+    private valueChanged = () => {
       this.isDirty = true
+      this.validate()
     }
 
     @action
