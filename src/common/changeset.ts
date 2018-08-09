@@ -5,6 +5,7 @@ export namespace Changeset {
   export interface ChangesetField<ValueType> {
     value: ValueType | null,
     fieldName: string
+    error: string | null
   }
 
   export type ValidationRule<Host, Key extends keyof Host> =
