@@ -8,14 +8,16 @@ export namespace Changeset {
     error: string | null
   }
 
-  export type ValidationRule<Host, Key extends keyof Host> =
-    (value: Host[Key] | null, field: ChangesetField<Host[Key]>, changeset: Changeset<Host>) => { valid: boolean, error?: string }
+  export type ValidationResult = { valid: boolean, error?: string }
 
-  export type ValidationRules<Host> = {
-    [Key in keyof Host]? : ValidationRule<Host, Key>
+  export type ValidationRule<Host, Keys extends keyof Host, ValueType = Host[Keys]> =
+    (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys>) => ValidationResult
+
+  export type ValidationRules<Host, Keys extends keyof Host> = {
+    [Key in Keys]: ValidationRule<Host, Keys, Host[Key]>
   }
 
-  class DefaultChangesetField<Host, Key extends keyof Host> implements ChangesetField<Host[Key]> {
+  class DefaultChangesetField<Host, Keys extends keyof Host, Key extends Keys> implements ChangesetField<Host[Key]> {
 
     @computed
     get value(): Host[Key] | null {
@@ -23,7 +25,6 @@ export namespace Changeset {
     }
 
     set value(v: Host[Key] | null) {
-      // debugger
       runInAction(() => {
         this._value = v
         this.onChange()
@@ -36,13 +37,13 @@ export namespace Changeset {
     @observable
     error: string | null
 
-    readonly validation: ValidationRule<Host, Key>
+    readonly validation: ValidationRule<Host, Keys, Host[Key]>
 
     private readonly onChange: () => void
 
     readonly fieldName: string
 
-    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Key>, fieldName: Key, onChange: () => void) {
+    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, Host[Key]>, fieldName: Key, onChange: () => void) {
 
       this._value = initialValue
       this.validation = validation
@@ -51,42 +52,56 @@ export namespace Changeset {
     }
   }
 
-  export class Changeset<Host> {
+  export class Changeset<Host, Keys extends keyof Host> {
 
     @computed
-    get fields(): {[Key in keyof Host]?: ChangesetField<Host[Key]>} {
+    get fields(): {[Key in Keys]: ChangesetField<Host[Key]>} {
       return this._fields
     }
 
     @observable
-    private _fields: {[Key in keyof Host]?: DefaultChangesetField<Host, Key>} = {}
+    private readonly _fields: {[Key in Keys]: DefaultChangesetField<Host, Keys, Key>}
+
+    @computed
+    get isValid(): boolean {
+      return this._isValid
+    }
 
     @observable
-    isValid = true
+    private _isValid = true
+
+    @computed
+    get isDirty(): boolean {
+      return this._isDirty
+    }
 
     @observable
-    isDirty = false
+    private _isDirty = false
 
     private readonly hostObject: Host
 
-    constructor(hostObject: Host, rules: ValidationRules<Host>) {
+    constructor(hostObject: Host, rules: ValidationRules<Host, Keys>) {
 
       this.hostObject = hostObject
 
-      for (const property in rules) {
-        if (rules.hasOwnProperty(property) /* Duh */ && hostObject.hasOwnProperty(property)) {
+      const fields: any = {}
 
-          this._fields[property] = observable(new DefaultChangesetField(hostObject[property], rules[property]!, property, this.valueChanged))
+      for (const property in rules) {
+        if (rules.hasOwnProperty(property) && hostObject.hasOwnProperty(property)) {
+
+          fields[property] = observable(new DefaultChangesetField(hostObject[property], rules[property]!, property, this.valueChanged))
         }
         else {
           throw new Error(`Property '${property}' is not present in host object!`)
         }
       }
+
+      this._fields = fields
     }
 
     @action
     private valueChanged = () => {
-      this.isDirty = true
+      this._isDirty = true
       this.validate()
     }
 
@@ -99,19 +114,19 @@ export namespace Changeset {
         if (this._fields.hasOwnProperty(property)) {
           const field = this._fields[property]!
 
-          const validation = field.validation(field.value, field, this as Changeset<Host>)
+          const validation = field.validation(field.value, field, this as Changeset<Host, Keys> /* Duh */)
           valid = valid && validation.valid
           field.error = validation.valid ? null : validation.error || `${field.fieldName} is invalid`
         }
       }
 
-      return this.isValid = valid
+      return this._isValid = valid
     }
 
     save = (): boolean => {
       if (this.validate) {
         for (const property in this._fields) {
-          if (this._fields.hasOwnProperty(property) /* Duh */ && this.hostObject.hasOwnProperty(property)) {
+          if (this._fields.hasOwnProperty(property) && this.hostObject.hasOwnProperty(property)) {
 
             const field = this._fields[property]
             if (!!field) {
@@ -139,8 +154,10 @@ export namespace Changeset {
         }
       }
 
-      this.isDirty = false
-      this.isValid = true
+      this._isDirty = false
+      this._isValid = true
     }
   }
 }
+
+export default Changeset
