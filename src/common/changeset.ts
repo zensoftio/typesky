@@ -94,7 +94,7 @@ export namespace Changeset {
       return proxy
     }
 
-    private _proxyFields: ProxyKeys[]
+    private readonly _proxyFields: ProxyKeys[]
 
     @computed
     get isValid(): boolean | undefined {
@@ -134,6 +134,14 @@ export namespace Changeset {
       }
 
       this._fields = fields
+
+      const missingProperty = proxyFields.find((property) => !hostObject.hasOwnProperty(property))
+
+      if (missingProperty) {
+
+        throw new Error(`Property '${missingProperty}' is not present in host object!`)
+      }
+
       this._proxyFields = proxyFields
     }
 
