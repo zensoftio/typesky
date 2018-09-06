@@ -74,8 +74,27 @@ export namespace Changeset {
     @observable
     private readonly _fields: DefaultChangesetFields<Host, Keys, ProxyKeys>
 
-    @observable
-    readonly proxyFields: ProxyFields<Host, ProxyKeys>
+    @computed
+    get proxy(): ProxyFields<Host, ProxyKeys> {
+      const proxy: any = {}
+
+      for (const property of this._proxyFields) {
+
+        if (this.hostObject.hasOwnProperty(property)) {
+
+          Object.defineProperty(proxy, property, {
+            get: () => this.hostObject[property]
+          })
+        }
+        else {
+          throw new Error(`Property '${property}' is not present in host object!`)
+        }
+      }
+
+      return proxy
+    }
+
+    private _proxyFields: ProxyKeys[]
 
     @computed
     get isValid(): boolean | undefined {
@@ -115,23 +134,7 @@ export namespace Changeset {
       }
 
       this._fields = fields
-
-      const proxy: any = {}
-
-      for (const property of proxyFields) {
-
-        if (hostObject.hasOwnProperty(property)) {
-
-          Object.defineProperty(proxy, property, {
-            get: () => this.hostObject[property]
-          })
-        }
-        else {
-          throw new Error(`Property '${property}' is not present in host object!`)
-        }
-      }
-
-      this.proxyFields = observable(proxy)
+      this._proxyFields = proxyFields
     }
 
     private valueChanged = (property: Keys) => action(() => {

@@ -88,8 +88,8 @@ export default class TodoListView extends React.Component<{}, {}> {
             </div>
           )}
           {changeset && (
-            <div key={changeset.proxyFields.id}>
-              <div>Edit post #{changeset.proxyFields.id} by user #{changeset.proxyFields.userId}</div>
+            <div>
+              <div>Edit post #{changeset.proxy.id} by user #{changeset.proxy.userId}</div>
               <div>
                 <input value={changeset.fields.title.value || ''}
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
