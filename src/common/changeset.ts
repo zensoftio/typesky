@@ -14,10 +14,10 @@ export namespace Changeset {
 
   export type ValidationResult = { valid: boolean, error?: string }
 
-  export type ValidationRule<Host, Keys extends keyof Host, ProxyKeys extends keyof Host, ValueType = Host[Keys]> =
+  export type ValidationRule<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never, ValueType = Host[Keys]> =
     (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys, ProxyKeys>) => ValidationResult
 
-  export type ValidationRules<Host, Keys extends keyof Host, ProxyKeys extends keyof Host> = {
+  export type ValidationRules<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> = {
     [Key in Keys]: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>
   }
 

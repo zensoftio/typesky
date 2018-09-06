@@ -11,7 +11,7 @@ const URL_FORMAT = '^((https?:)?\\/\\/)?' + // protocol
   '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
   '(\\#[-a-z\\d_]*)?$' // fragment locater
 
-const validateFormat = <Host, Keys extends keyof Host>(fieldName: string, format: string): Changeset.ValidationRule<Host, Keys, any, string> => {
+const validateFormat = <Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never>(fieldName: string, format: string): Changeset.ValidationRule<Host, Keys, ProxyKeys, string> => {
 
   const regExp = new RegExp(format, 'i')
 
@@ -32,7 +32,7 @@ interface LengthConstraint {
 }
 
 const ChangesetValidations = {
-  validatePresence: <Host, Keys extends keyof Host>(fieldName: string, required: boolean = true): Changeset.ValidationRule<Host, Keys, any, Host[Keys]> => {
+  validatePresence: <Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never>(fieldName: string, required: boolean = true): Changeset.ValidationRule<Host, Keys, ProxyKeys, Host[Keys]> => {
 
     return (value: Host[Keys] | null) => {
 
@@ -45,7 +45,7 @@ const ChangesetValidations = {
     }
   },
 
-  validateLength: <Host, Keys extends keyof Host>(fieldName: string, constraint: LengthConstraint): Changeset.ValidationRule<Host, Keys, any, string> => {
+  validateLength: <Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never>(fieldName: string, constraint: LengthConstraint): Changeset.ValidationRule<Host, Keys, ProxyKeys, string> => {
 
     const {min, max} = constraint
 
@@ -91,7 +91,7 @@ const ChangesetValidations = {
 
   },
 
-  validateAlwaysValid: <Host, Keys extends keyof Host, Key extends Keys>(): Changeset.ValidationRule<Host, Keys, any, Host[Key]> => {
+  validateAlwaysValid: <Host, Keys extends keyof Host, Key extends Keys, ProxyKeys extends keyof Host = never>(): Changeset.ValidationRule<Host, Keys, ProxyKeys, Host[Key]> => {
 
     return () => {
       return {valid: true}
@@ -99,8 +99,8 @@ const ChangesetValidations = {
   },
 
   validateFormat: validateFormat,
-  validateEmail: <Host, Keys extends keyof Host>(fieldName: string): Changeset.ValidationRule<Host, Keys, any, string> => validateFormat(fieldName, EMAIL_FORMAT),
-  validateUrl: <Host, Keys extends keyof Host>(fieldName: string): Changeset.ValidationRule<Host, Keys, any, string> => validateFormat(fieldName, URL_FORMAT),
+  validateEmail: <Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never>(fieldName: string): Changeset.ValidationRule<Host, Keys, ProxyKeys, string> => validateFormat(fieldName, EMAIL_FORMAT),
+  validateUrl: <Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never>(fieldName: string): Changeset.ValidationRule<Host, Keys, ProxyKeys, string> => validateFormat(fieldName, URL_FORMAT),
 
   validateEmailArray: <Host, Key extends keyof Host>(fieldName: string) => {
     return (value: Host[Key] | null) => {
