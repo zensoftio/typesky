@@ -63,33 +63,36 @@ export namespace Changeset {
     private readonly _fields: {[Key in Keys]: DefaultChangesetField<Host, Keys, Key>}
 
     @computed
-    get isValid(): boolean {
+    get isValid(): boolean | undefined {
       return this._isValid
     }
 
     @observable
-    private _isValid = true
+    private _isValid: boolean | undefined = undefined
 
     @computed
     get isDirty(): boolean {
       return this._isDirty
     }
 
+    private readonly validateAutomatically: boolean
+
     @observable
     private _isDirty = false
 
     private readonly hostObject: Host
 
-    constructor(hostObject: Host, rules: ValidationRules<Host, Keys>) {
+    constructor(hostObject: Host, rules: ValidationRules<Host, Keys>, validateAutomatically: boolean = false) {
 
       this.hostObject = hostObject
+      this.validateAutomatically = validateAutomatically
 
       const fields: any = {}
 
       for (const property in rules) {
         if (rules.hasOwnProperty(property) && hostObject.hasOwnProperty(property)) {
 
-          fields[property] = observable(new DefaultChangesetField(hostObject[property], rules[property]!, property, this.valueChanged))
+          fields[property] = observable(new DefaultChangesetField(hostObject[property], rules[property], property, this.valueChanged(property)))
         }
         else {
           throw new Error(`Property '${property}' is not present in host object!`)
@@ -99,11 +102,17 @@ export namespace Changeset {
       this._fields = fields
     }
 
-    @action
-    private valueChanged = () => {
+    private valueChanged = (property: Keys) => action(() => {
       this._isDirty = true
-      this.validate()
-    }
+
+      if (this.validateAutomatically) {
+        this.validate()
+      }
+      else {
+        // isValid will remain undefined unless full validation is performed
+        this.validateProperty(property)
+      }
+    })
 
     @action
     validate = () => {
@@ -112,19 +121,28 @@ export namespace Changeset {
 
       for (const property in this._fields) {
         if (this._fields.hasOwnProperty(property)) {
-          const field = this._fields[property]!
-
-          const validation = field.validation(field.value, field, this as Changeset<Host, Keys> /* Duh */)
-          valid = valid && validation.valid
-          field.error = validation.valid ? null : validation.error || `${field.fieldName} is invalid`
+          valid = valid && this.validateProperty(property)
         }
       }
 
       return this._isValid = valid
     }
 
+    private validateProperty(propertyName: Keys) {
+      if (this._fields.hasOwnProperty(propertyName)) {
+        const field = this._fields[propertyName]
+
+        const validation = field.validation(field.value, field, this as Changeset<Host, Keys>)
+        field.error = validation.valid ? null : validation.error || `${field.fieldName} is invalid`
+
+        return validation.valid
+      }
+
+      throw new Error(`Field '${propertyName}' is no registered in changeset`)
+    }
+
     save = (): boolean => {
-      if (this.validate) {
+      if (this.validate()) {
         for (const property in this._fields) {
           if (this._fields.hasOwnProperty(property) && this.hostObject.hasOwnProperty(property)) {
 
@@ -145,7 +163,7 @@ export namespace Changeset {
     @action
     rollback = () => {
       for (const property in this._fields) {
-        if (this._fields.hasOwnProperty(property) /* Duh */ && this.hostObject.hasOwnProperty(property)) {
+        if (this._fields.hasOwnProperty(property) && this.hostObject.hasOwnProperty(property)) {
 
           const field = this._fields[property]
           if (!!field) {
@@ -155,7 +173,7 @@ export namespace Changeset {
       }
 
       this._isDirty = false
-      this._isValid = true
+      this._isValid = undefined
     }
   }
 }
