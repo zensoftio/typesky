@@ -29,10 +29,8 @@ export namespace Changeset {
     }
 
     set value(v: Host[Key] | null) {
-      runInAction(() => {
-        this._value = v
-        this.onChange()
-      })
+      this._value = v
+      this.onChange()
     }
 
     @observable
@@ -64,6 +62,13 @@ export namespace Changeset {
     readonly [Key in Keys]: Host[Key]
   }
 
+  export type ChangesetParams<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> = {
+    hostObject: Host
+    rules: ValidationRules<Host, Keys, ProxyKeys>
+    proxyFields?: ProxyKeys[]
+    validateAutomatically?: boolean
+  }
+
   export class Changeset<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> {
 
     @computed
@@ -75,7 +80,7 @@ export namespace Changeset {
     private readonly _fields: DefaultChangesetFields<Host, Keys, ProxyKeys>
 
     @computed
-    get proxy(): ProxyFields<Host, ProxyKeys> {
+    get context(): ProxyFields<Host, ProxyKeys> {
       const proxy: any = {}
 
       for (const property of this._proxyFields) {
@@ -116,7 +121,9 @@ export namespace Changeset {
 
     private readonly hostObject: Host
 
-    constructor(hostObject: Host, rules: ValidationRules<Host, Keys, ProxyKeys>, proxyFields: ProxyKeys[] = [], validateAutomatically: boolean = false) {
+    constructor(params: ChangesetParams<Host, Keys, ProxyKeys>) {
+
+      const {hostObject, rules, proxyFields = [], validateAutomatically = false} = params
 
       this.hostObject = hostObject
       this.validateAutomatically = validateAutomatically
