@@ -9,7 +9,7 @@ export namespace Changeset {
   }
 
   export type ChangesetFields<Host, Keys extends keyof Host> = {
-    [Key in Keys]: ChangesetField<Host[Keys]>
+    [Key in Keys]: ChangesetField<Host[Key]>
   }
 
   export type ValidationResult = { valid: boolean, error?: string }
