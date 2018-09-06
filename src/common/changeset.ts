@@ -8,6 +8,10 @@ export namespace Changeset {
     error: string | null
   }
 
+  export type ChangesetFields<Host, Keys extends keyof Host> = {
+    [Key in Keys]: ChangesetField<Host[Keys]>
+  }
+
   export type ValidationResult = { valid: boolean, error?: string }
 
   export type ValidationRule<Host, Keys extends keyof Host, ValueType = Host[Keys]> =
@@ -52,15 +56,19 @@ export namespace Changeset {
     }
   }
 
+  type DefaultChangesetFields<Host, Keys extends keyof Host> = {
+    [Key in Keys]: DefaultChangesetField<Host, Keys, Key>
+  }
+
   export class Changeset<Host, Keys extends keyof Host> {
 
     @computed
-    get fields(): {[Key in Keys]: ChangesetField<Host[Key]>} {
+    get fields(): ChangesetFields<Host, Keys> {
       return this._fields
     }
 
     @observable
-    private readonly _fields: {[Key in Keys]: DefaultChangesetField<Host, Keys, Key>}
+    private readonly _fields: DefaultChangesetFields<Host, Keys>
 
     @computed
     get isValid(): boolean | undefined {
