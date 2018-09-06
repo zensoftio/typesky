@@ -14,14 +14,14 @@ export namespace Changeset {
 
   export type ValidationResult = { valid: boolean, error?: string }
 
-  export type ValidationRule<Host, Keys extends keyof Host, ValueType = Host[Keys]> =
-    (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys>) => ValidationResult
+  export type ValidationRule<Host, Keys extends keyof Host, ProxyKeys extends keyof Host, ValueType = Host[Keys]> =
+    (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys, ProxyKeys>) => ValidationResult
 
-  export type ValidationRules<Host, Keys extends keyof Host> = {
-    [Key in Keys]: ValidationRule<Host, Keys, Host[Key]>
+  export type ValidationRules<Host, Keys extends keyof Host, ProxyKeys extends keyof Host> = {
+    [Key in Keys]: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>
   }
 
-  class DefaultChangesetField<Host, Keys extends keyof Host, Key extends Keys> implements ChangesetField<Host[Key]> {
+  class DefaultChangesetField<Host, Keys extends keyof Host, ProxyKeys extends keyof Host, Key extends Keys> implements ChangesetField<Host[Key]> {
 
     @computed
     get value(): Host[Key] | null {
@@ -41,13 +41,13 @@ export namespace Changeset {
     @observable
     error: string | null
 
-    readonly validation: ValidationRule<Host, Keys, Host[Key]>
+    readonly validation: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>
 
     private readonly onChange: () => void
 
     readonly fieldName: string
 
-    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, Host[Key]>, fieldName: Key, onChange: () => void) {
+    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>, fieldName: Key, onChange: () => void) {
 
       this._value = initialValue
       this.validation = validation
@@ -56,11 +56,15 @@ export namespace Changeset {
     }
   }
 
-  type DefaultChangesetFields<Host, Keys extends keyof Host> = {
-    [Key in Keys]: DefaultChangesetField<Host, Keys, Key>
+  type DefaultChangesetFields<Host, Keys extends keyof Host, ProxyKeys extends keyof Host> = {
+    [Key in Keys]: DefaultChangesetField<Host, Keys, ProxyKeys, Key>
   }
 
-  export class Changeset<Host, Keys extends keyof Host> {
+  export type ProxyFields<Host, Keys extends keyof Host> = {
+    readonly [Key in Keys]: Host[Key]
+  }
+
+  export class Changeset<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> {
 
     @computed
     get fields(): ChangesetFields<Host, Keys> {
@@ -68,7 +72,10 @@ export namespace Changeset {
     }
 
     @observable
-    private readonly _fields: DefaultChangesetFields<Host, Keys>
+    private readonly _fields: DefaultChangesetFields<Host, Keys, ProxyKeys>
+
+    @observable
+    readonly proxyFields: ProxyFields<Host, ProxyKeys>
 
     @computed
     get isValid(): boolean | undefined {
@@ -90,7 +97,7 @@ export namespace Changeset {
 
     private readonly hostObject: Host
 
-    constructor(hostObject: Host, rules: ValidationRules<Host, Keys>, validateAutomatically: boolean = false) {
+    constructor(hostObject: Host, rules: ValidationRules<Host, Keys, ProxyKeys>, proxyFields: ProxyKeys[] = [], validateAutomatically: boolean = false) {
 
       this.hostObject = hostObject
       this.validateAutomatically = validateAutomatically
@@ -108,6 +115,23 @@ export namespace Changeset {
       }
 
       this._fields = fields
+
+      const proxy: any = {}
+
+      for (const property of proxyFields) {
+
+        if (hostObject.hasOwnProperty(property)) {
+
+          Object.defineProperty(proxy, property, {
+            get: () => this.hostObject[property]
+          })
+        }
+        else {
+          throw new Error(`Property '${property}' is not present in host object!`)
+        }
+      }
+
+      this.proxyFields = observable(proxy)
     }
 
     private valueChanged = (property: Keys) => action(() => {
@@ -129,7 +153,7 @@ export namespace Changeset {
 
       for (const property in this._fields) {
         if (this._fields.hasOwnProperty(property)) {
-          valid = valid && this.validateProperty(property)
+          valid = this.validateProperty(property) && valid
         }
       }
 
@@ -140,7 +164,7 @@ export namespace Changeset {
       if (this._fields.hasOwnProperty(propertyName)) {
         const field = this._fields[propertyName]
 
-        const validation = field.validation(field.value, field, this as Changeset<Host, Keys>)
+        const validation = field.validation(field.value, field, this as Changeset<Host, Keys, ProxyKeys>)
         field.error = validation.valid ? null : validation.error || `${field.fieldName} is invalid`
 
         return validation.valid
