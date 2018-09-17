@@ -1,24 +1,31 @@
 import {action, computed, observable, runInAction} from 'mobx'
+import {isEmpty} from './utils/common'
 
 export namespace Changeset {
 
   export interface ChangesetField<ValueType> {
     value: ValueType | null,
     fieldName: string,
-    error: string | null
+    validationResult: ValidationResult<ValueType> | undefined
+    readonly isDirty: boolean
+    readonly isInvalidAndDirty: boolean
   }
 
   export type ChangesetFields<Host, Keys extends keyof Host> = {
     [Key in Keys]: ChangesetField<Host[Key]>
   }
 
-  export type ValidationResult = { valid: boolean, error?: string }
+  export type ValidationResult<ValueType> = {
+    valid: boolean,
+    error?: string,
+    meta?: ValueType extends Array<any> ? number : ValueType extends Object ? string : never
+  }
 
-  export type ValidationRule<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never, ValueType = Host[Keys]> =
-    (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys, ProxyKeys>) => ValidationResult
+  export type ValidationRule<Host, Keys extends keyof Host, Key extends keyof Host, ProxyKeys extends keyof Host = never, ValueType = Host[Key]> =
+    (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys, ProxyKeys>) => ValidationResult<ValueType>
 
   export type ValidationRules<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> = {
-    [Key in Keys]: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>
+    [Key in Keys]: ValidationRule<Host, Keys, Key, ProxyKeys, Host[Key]>
   }
 
   class DefaultChangesetField<Host, Keys extends keyof Host, ProxyKeys extends keyof Host, Key extends Keys> implements ChangesetField<Host[Key]> {
@@ -30,22 +37,36 @@ export namespace Changeset {
 
     set value(v: Host[Key] | null) {
       this._value = v
+      this._isDirty = true
       this.onChange()
+    }
+
+    @computed
+    get isDirty(): boolean {
+      return this._isDirty
+    }
+
+    @computed
+    get isInvalidAndDirty(): boolean {
+      return this._isDirty && !!this.validationResult && !this.validationResult.valid
     }
 
     @observable
     private _value: Host[Key] | null
 
     @observable
-    error: string | null
+    validationResult: ValidationResult<Host[Key]> | undefined
 
-    readonly validation: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>
+    @observable
+    _isDirty: boolean = false
+
+    readonly validation: ValidationRule<Host, Keys, Key, ProxyKeys, Host[Key]>
 
     private readonly onChange: () => void
 
     readonly fieldName: string
 
-    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, ProxyKeys, Host[Key]>, fieldName: Key, onChange: () => void) {
+    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, Key, ProxyKeys, Host[Key]>, fieldName: Key, onChange: () => void) {
 
       this._value = initialValue
       this.validation = validation
@@ -60,6 +81,10 @@ export namespace Changeset {
 
   export type ProxyFields<Host, Keys extends keyof Host> = {
     readonly [Key in Keys]: Host[Key]
+  }
+
+  export type ChangesetErrors<Host, Keys extends keyof Host> = {
+    [Key in Keys]?: string
   }
 
   export type ChangesetParams<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> = {
@@ -103,6 +128,7 @@ export namespace Changeset {
 
     @computed
     get isValid(): boolean | undefined {
+      //TODO: Think of computing valida state the same way as isDirty
       return this._isValid
     }
 
@@ -111,13 +137,30 @@ export namespace Changeset {
 
     @computed
     get isDirty(): boolean {
-      return this._isDirty
+      return Object.keys(this._fields)
+        .map(key => this._fields[(key as Keys)])
+        .some(field => field.isDirty)
+    }
+
+    @computed
+    get errors(): ChangesetErrors<Host, Keys> {
+
+      const errors: any = {}
+
+      for (const field in this._fields) {
+
+        if (this._fields.hasOwnProperty(field)) {
+          const validationResult = this._fields[field].validationResult
+          if (validationResult) {
+            errors[field] = validationResult.error
+          }
+        }
+      }
+
+      return errors
     }
 
     private readonly validateAutomatically: boolean
-
-    @observable
-    private _isDirty = false
 
     private readonly hostObject: Host
 
@@ -153,54 +196,53 @@ export namespace Changeset {
     }
 
     private valueChanged = (property: Keys) => action(() => {
-      this._isDirty = true
 
       if (this.validateAutomatically) {
-        this.validate()
+        this.validate(false)
       }
       else {
         // isValid will remain undefined unless full validation is performed
-        this.validateProperty(property)
+        this.validateProperty(property, true)
       }
     })
 
     @action
-    validate = () => {
+    validate = (markAsDirty: boolean = true) => {
 
       let valid = true
 
       for (const property in this._fields) {
         if (this._fields.hasOwnProperty(property)) {
-          valid = this.validateProperty(property) && valid
+          valid = this.validateProperty(property, markAsDirty) && valid
         }
       }
 
       return this._isValid = valid
     }
 
-    private validateProperty(propertyName: Keys) {
+    private validateProperty(propertyName: Keys, markAsDirty: boolean = true) {
       if (this._fields.hasOwnProperty(propertyName)) {
         const field = this._fields[propertyName]
 
-        const validation = field.validation(field.value, field, this as Changeset<Host, Keys, ProxyKeys>)
-        field.error = validation.valid ? null : validation.error || `${field.fieldName} is invalid`
+        const validationResult = field.validation(field.value, field, this as Changeset<Host, Keys, ProxyKeys>)
+        field.validationResult = validationResult
+        field._isDirty = field._isDirty || markAsDirty
 
-        return validation.valid
+        return validationResult.valid
       }
 
       throw new Error(`Field '${propertyName}' is no registered in changeset`)
     }
 
-    save = (): boolean => {
-      if (this.validate()) {
+    @action
+    save = (markAsDirty: boolean = true): boolean => {
+      if (this.validate(markAsDirty)) {
         for (const property in this._fields) {
           if (this._fields.hasOwnProperty(property) && this.hostObject.hasOwnProperty(property)) {
 
             const field = this._fields[property]
-            if (!!field) {
-              //@ts-ignore Fields of host object may be nullable. Checks for presence of field.value will incorrectly discard false values. Check for all possible conditions considered wasteful
-              this.hostObject[property] = field.value
-            }
+            //@ts-ignore Fields of host object may be nullable. Checks for presence of field.value will incorrectly discard false values. Check for all possible conditions considered wasteful
+            this.hostObject[property] = field.value
           }
         }
 
@@ -216,13 +258,11 @@ export namespace Changeset {
         if (this._fields.hasOwnProperty(property) && this.hostObject.hasOwnProperty(property)) {
 
           const field = this._fields[property]
-          if (!!field) {
-            field.value = this.hostObject[property]
-          }
+          field.value = this.hostObject[property]
+          field._isDirty = false
         }
       }
 
-      this._isDirty = false
       this._isValid = undefined
     }
   }
