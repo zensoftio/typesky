@@ -11,7 +11,8 @@ export const isEmpty = (value: any) => {
   if (value == null || value == undefined) {
     return true
   }
-  if (value.prop && value.prop.constructor === Array) {
+  //TODO: May be improve this check to regard mobx's observable array as arrays
+  if (Array.isArray(value)) {
     return value.length == 0
   }
   else if (typeof value == 'object') {
@@ -25,3 +26,5 @@ export const isEmpty = (value: any) => {
 
   return false
 }
+
+export type ElementType<ArrayType> = ArrayType extends (infer Element)[] ? Element : never

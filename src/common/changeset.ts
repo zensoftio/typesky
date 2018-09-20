@@ -1,5 +1,4 @@
-import {action, computed, observable, runInAction} from 'mobx'
-import {isEmpty} from './utils/common'
+import {action, computed, observable} from 'mobx'
 
 export namespace Changeset {
 
@@ -21,11 +20,11 @@ export namespace Changeset {
     meta?: ValueType extends Array<any> ? number : ValueType extends Object ? string : never
   }
 
-  export type ValidationRule<Host, Keys extends keyof Host, Key extends keyof Host, ProxyKeys extends keyof Host = never, ValueType = Host[Key]> =
-    (value: ValueType | null, field: ChangesetField<ValueType>, changeset: Changeset<Host, Keys, ProxyKeys>) => ValidationResult<ValueType>
+  export type ValidationRule<Host, Keys extends keyof Host, Key extends Keys, ValueType = Host[Key], ProxyKeys extends keyof Host = never> =
+    (value: ValueType | null, changeset?: Changeset<Host, Keys, ProxyKeys>) => ValidationResult<ValueType>
 
   export type ValidationRules<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> = {
-    [Key in Keys]: ValidationRule<Host, Keys, Key, ProxyKeys, Host[Key]>
+    [Key in Keys]: ValidationRule<Host, Keys, Key, Host[Key], ProxyKeys>
   }
 
   class DefaultChangesetField<Host, Keys extends keyof Host, ProxyKeys extends keyof Host, Key extends Keys> implements ChangesetField<Host[Key]> {
@@ -60,13 +59,13 @@ export namespace Changeset {
     @observable
     _isDirty: boolean = false
 
-    readonly validation: ValidationRule<Host, Keys, Key, ProxyKeys, Host[Key]>
+    readonly validation: ValidationRule<Host, Keys, Key, Host[Key], ProxyKeys>
 
     private readonly onChange: () => void
 
     readonly fieldName: string
 
-    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, Key, ProxyKeys, Host[Key]>, fieldName: Key, onChange: () => void) {
+    constructor(initialValue: Host[Key], validation: ValidationRule<Host, Keys, Key, Host[Key], ProxyKeys>, fieldName: Key, onChange: () => void) {
 
       this._value = initialValue
       this.validation = validation
@@ -127,13 +126,11 @@ export namespace Changeset {
     private readonly _proxyFields: ProxyKeys[]
 
     @computed
-    get isValid(): boolean | undefined {
-      //TODO: Think of computing valida state the same way as isDirty
-      return this._isValid
+    get isValid(): boolean {
+      return Object.keys(this._fields)
+        .map(key => this._fields[(key as Keys)])
+        .every(field => field.validationResult && field.validationResult.valid || false)
     }
-
-    @observable
-    private _isValid: boolean | undefined = undefined
 
     @computed
     get isDirty(): boolean {
@@ -209,22 +206,18 @@ export namespace Changeset {
     @action
     validate = (markAsDirty: boolean = true) => {
 
-      let valid = true
+      Object.keys(this._fields)
+        .forEach(key => this.validateProperty(key as Keys, markAsDirty))
 
-      for (const property in this._fields) {
-        if (this._fields.hasOwnProperty(property)) {
-          valid = this.validateProperty(property, markAsDirty) && valid
-        }
-      }
-
-      return this._isValid = valid
+      return this.isValid
     }
 
+    @action
     private validateProperty(propertyName: Keys, markAsDirty: boolean = true) {
       if (this._fields.hasOwnProperty(propertyName)) {
         const field = this._fields[propertyName]
 
-        const validationResult = field.validation(field.value, field, this as Changeset<Host, Keys, ProxyKeys>)
+        const validationResult = field.validation(field.value, this as Changeset<Host, Keys, ProxyKeys>)
         field.validationResult = validationResult
         field._isDirty = field._isDirty || markAsDirty
 
@@ -262,8 +255,6 @@ export namespace Changeset {
           field._isDirty = false
         }
       }
-
-      this._isValid = undefined
     }
   }
 }
