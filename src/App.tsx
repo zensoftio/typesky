@@ -2,9 +2,9 @@ import * as React from 'react'
 import {Redirect, Route, Router, Switch} from 'react-router-dom'
 import createBrowserHistory from 'history/createBrowserHistory'
 
-import {NotFoundScene} from './scenes/NotFoundScene/index'
-import {SceneRegistryService} from "./services/index"
-import {instanceRegistry} from "./common/annotations/common"
+import {NotFoundScene} from './scenes/NotFoundScene'
+import {SceneRegistryService} from './services'
+import {instanceRegistry} from './common/annotations/common'
 
 const history = createBrowserHistory()
 
@@ -20,7 +20,8 @@ export default class App extends React.Component<{}, {}> {
   render() {
 
     let routes = this.sceneRegistry.rootScenes().map(scene => {
-      return (<Route path={`/${scene.navigationItem.route}`} exact={scene.navigationItem.exact} component={scene.sceneComponent} key={scene.sceneName} />)
+      return (<Route path={`/${scene.navigationItem.route}`} exact={scene.navigationItem.exact}
+                     component={scene.sceneComponent} key={scene.sceneName}/>)
     })
 
     return (

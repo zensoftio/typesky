@@ -36,7 +36,7 @@ export class NavigationItem {
 
 export interface SceneMetadata {
   readonly sceneName: string
-  readonly parentSceneName: string | null
+  readonly childScenes: SceneMetadata[]
   readonly authorized: boolean
   readonly requiredPermissions: USER_PERMISSIONS[]
   readonly navigationItem: NavigationItem
@@ -45,7 +45,7 @@ export interface SceneMetadata {
 export interface SceneMetadataParams {
   sceneName: string,
   sceneComponent: any,
-  parentSceneName?: string,
+  childScenes?: SceneEntry[],
   navigationItem: NavigationItem,
   authorized?: boolean,
   requiredPermissions: USER_PERMISSIONS[]
@@ -55,7 +55,7 @@ export class SceneEntry implements SceneMetadata {
 
   readonly sceneName: string
   readonly sceneComponent: any
-  readonly parentSceneName: string | null
+  readonly childScenes: SceneEntry[]
   readonly navigationItem: NavigationItem
   readonly authorized: boolean
   readonly requiredPermissions: USER_PERMISSIONS[]
@@ -63,7 +63,7 @@ export class SceneEntry implements SceneMetadata {
   constructor({
                 sceneName,
                 sceneComponent,
-                parentSceneName = null,
+                childScenes,
                 navigationItem,
                 authorized = true,
                 requiredPermissions
@@ -71,7 +71,7 @@ export class SceneEntry implements SceneMetadata {
 
     this.sceneName = sceneName
     this.sceneComponent = sceneComponent
-    this.parentSceneName = parentSceneName || null
+    this.childScenes = childScenes || []
     this.navigationItem = navigationItem
     this.authorized = (authorized === undefined) ? true : authorized
     this.requiredPermissions = requiredPermissions
