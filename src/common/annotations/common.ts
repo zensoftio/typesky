@@ -44,7 +44,7 @@ class ConstructorInjectionRecord {
   }
 }
 
-export const singleton = (qualifier: string) => (constructor: { new(a?: any, b?: any, c?: any, d?: any): any }) => {
+export const singleton = (qualifier: string) => (constructor: { new(...args: any[]): any }) => {
   const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(constructor, CONSTRUCTOR_INJECTIONS)
   if (constructorInjectors) {
     constructorRegistry.set(qualifier, class extends constructor {

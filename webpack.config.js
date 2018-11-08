@@ -32,6 +32,7 @@ module.exports = {
     // (jsnext:main directs not usually distributable es6 format, but es6 sources)
     mainFields: ['module', 'browser', 'main']
   },
+  devtool: 'inline-cheap-source-map',
   module: {
     loaders: [
       // .ts, .tsx
