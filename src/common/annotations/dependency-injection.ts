@@ -31,7 +31,11 @@ class RegistrationEntry<T extends Injectable> {
 
 export class Container implements Resolver {
 
-  static defaultContainer: Container = new Container()
+  private static internalContainer = new Container()
+
+  static get defaultContainer(): Container {
+    return this.internalContainer
+  }
 
   private registrations: Map<string, RegistrationEntry<any>> = new Map()
   private instances: Map<string, Injectable> = new Map()
@@ -122,10 +126,6 @@ class ConstructorInjectionRecord {
 // NOTE: Qualifiers made required to survive minification
 
 export const injectProperty = (qualifier: string) => (target: any, propertyKey: string) => {
-  if (process.env.IS_MOCK) {
-    return
-  }
-
   if (!Reflect.has(target, PROPERTY_INJECTIONS)) {
     Reflect.set(target, PROPERTY_INJECTIONS, [])
   }
@@ -134,10 +134,6 @@ export const injectProperty = (qualifier: string) => (target: any, propertyKey: 
 }
 
 export const injectMethod = (qualifier: string) => (target: any, setterName: string) => {
-  if (process.env.IS_MOCK) {
-    return
-  }
-
   if (!Reflect.has(target, METHOD_INJECTIONS)) {
     Reflect.set(target, METHOD_INJECTIONS, [])
   }
@@ -145,11 +141,8 @@ export const injectMethod = (qualifier: string) => (target: any, setterName: str
     .push(new MethodInjectionRecord(qualifier, setterName))
 }
 
+// NOTE: This decorator SHOULD NOT be used for components!
 export const injectConstructor = (qualifier: string) => (target: any, _: any, index: number) => {
-  if (process.env.IS_MOCK) {
-    return
-  }
-
   if (!Reflect.has(target, CONSTRUCTOR_INJECTIONS)) {
     Reflect.set(target, CONSTRUCTOR_INJECTIONS, [])
   }
@@ -157,9 +150,11 @@ export const injectConstructor = (qualifier: string) => (target: any, _: any, in
     .push(new ConstructorInjectionRecord(qualifier, index))
 }
 
-export const injectable = (qualifier: string, registrationType: RegistrationType = RegistrationType.CONTAINER) => (target: any) => {
+export const injectable = (qualifier: string,
+                           registrationType: RegistrationType = RegistrationType.CONTAINER,
+                           container: Container = Container.defaultContainer) => (target: any) => {
 
-  // NOTE: THis annotation WILL NOT work under testing conditions for isolation purposes.
+  // NOTE: This decorator is disabled for testing mode for isolation purposes
   if (process.env.IS_MOCK) {
     return target
   }
@@ -175,23 +170,30 @@ export const injectable = (qualifier: string, registrationType: RegistrationType
     }
   })
 
-  Container.defaultContainer.register(qualifier, registration)
+  container.register(qualifier, registration)
 
   return target
 }
 
-export const service = (serviceName: string, registrationType: RegistrationType = RegistrationType.CONTAINER) =>
-  injectable(serviceName + 'Service', registrationType)
+export const service = (serviceName: string,
+                        registrationType: RegistrationType = RegistrationType.CONTAINER,
+                        container: Container = Container.defaultContainer) =>
+  injectable(serviceName + 'Service', registrationType, container)
 
-export const mapper = (mapperName: string, registrationType: RegistrationType = RegistrationType.CONTAINER) =>
-  injectable(mapperName + 'Mapper', registrationType)
+export const mapper = (mapperName: string,
+                       registrationType: RegistrationType = RegistrationType.CONTAINER,
+                       container: Container = Container.defaultContainer) =>
+  injectable(mapperName + 'Mapper', registrationType, container)
 
-export const storage = (storageName: string, registrationType: RegistrationType = RegistrationType.CONTAINER) =>
-  injectable(storageName + 'RecordStorage', registrationType)
+export const storage = (storageName: string,
+                        registrationType: RegistrationType = RegistrationType.CONTAINER,
+                        container: Container = Container.defaultContainer) =>
+  injectable(storageName + 'RecordStorage', registrationType, container)
 
+// NOTE: This decorator DOES NOT support injectConstructor entries!
 export const injectAware = (target: { new(props: any, context: any): React.Component }) => {
 
-  // NOTE: This annotation will work under testing conditions to allow proper component configuration under Jest
+  // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
 
   return class extends target {
 
