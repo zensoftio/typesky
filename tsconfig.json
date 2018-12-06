@@ -28,7 +28,8 @@
       "src/common/types"
     ],
     "strict": true,
-    "locale": "ru"
+    "locale": "ru",
+    "strictPropertyInitialization": false
   },
   "exclude": [
     "node_modules",

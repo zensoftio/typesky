@@ -1,13 +1,14 @@
 import 'mocha'
 import ChangesetValidations from '../../common/changeset-validations'
 import {Changeset} from '../../common/changeset'
-import 'jsmockito'
-import {anyString, anything} from 'ts-mockito'
+// import 'jsmockito'
+// import {anyString, anything} from 'ts-mockito'
 
 const chai = require('chai')
 // const chaiExclude = require('chai-exclude')
 // chai.use(chaiExclude)
 
+// TODO: Find a proper way to mock/stub Changeset objects for validators
 describe('Changeset Validations', () => {
 
   describe('Presence Validator', () => {
@@ -20,7 +21,7 @@ describe('Changeset Validations', () => {
 
     it('Regards null as invalid', () => {
 
-      const validationResult = validationRule(null)
+      const validationResult = validationRule(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isNotTrue(validationResult.valid)
       chai.assert.isNotEmpty(validationResult.error)
@@ -28,7 +29,7 @@ describe('Changeset Validations', () => {
 
     it('Regards undefined as invalid', () => {
 
-      const validationResult = validationRule(undefined)
+      const validationResult = validationRule(undefined, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isNotTrue(validationResult.valid)
       chai.assert.isNotEmpty(validationResult.error)
@@ -36,7 +37,7 @@ describe('Changeset Validations', () => {
 
     it('Regards empty object as invalid', () => {
 
-      const validationResult = validationRule({})
+      const validationResult = validationRule({}, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isNotTrue(validationResult.valid)
       chai.assert.isNotEmpty(validationResult.error)
@@ -44,7 +45,7 @@ describe('Changeset Validations', () => {
 
     it('Regards empty array as invalid', () => {
 
-      const validationResult = validationRule([])
+      const validationResult = validationRule([], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isNotTrue(validationResult.valid)
       chai.assert.isNotEmpty(validationResult.error)
@@ -52,7 +53,7 @@ describe('Changeset Validations', () => {
 
     it('Regards empty string as invalid', () => {
 
-      const validationResult = validationRule('')
+      const validationResult = validationRule('', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isNotTrue(validationResult.valid)
       chai.assert.isNotEmpty(validationResult.error)
@@ -60,7 +61,7 @@ describe('Changeset Validations', () => {
 
     it('Regards non-empty string as valid', () => {
 
-      const validationResult = validationRule('test')
+      const validationResult = validationRule('test', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid)
     })
@@ -88,15 +89,15 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateLength('test', {min: 2})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validation('1')
+      const validationResult2 = validation('1', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult2.valid)
 
-      const validationResult3 = validation('test')
+      const validationResult3 = validation('test', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult3.valid)
     })
@@ -105,19 +106,19 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateLength('test', {min: 2, allowEmpty: true})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validation('')
+      const validationResult2 = validation('', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation('1')
+      const validationResult3 = validation('1', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult3.valid)
 
-      const validationResult4 = validation('test')
+      const validationResult4 = validation('test', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult4.valid)
     })
@@ -126,15 +127,15 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateLength('test', {max: 2})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validation('1')
+      const validationResult2 = validation('1', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation('test')
+      const validationResult3 = validation('test', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult3.valid)
     })
@@ -143,19 +144,19 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateLength('test', {max: 2, allowEmpty: true})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validation('')
+      const validationResult2 = validation('', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation('1')
+      const validationResult3 = validation('1', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult3.valid)
 
-      const validationResult4 = validation('test')
+      const validationResult4 = validation('test', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult4.valid)
     })
@@ -164,19 +165,19 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateLength('test', {min: 2, max: 4})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validation('1')
+      const validationResult2 = validation('1', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult2.valid)
 
-      const validationResult3 = validation('123')
+      const validationResult3 = validation('123', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult3.valid)
 
-      const validationResult4 = validation('12345')
+      const validationResult4 = validation('12345', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult4.valid)
     })
@@ -185,23 +186,23 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateLength('test', {min: 2, max: 4, allowEmpty: true})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validation('')
+      const validationResult2 = validation('', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation('1')
+      const validationResult3 = validation('1', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult3.valid)
 
-      const validationResult4 = validation('123')
+      const validationResult4 = validation('123', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult4.valid)
 
-      const validationResult5 = validation('12345')
+      const validationResult5 = validation('12345', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult5.valid)
     })
@@ -213,10 +214,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateFormat('test', 'test')
 
-      const validationResult1 = validationRule('test')
+      const validationResult1 = validationRule('test', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validationRule('not-correct')
+      const validationResult2 = validationRule('not-correct', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult2.valid)
     })
 
@@ -224,19 +225,19 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateFormat('test', '^tests?$')
 
-      const validationResult1 = validationRule('test')
+      const validationResult1 = validationRule('test', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validationRule('tests')
+      const validationResult2 = validationRule('tests', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validationRule('tes ts')
+      const validationResult3 = validationRule('tes ts', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult3.valid)
 
-      const validationResult4 = validationRule(' test')
+      const validationResult4 = validationRule(' test', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult4.valid)
 
-      const validationResult5 = validationRule('test ')
+      const validationResult5 = validationRule('test ', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult5.valid)
     })
 
@@ -244,10 +245,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateFormat('test', 'test')
 
-      const validationResult1 = validationRule(null)
+      const validationResult1 = validationRule(null, {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validationRule('')
+      const validationResult2 = validationRule('', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult2.valid)
     })
 
@@ -255,10 +256,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateFormat('test', 'test', true)
 
-      const validationResult1 = validationRule(null)
+      const validationResult1 = validationRule(null, {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validationRule('')
+      const validationResult2 = validationRule('', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult2.valid)
     })
   })
@@ -319,12 +320,12 @@ describe('Changeset Validations', () => {
       const validationRule = ChangesetValidations.validateEmail('test')
 
       INVALID_EMAIL_EXAMPLES.forEach((email => {
-        const validationResult = validationRule(email)
+        const validationResult = validationRule(email, {} as Changeset.Changeset<any, string, never>)
         chai.assert.isFalse(validationResult.valid)
       }))
 
       VALID_EMAIL_EXAMPLES.forEach((email => {
-        const validationResult = validationRule(email)
+        const validationResult = validationRule(email, {} as Changeset.Changeset<any, string, never>)
         chai.assert.isTrue(validationResult.valid)
       }))
     })
@@ -333,10 +334,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateEmail('test')
 
-      const validationResult1 = validationRule(null)
+      const validationResult1 = validationRule(null, {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validationRule('')
+      const validationResult2 = validationRule('', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult2.valid)
     })
 
@@ -344,10 +345,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateEmail('test', true)
 
-      const validationResult1 = validationRule(null)
+      const validationResult1 = validationRule(null, {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validationRule('')
+      const validationResult2 = validationRule('', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult2.valid)
     })
   })
@@ -393,12 +394,12 @@ describe('Changeset Validations', () => {
       const validationRule = ChangesetValidations.validateUrl('test')
 
       INVALID_URL_EXAMPLES.forEach((url => {
-        const validationResult = validationRule(url)
+        const validationResult = validationRule(url, {} as Changeset.Changeset<any, string, never>)
         chai.assert.isFalse(validationResult.valid)
       }))
 
       VALID_URL_EXAMPLES.forEach((url => {
-        const validationResult = validationRule(url)
+        const validationResult = validationRule(url, {} as Changeset.Changeset<any, string, never>)
         chai.assert.isTrue(validationResult.valid)
       }))
     })
@@ -407,10 +408,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateUrl('test')
 
-      const validationResult1 = validationRule(null)
+      const validationResult1 = validationRule(null, {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validationRule('')
+      const validationResult2 = validationRule('', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isFalse(validationResult2.valid)
     })
 
@@ -418,10 +419,10 @@ describe('Changeset Validations', () => {
 
       const validationRule = ChangesetValidations.validateUrl('test', true)
 
-      const validationResult1 = validationRule(null)
+      const validationResult1 = validationRule(null, {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validationRule('')
+      const validationResult2 = validationRule('', {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult2.valid)
     })
   })
@@ -467,20 +468,20 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateStringArrayLength('test', {min: 2})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validation(['1'])
+      const validationResult2 = validation(['1'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult2.valid)
       chai.assert.isTrue(validationResult2.meta === 0)
 
-      const validationResult3 = validation(['test'])
+      const validationResult3 = validation(['test'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult3.valid)
 
-      const validationResult4 = validation(['test', ''])
+      const validationResult4 = validation(['test', ''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult4.valid)
       chai.assert.isTrue(validationResult4.meta === 1)
@@ -490,28 +491,28 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateStringArrayLength('test', {min: 2, allowEmpty: true})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validation([''])
+      const validationResult2 = validation([''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation(['1'])
+      const validationResult3 = validation(['1'], {} as Changeset.Changeset<any, string, never>)
       chai.assert.isTrue(validationResult3.meta === 0)
 
       chai.assert.isFalse(validationResult3.valid)
 
-      const validationResult4 = validation(['test'])
+      const validationResult4 = validation(['test'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult4.valid)
 
-      const validationResult5 = validation(['test', ''])
+      const validationResult5 = validation(['test', ''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult5.valid)
 
-      const validationResult6 = validation(['test', '1'])
+      const validationResult6 = validation(['test', '1'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult6.valid)
     })
@@ -520,21 +521,21 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateStringArrayLength('test', {max: 2})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validation([''])
+      const validationResult2 = validation([''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult2.valid)
       chai.assert.isTrue(validationResult2.meta === 0)
 
-      const validationResult3 = validation(['test'])
+      const validationResult3 = validation(['test'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult3.valid)
       chai.assert.isTrue(validationResult3.meta === 0)
 
-      const validationResult4 = validation(['1', 'test'])
+      const validationResult4 = validation(['1', 'test'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult4.valid)
       chai.assert.isTrue(validationResult4.meta === 1)
@@ -544,28 +545,28 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateStringArrayLength('test', {max: 2, allowEmpty: true})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validation([''])
+      const validationResult2 = validation([''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation(['1'])
+      const validationResult3 = validation(['1'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult3.valid)
 
-      const validationResult4 = validation(['1', ''])
+      const validationResult4 = validation(['1', ''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult4.valid)
 
-      const validationResult5 = validation(['test'])
+      const validationResult5 = validation(['test'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult5.valid)
       chai.assert.isTrue(validationResult5.meta === 0)
 
-      const validationResult6 = validation(['1', 'test'])
+      const validationResult6 = validation(['1', 'test'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult6.valid)
       chai.assert.isTrue(validationResult6.meta === 1)
@@ -575,28 +576,28 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateStringArrayLength('test', {min: 2, max: 4})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult1.valid)
 
-      const validationResult2 = validation(['1'])
+      const validationResult2 = validation(['1'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult2.valid)
 
-      const validationResult3 = validation([''])
+      const validationResult3 = validation([''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult3.valid)
 
-      const validationResult4 = validation(['123'])
+      const validationResult4 = validation(['123'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult4.valid)
 
-      const validationResult5 = validation(['123', ''])
+      const validationResult5 = validation(['123', ''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult5.valid)
       chai.assert.isTrue(validationResult5.meta === 1)
 
-      const validationResult6 = validation(['12345'])
+      const validationResult6 = validation(['12345'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult6.valid)
     })
@@ -605,33 +606,33 @@ describe('Changeset Validations', () => {
 
       const validation = ChangesetValidations.validateStringArrayLength('test', {min: 2, max: 4, allowEmpty: true})
 
-      const validationResult1 = validation(null)
+      const validationResult1 = validation(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult1.valid)
 
-      const validationResult2 = validation([''])
+      const validationResult2 = validation([''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult2.valid)
 
-      const validationResult3 = validation(['1'])
+      const validationResult3 = validation(['1'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult3.valid)
       chai.assert.isTrue(validationResult3.meta === 0)
 
-      const validationResult4 = validation(['123'])
+      const validationResult4 = validation(['123'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult4.valid)
 
-      const validationResult5 = validation(['123', ''])
+      const validationResult5 = validation(['123', ''], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult5.valid)
 
-      const validationResult6 = validation(['123', '1'])
+      const validationResult6 = validation(['123', '1'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult6.valid)
       chai.assert.isTrue(validationResult6.meta === 1)
 
-      const validationResult7 = validation(['12345'])
+      const validationResult7 = validation(['12345'], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isFalse(validationResult7.valid)
       chai.assert.isTrue(validationResult7.meta === 0)
@@ -673,49 +674,49 @@ describe('Changeset Validations', () => {
 
     it('Regards false values as valid', () => {
 
-      const validationResult = validationRule(false)
+      const validationResult = validationRule(false, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid, 'This validator should regard any values as valid')
     })
 
     it('Regards null values as valid', () => {
 
-      const validationResult = validationRule(null)
+      const validationResult = validationRule(null, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid, 'This validator should regard any values as valid')
     })
 
     it('Regards undefined values as valid', () => {
 
-      const validationResult = validationRule(undefined)
+      const validationResult = validationRule(undefined, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid, 'This validator should regard any values as valid')
     })
 
     it('Regards empty arrays as valid', () => {
 
-      const validationResult = validationRule([])
+      const validationResult = validationRule([], {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid, 'This validator should regard any values as valid')
     })
 
     it('Regards objects as valid', () => {
 
-      const validationResult = validationRule({})
+      const validationResult = validationRule({}, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid)
     })
 
     it('Regards lambdas as valid', () => {
 
-      const validationResult = validationRule(() => false)
+      const validationResult = validationRule(() => false, {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid)
     })
 
     it('Regards empty string as valid', () => {
 
-      const validationResult = validationRule('')
+      const validationResult = validationRule('', {} as Changeset.Changeset<any, string, never>)
 
       chai.assert.isTrue(validationResult.valid)
     })

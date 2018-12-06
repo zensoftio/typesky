@@ -31,18 +31,19 @@ export default class TodoListView extends React.Component<{}, {}> {
 
     const post = this.postMapper.postById
 
-    return post && new Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields>(
-      post,
-      {
+    return post && new Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields>({
+      hostObject: post,
+      rules: {
         title: ChangesetValidations.validateLength('Title', {min: 10, max: 50}),
-        body: ChangesetValidations.validateLength('Title', {min: 50})
+        body:
+          ChangesetValidations.validateLength('Title', {min: 50})
       },
-      [
+      proxyFields: [
         'userId',
         'id'
       ],
-      true
-    )
+      validateAutomatically: true
+    })
   }
 
   // constructor
@@ -89,20 +90,20 @@ export default class TodoListView extends React.Component<{}, {}> {
           )}
           {changeset && (
             <div>
-              <div>Edit post #{changeset.proxy.id} by user #{changeset.proxy.userId}</div>
+              <div>Edit post #{changeset.context.id} by user #{changeset.context.userId}</div>
               <div>
                 <input value={changeset.fields.title.value || ''}
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
                          changeset.fields.title.value = e.target.value
                        })}/>
-                {changeset.fields.title.error && (<span>{changeset.fields.title.error}</span>)}
+                {changeset.fields.title.isInvalidAndDirty && (<span>{changeset.fields.title.validationResult!.error}</span>)}
               </div>
               <div>
                 <input value={changeset.fields.body.value || ''}
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
                          changeset.fields.body.value = e.target.value
                        })}/>
-                {changeset.fields.body.error && (<span>{changeset.fields.body.error}</span>)}
+                {changeset.fields.body.isInvalidAndDirty && (<span>{changeset.fields.body.validationResult!.error}</span>)}
               </div>
             </div>
           )}
