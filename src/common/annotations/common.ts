@@ -1,5 +1,3 @@
-import DefaultPostRecordStorage from "../../storages/post/default";
-
 const METHOD_INJECTIONS = Symbol('method_injections')
 const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 

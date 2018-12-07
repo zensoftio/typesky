@@ -1,12 +1,12 @@
 import {computed} from 'mobx'
 import {TodoMapper} from '../index'
-import {injectConst, mapper} from '../../common/annotations/common'
 import Todo from '../../models/todo'
 import {TodoRecordStorage} from '../../storages'
+import {injectConstructor, mapper} from '../../common/annotations/dependency-injection'
 
 @mapper('Todo')
 export default class DefaultTodoMapper implements TodoMapper {
-  constructor(@injectConst('TodoRecordStorage') protected store: TodoRecordStorage) {
+  constructor(@injectConstructor('TodoRecordStorage') protected store: TodoRecordStorage) {
 
   }
 

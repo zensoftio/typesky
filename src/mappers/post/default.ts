@@ -1,12 +1,12 @@
 import {PostMapper} from '../index'
-import {injectConst, mapper} from '../../common/annotations/common'
 import {computed} from 'mobx'
 import {PostRecordStorage} from '../../storages'
+import {injectConstructor, mapper} from '../../common/annotations/dependency-injection'
 
 @mapper('Post')
 export default class DefaultPostMapper implements PostMapper {
 
-  constructor(@injectConst('PostRecordStorage') protected store: PostRecordStorage) {
+  constructor(@injectConstructor('PostRecordStorage') protected store: PostRecordStorage) {
 
   }
 

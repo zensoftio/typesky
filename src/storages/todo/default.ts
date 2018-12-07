@@ -1,8 +1,8 @@
 import {TodoRecordStorage} from '../index'
 import Todo from '../../models/todo'
 import DefaultRecordStorage from '../../common/storages/base/default'
-import {storage} from '../../common/annotations/common'
 import {action} from 'mobx'
+import {storage} from '../../common/annotations/dependency-injection'
 
 @storage('Todo')
 export default class DefaultTodoRecordStorage extends DefaultRecordStorage<Todo.Records> implements TodoRecordStorage {
