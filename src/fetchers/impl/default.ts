@@ -25,7 +25,7 @@ export default class DefaultFetcher implements Fetcher, Injectable {
   }
 
   @injectMethod('AuthService')
-  setFetcher(authService: AuthService) {
+  setAuthService(authService: AuthService) {
     this.authService = authService
   }
 

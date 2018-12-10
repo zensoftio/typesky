@@ -3,11 +3,13 @@ import {TodoMapper} from '../index'
 import Todo from '../../models/todo'
 import {TodoRecordStorage} from '../../storages'
 import {injectConstructor, mapper} from '../../common/annotations/dependency-injection'
+import BaseMapper from '../../common/mappers/base/base'
 
 @mapper('Todo')
-export default class DefaultTodoMapper implements TodoMapper {
-  constructor(@injectConstructor('TodoRecordStorage') protected store: TodoRecordStorage) {
+export default class DefaultTodoMapper extends BaseMapper implements TodoMapper {
 
+  constructor(@injectConstructor('TodoRecordStorage') protected store: TodoRecordStorage) {
+    super()
   }
 
   @computed

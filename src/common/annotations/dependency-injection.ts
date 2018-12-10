@@ -1,5 +1,5 @@
-import 'reflect-metadata';
-import * as React from 'react';
+import 'reflect-metadata'
+import * as React from 'react'
 
 export enum RegistrationType {
   TRANSIENT, // new instance is created on every resolution
@@ -31,66 +31,69 @@ class RegistrationEntry<T extends Injectable> {
 
 export class Container implements Resolver {
 
-  static defaultContainer: Container = new Container();
+  static defaultContainer: Container = new Container()
 
-  private registrations: Map<string, RegistrationEntry<any>> = new Map();
-  private instances: Map<string, Injectable> = new Map();
+  private registrations: Map<string, RegistrationEntry<any>> = new Map()
+  private instances: Map<string, Injectable> = new Map()
 
   public resolve<T extends Injectable>(qualifier: string): T {
 
-    const registration = this.registrations.get(qualifier);
+    const registration = this.registrations.get(qualifier)
 
     if (!registration) {
-      throw new Error(`No registration for qualifier '${qualifier}'`);
+      throw new Error(`No registration for qualifier '${qualifier}'`)
     }
 
     if (registration.type === RegistrationType.CONTAINER) {
 
-      const instance = this.instances.get(qualifier) || this.construct(registration);
-      this.instances.set('qualifier', instance);
+      let instance = this.instances.get(qualifier) || this.construct(registration, qualifier)
 
-      return instance;
+      return instance as T
 
     } else if (registration.type === RegistrationType.TRANSIENT) {
 
-      return this.construct(registration);
+      return this.construct(registration, qualifier)
 
     } else {
 
-      throw new Error(`Invalid registration type ${registration.type}' for qualifier '${qualifier}'`);
+      throw new Error(`Invalid registration type ${registration.type}' for qualifier '${qualifier}'`)
     }
   }
 
-  private construct<T extends Injectable>(registration: RegistrationEntry<T>) {
-    const instance = registration.factory(this);
-    instance.postConstructor();
+  private construct<T extends Injectable>(registration: RegistrationEntry<T>, qualifier: string) {
+    const instance = registration.factory(this)
+    instance.postConstructor()
 
-    this.performInjection(instance);
-    instance.awakeAfterInjection();
+    if (registration.type === RegistrationType.CONTAINER) {
+      this.instances.set(qualifier, instance as Injectable)
+    }
 
-    return instance;
+    this.performInjection(instance)
+    instance.awakeAfterInjection()
+
+    return instance
   }
 
   public register<T extends Injectable>(qualifier: string, registration: RegistrationEntry<T>) {
-    this.registrations.set(qualifier, registration);
+    this.registrations.set(qualifier, registration)
   }
 
   performInjection(target: Injectable) {
-    const propertyInjections: PropertyInjectionRecord[] = Reflect.get(target.constructor, PROPERTY_INJECTIONS) || [];
+    const propertyInjections: PropertyInjectionRecord[] = Reflect.get(target, PROPERTY_INJECTIONS) || []
     propertyInjections.forEach(injection => {
-      target[injection.propertyKey] = this.resolve(injection.qualifier);
-    });
+      target[injection.propertyKey] = this.resolve(injection.qualifier)
+    })
 
-    const methodInjections: MethodInjectionRecord[] = Reflect.get(target.constructor, METHOD_INJECTIONS) || [];
+    const methodInjections: MethodInjectionRecord[] = Reflect.get(target, METHOD_INJECTIONS) || []
     methodInjections.forEach(injection => {
-      target[injection.setterName](this.resolve(injection.qualifier));
-    });
+      target[injection.setterName](this.resolve(injection.qualifier))
+    })
   }
 }
 
-const PROPERTY_INJECTIONS = Symbol('property_injection');
-const METHOD_INJECTIONS = Symbol('method_injections');
-const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections');
+const PROPERTY_INJECTIONS = Symbol('property_injection')
+const METHOD_INJECTIONS = Symbol('method_injections')
+const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 
 class PropertyInjectionRecord {
   constructor(public qualifier: string, public propertyKey: string) {
@@ -111,80 +114,80 @@ class ConstructorInjectionRecord {
 
 export const injectProperty = (qualifier: string) => (target: any, propertyKey: string) => {
   if (process.env.IS_MOCK) {
-    return;
+    return
   }
 
-  if (!Reflect.has(target.constructor, PROPERTY_INJECTIONS)) {
-    Reflect.set(target.constructor, PROPERTY_INJECTIONS, []);
+  if (!Reflect.has(target, PROPERTY_INJECTIONS)) {
+    Reflect.set(target, PROPERTY_INJECTIONS, [])
   }
-  Reflect.get(target.constructor, PROPERTY_INJECTIONS)
-    .push(new PropertyInjectionRecord(qualifier, propertyKey));
-};
+  Reflect.get(target, PROPERTY_INJECTIONS)
+    .push(new PropertyInjectionRecord(qualifier, propertyKey))
+}
 
 export const injectMethod = (qualifier: string) => (target: any, setterName: string) => {
   if (process.env.IS_MOCK) {
-    return;
+    return
   }
 
-  if (!Reflect.has(target.constructor, METHOD_INJECTIONS)) {
-    Reflect.set(target.constructor, METHOD_INJECTIONS, []);
+  if (!Reflect.has(target, METHOD_INJECTIONS)) {
+    Reflect.set(target, METHOD_INJECTIONS, [])
   }
-  Reflect.get(target.constructor, METHOD_INJECTIONS)
-    .push(new MethodInjectionRecord(qualifier, setterName));
-};
+  Reflect.get(target, METHOD_INJECTIONS)
+    .push(new MethodInjectionRecord(qualifier, setterName))
+}
 
 export const injectConstructor = (qualifier: string) => (target: any, _: any, index: number) => {
   if (process.env.IS_MOCK) {
-    return;
+    return
   }
 
-  if (!Reflect.has(target.constructor, CONSTRUCTOR_INJECTIONS)) {
-    Reflect.set(target.constructor, CONSTRUCTOR_INJECTIONS, []);
+  if (!Reflect.has(target, CONSTRUCTOR_INJECTIONS)) {
+    Reflect.set(target, CONSTRUCTOR_INJECTIONS, [])
   }
   Reflect.get(target, CONSTRUCTOR_INJECTIONS)
-    .push(new ConstructorInjectionRecord(qualifier, index));
-};
+    .push(new ConstructorInjectionRecord(qualifier, index))
+}
 
 export const injectable = (qualifier: string, registrationType: RegistrationType = RegistrationType.CONTAINER) => (target: any) => {
   if (process.env.IS_MOCK) {
-    return target;
+    return target
   }
 
   const registration = new RegistrationEntry(registrationType, (resolver: Resolver) => {
 
-    const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(target.constructor, CONSTRUCTOR_INJECTIONS);
-    if (constructorInjectors) {
+    const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(target, CONSTRUCTOR_INJECTIONS)
 
-      return new target(...constructorInjectors.map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined));
+    if (constructorInjectors && constructorInjectors.length > 0) {
+      return new target(...constructorInjectors.map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined))
     } else {
-      return new target();
+      return new target()
     }
-  });
+  })
 
-  Container.defaultContainer.register(qualifier, registration);
+  Container.defaultContainer.register(qualifier, registration)
 
-  return target;
-};
+  return target
+}
 
 export const service = (serviceName: string, registrationType: RegistrationType = RegistrationType.CONTAINER) =>
-  injectable(serviceName + 'Service', registrationType);
+  injectable(serviceName + 'Service', registrationType)
 
 export const mapper = (mapperName: string, registrationType: RegistrationType = RegistrationType.CONTAINER) =>
-  injectable(mapperName + 'Mapper', registrationType);
+  injectable(mapperName + 'Mapper', registrationType)
 
 export const storage = (storageName: string, registrationType: RegistrationType = RegistrationType.CONTAINER) =>
-  injectable(storageName + 'Storage', registrationType);
+  injectable(storageName + 'RecordStorage', registrationType)
 
-export const injectAware = (target: { new (props: any, context: any): React.Component }) => {
+export const injectAware = (target: { new(props: any, context: any): React.Component }) => {
   if (process.env.IS_MOCK) {
-    return target;
+    return target
   }
 
   return class extends target {
 
     constructor(props: any, context: any) {
-      super(props, context);
-      Container.defaultContainer.performInjection(this as any);
+      super(props, context)
+      Container.defaultContainer.performInjection(this as any)
     }
-  } as any;
-};
+  } as any
+}

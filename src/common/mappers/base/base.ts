@@ -1,6 +1,6 @@
 import {Injectable} from '../../annotations/dependency-injection'
 
-export default class DefaultMapper implements Injectable {
+export default class BaseMapper implements Injectable {
 
   postConstructor() { }
 
