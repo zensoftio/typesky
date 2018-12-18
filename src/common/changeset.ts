@@ -4,14 +4,15 @@ export namespace Changeset {
 
   export interface ChangesetField<ValueType> {
     value: ValueType | null,
-    fieldName: string,
+    readonly fieldName: string,
     validationResult: ValidationResult<ValueType> | undefined
+    readonly isInvalid: boolean | undefined
     readonly isDirty: boolean
     readonly isInvalidAndDirty: boolean
   }
 
   export type ChangesetFields<Host, Keys extends keyof Host> = {
-    [Key in Keys]: ChangesetField<Host[Key]>
+    readonly [Key in Keys]: ChangesetField<Host[Key]>
   }
 
   export type ValidationResult<ValueType> = {
@@ -21,7 +22,7 @@ export namespace Changeset {
   }
 
   export type ValidationRule<Host, Keys extends keyof Host, Key extends Keys, ValueType = Host[Key], ProxyKeys extends keyof Host = never> =
-    (value: ValueType | null, changeset?: Changeset<Host, Keys, ProxyKeys>) => ValidationResult<ValueType>
+    (value: ValueType | null, changeset: Changeset<Host, Keys, ProxyKeys>) => ValidationResult<ValueType>
 
   export type ValidationRules<Host, Keys extends keyof Host, ProxyKeys extends keyof Host = never> = {
     [Key in Keys]: ValidationRule<Host, Keys, Key, Host[Key], ProxyKeys>
@@ -38,6 +39,11 @@ export namespace Changeset {
       this._value = v
       this._isDirty = true
       this.onChange()
+    }
+
+    @computed
+    get isInvalid(): boolean | undefined {
+      return this.validationResult && !this.validationResult.valid
     }
 
     @computed
@@ -126,10 +132,14 @@ export namespace Changeset {
     private readonly _proxyFields: ProxyKeys[]
 
     @computed
-    get isValid(): boolean {
+    get isValid(): boolean | undefined {
+
+      const isValid: boolean | undefined = true
+
       return Object.keys(this._fields)
-        .map(key => this._fields[(key as Keys)])
-        .every(field => field.validationResult && field.validationResult.valid || false)
+        .map(key => this._fields[(key as Keys)]).reduce((valid: boolean | undefined, field) => {
+          return valid && (field.validationResult && field.validationResult.valid)
+        }, isValid)
     }
 
     @computed
@@ -142,19 +152,19 @@ export namespace Changeset {
     @computed
     get errors(): ChangesetErrors<Host, Keys> {
 
-      const errors: any = {}
+      const errors: {[Key: string]: string} = {}
 
       for (const field in this._fields) {
 
         if (this._fields.hasOwnProperty(field)) {
           const validationResult = this._fields[field].validationResult
-          if (validationResult) {
+          if (validationResult && validationResult.error) {
             errors[field] = validationResult.error
           }
         }
       }
 
-      return errors
+      return errors as ChangesetErrors<Host, Keys>
     }
 
     private readonly validateAutomatically: boolean
@@ -198,7 +208,6 @@ export namespace Changeset {
         this.validate(false)
       }
       else {
-        // isValid will remain undefined unless full validation is performed
         this.validateProperty(property, true)
       }
     })
@@ -253,6 +262,7 @@ export namespace Changeset {
           const field = this._fields[property]
           field.value = this.hostObject[property]
           field._isDirty = false
+          field.validationResult = undefined
         }
       }
     }

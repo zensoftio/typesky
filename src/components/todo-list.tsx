@@ -4,27 +4,36 @@ import {observer} from 'mobx-react'
 import Todo from '../models/todo'
 import {PostService, TodoService} from '../services'
 import {PostMapper, TodoMapper} from '../mappers'
-import {instanceRegistry} from '../common/annotations/common'
+
 import Post from '../models/post'
 import {action, computed, observable} from 'mobx'
 import Changeset from '../common/changeset'
 import ChangesetValidations from '../common/changeset-validations'
+import {Injectable, injectAware, injectProperty} from '../common/annotations/dependency-injection'
 
 type ReadonlyPostFields = 'userId' | 'id'
 
 type EditablePostFields = 'title' | 'body'
 
 @observer
-export default class TodoListView extends React.Component<{}, {}> {
+@injectAware
+export default class TodoListView extends React.Component<{}, {}> implements Injectable {
 
   // fields
 
   private postId = 1
 
-  private todoService: TodoService = instanceRegistry.get('TodoService')
-  private postService: PostService = instanceRegistry.get('PostService')
-  private todoMapper: TodoMapper = instanceRegistry.get('TodoMapper')
-  private postMapper: PostMapper = instanceRegistry.get('PostMapper')
+  @injectProperty('TodoService')
+  private todoService: TodoService;
+
+  @injectProperty('PostService')
+  private postService: PostService;
+
+  @injectProperty('TodoMapper')
+  private todoMapper: TodoMapper;
+
+  @injectProperty('PostMapper')
+  private postMapper: PostMapper;
 
   @computed
   private get changeset(): Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields> | undefined {
@@ -37,8 +46,7 @@ export default class TodoListView extends React.Component<{}, {}> {
         title: ChangesetValidations.validateLength('Title', {min: 10, max: 50}),
         body:
           ChangesetValidations.validateLength('Title', {min: 50})
-      }
-      ,
+      },
       proxyFields: [
         'userId',
         'id'
@@ -50,6 +58,9 @@ export default class TodoListView extends React.Component<{}, {}> {
   // constructor
 
   // life circle
+  postConstructor() {}
+
+  awakeAfterInjection() {}
 
   componentDidMount() {
     this.loadPost()
