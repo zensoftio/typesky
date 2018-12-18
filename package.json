@@ -45,6 +45,8 @@
     "webpack-dev-server": "^2.9.5"
   },
   "dependencies": {
+    "@casl/ability": "^2.4.2",
+    "@casl/react": "^0.8.0",
     "classnames": "^2.2.5",
     "i18next": "^10.2.1",
     "i18next-xhr-backend": "^1.5.0",

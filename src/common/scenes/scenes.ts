@@ -1,54 +1,67 @@
-import {USER_PERMISSIONS} from '../../misc/permissions'
+import {Account} from '../../models/account'
 
 export interface NavigationItemParams {
-  link: string,         // Absolute link to use in LinkTo component
-  route: string,        // Relative route to the scene
-  showInMenu?: boolean, // Whether to show a menu item for the scene
-  className?: string,   // Class name for navigation item
-  withIcon?: boolean,
-  exact?: boolean
+  link: string;         // Absolute link to use in LinkTo component
+  route: string;        // Relative route to the scene
+  showInMenu?: boolean; // Whether to show a menu item for the scene
+  className?: string;   // Class name for navigation item
+  withIcon?: boolean;
+  exact?: boolean;
+  name: string;
 }
 
 export class NavigationItem {
   readonly link: string // Absolute link to use in LinkTo component
   readonly route: string // Relative route to the scene
   readonly showInMenu: boolean // Whether to show a menu item for the scene
-  readonly className: string | null // Class name for navigation item
+  readonly className: string | undefined // Class name for navigation item
   readonly withIcon: boolean
   readonly exact: boolean
+  readonly name: string
 
   constructor({
                 link,
                 route,
                 showInMenu = false,
-                className = null,
+                className,
                 withIcon = false,
-                exact = true
+                exact,
+                name
               }: NavigationItemParams) {
     this.link = link
     this.route = route
     this.showInMenu = showInMenu
     this.className = className
     this.withIcon = withIcon
-    this.exact = exact
+    this.exact = exact || false
+    this.name = name
   }
 }
 
+type PermissionCheck = (user: Account.CurrentUser) => boolean;
+
 export interface SceneMetadata {
-  readonly sceneName: string
-  readonly childScenes: SceneMetadata[]
-  readonly authorized: boolean
-  readonly requiredPermissions: USER_PERMISSIONS[]
-  readonly navigationItem: NavigationItem
+  readonly sceneName: string;
+  readonly childScenes: SceneMetadata[];
+  readonly authorized: boolean;
+  readonly permissionCheck: PermissionCheck;
+  readonly navigationItem: NavigationItem;
 }
 
 export interface SceneMetadataParams {
-  sceneName: string,
-  sceneComponent: any,
-  childScenes?: SceneEntry[],
-  navigationItem: NavigationItem,
-  authorized?: boolean,
-  requiredPermissions: USER_PERMISSIONS[]
+  sceneName: string;
+  sceneComponent: any;
+  childScenes?: SceneEntry[];
+  navigationItemParams: {
+    link: string;         // Absolute link to use in LinkTo component
+    route: string;        // Relative route to the scene
+    showInMenu?: boolean; // Whether to show a menu item for the scene
+    className?: string;   // Class name for navigation item
+    withIcon?: boolean;
+    exact?: boolean;
+  };
+  authorized?: boolean;
+  permissionCheck: PermissionCheck;
 }
 
 export class SceneEntry implements SceneMetadata {
@@ -58,22 +71,25 @@ export class SceneEntry implements SceneMetadata {
   readonly childScenes: SceneEntry[]
   readonly navigationItem: NavigationItem
   readonly authorized: boolean
-  readonly requiredPermissions: USER_PERMISSIONS[]
+  readonly permissionCheck: PermissionCheck
 
   constructor({
                 sceneName,
                 sceneComponent,
                 childScenes,
-                navigationItem,
+                navigationItemParams,
                 authorized = true,
-                requiredPermissions
+                permissionCheck
               }: SceneMetadataParams) {
 
     this.sceneName = sceneName
     this.sceneComponent = sceneComponent
     this.childScenes = childScenes || []
-    this.navigationItem = navigationItem
+    this.navigationItem = new NavigationItem({
+      ...navigationItemParams,
+      name: sceneName
+    })
     this.authorized = (authorized === undefined) ? true : authorized
-    this.requiredPermissions = requiredPermissions
+    this.permissionCheck = permissionCheck
   }
 }
