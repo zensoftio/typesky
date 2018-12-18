@@ -1,7 +1,7 @@
 import Todo from '../models/todo'
 import BaseService from '../common/services/base/base'
 import {SceneEntry} from '../common/scenes/scenes'
-import {BaseScene} from '../scenes/BaseScene'
+import BaseScene from '../scenes/BaseScene'
 
 export interface TodoService extends BaseService {
   createNew(): void

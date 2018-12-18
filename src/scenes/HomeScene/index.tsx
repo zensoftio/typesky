@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {BaseScene} from "../BaseScene/index"
+import BaseScene from '../BaseScene'
 
 export class HomeScene extends BaseScene {
 

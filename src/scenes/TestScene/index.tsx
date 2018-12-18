@@ -3,7 +3,7 @@ import './index.css'
 import {Link} from 'react-router-dom'
 import TodoListView from '../../components/todo-list'
 import i18n from '../../common/translate'
-import {BaseScene} from "../BaseScene/index"
+import BaseScene from '../BaseScene'
 
 export class TestScene extends BaseScene {
   render() {

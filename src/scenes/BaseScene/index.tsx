@@ -1,11 +1,11 @@
 import * as React from 'react'
 import {computed} from 'mobx'
-import {instanceRegistry} from '../../common/annotations/common'
 import {SceneRegistryService} from '../../services'
 import {SceneEntry} from '../../common/scenes/scenes'
 import {Redirect, Route} from 'react-router'
 import {AccountMapper} from '../../mappers'
 import {observer} from 'mobx-react'
+import {injectAware, injectProperty} from '../../common/annotations/dependency-injection'
 
 export interface Match {
   params: any,
@@ -21,10 +21,11 @@ export interface SceneProps {
 }
 
 @observer
+@injectAware
 export default class BaseScene<P extends SceneProps = SceneProps> extends React.Component<P, never> {
 
-  protected accountMapper: AccountMapper = instanceRegistry.get('AccountMapper')
-  protected sceneRegistry: SceneRegistryService = instanceRegistry.get('SceneRegistryService')
+  @injectProperty('AccountMapper') accountMapper: AccountMapper
+  @injectProperty('SceneRegistryService') sceneRegistry: SceneRegistryService
 
   constructor(props: P) {
     super(props)

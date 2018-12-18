@@ -1,4 +1,4 @@
-import {NavigationItem, SceneEntry} from './common/scenes/scenes'
+import {SceneEntry} from './common/scenes/scenes'
 import {TestScene} from './scenes/TestScene'
 import {HomeScene} from './scenes/HomeScene'
 
@@ -6,30 +6,30 @@ const SCENE_REGISTRY: SceneEntry[] = [
   new SceneEntry({
     sceneName: 'RootScene',
     sceneComponent: TestScene,
-    navigationItem: new NavigationItem({
+    navigationItemParams: {
       link: '/',
       route: '/'
-    }),
-    requiredPermissions: [],
+    },
+    permissionCheck: () => true,
     childScenes: [
       new SceneEntry({
         sceneName: 'TestScene',
         sceneComponent: TestScene,
-        navigationItem: new NavigationItem({
+        navigationItemParams: {
           link: '/test',
           route: 'test'
-        }),
-        requiredPermissions: []
+        },
+        permissionCheck: () => true
       }),
 
       new SceneEntry({
         sceneName: 'HomeScene',
         sceneComponent: HomeScene,
-        navigationItem: new NavigationItem({
+        navigationItemParams: {
           link: '/home',
           route: 'home'
-        }),
-        requiredPermissions: []
+        },
+        permissionCheck: () => true
       })
     ]
   })
