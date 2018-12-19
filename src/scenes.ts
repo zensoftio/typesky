@@ -1,38 +1,29 @@
-import {SceneEntry} from './common/scenes/scenes'
+import {SceneParams} from './common/scenes/scenes'
 import {TestScene} from './scenes/TestScene'
 import {HomeScene} from './scenes/HomeScene'
 
-const SCENE_REGISTRY: SceneEntry[] = [
-  new SceneEntry({
-    sceneName: 'RootScene',
-    sceneComponent: TestScene,
-    navigationItemParams: {
-      link: '/',
-      route: '/'
-    },
+const SCENE_REGISTRY: SceneParams[] = [
+  {
+    name: 'RootScene',
+    component: TestScene,
+    segment: '',
     permissionCheck: () => true,
     childScenes: [
-      new SceneEntry({
-        sceneName: 'TestScene',
-        sceneComponent: TestScene,
-        navigationItemParams: {
-          link: '/test',
-          route: 'test'
-        },
+      {
+        name: 'TestScene',
+        component: TestScene,
+        segment: 'test',
         permissionCheck: () => true
-      }),
+      },
 
-      new SceneEntry({
-        sceneName: 'HomeScene',
-        sceneComponent: HomeScene,
-        navigationItemParams: {
-          link: '/home',
-          route: 'home'
-        },
+      {
+        name: 'HomeScene',
+        component: HomeScene,
+        segment: 'home',
         permissionCheck: () => true
-      })
+      }
     ]
-  })
+  }
 ]
 
 export default SCENE_REGISTRY

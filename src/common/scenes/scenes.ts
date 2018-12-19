@@ -2,7 +2,6 @@ import {Account} from '../../models/account'
 
 export interface NavigationItemParams {
   link: string;         // Absolute link to use in LinkTo component
-  route: string;        // Relative route to the scene
   showInMenu?: boolean; // Whether to show a menu item for the scene
   className?: string;   // Class name for navigation item
   withIcon?: boolean;
@@ -12,7 +11,6 @@ export interface NavigationItemParams {
 
 export class NavigationItem {
   readonly link: string // Absolute link to use in LinkTo component
-  readonly route: string // Relative route to the scene
   readonly showInMenu: boolean // Whether to show a menu item for the scene
   readonly className: string | undefined // Class name for navigation item
   readonly withIcon: boolean
@@ -21,7 +19,6 @@ export class NavigationItem {
 
   constructor({
                 link,
-                route,
                 showInMenu = false,
                 className,
                 withIcon = false,
@@ -29,7 +26,6 @@ export class NavigationItem {
                 name
               }: NavigationItemParams) {
     this.link = link
-    this.route = route
     this.showInMenu = showInMenu
     this.className = className
     this.withIcon = withIcon
@@ -40,56 +36,54 @@ export class NavigationItem {
 
 type PermissionCheck = (user: Account.CurrentUser) => boolean;
 
-export interface SceneMetadata {
-  readonly sceneName: string;
-  readonly childScenes: SceneMetadata[];
-  readonly authorized: boolean;
-  readonly permissionCheck: PermissionCheck;
-  readonly navigationItem: NavigationItem;
+export interface SceneParams {
+  name: string; // Unique name of the scene
+  segment: string; // Corresponding URL segment
+  component: any; // Scene component class
+  childScenes?: SceneParams[];
+  permissionCheck?: PermissionCheck;
+  showInMenu?: boolean; // Whether to show a menu item for the scene
+  className?: string;   // Class name for navigation item
+  withIcon?: boolean;
 }
 
-export interface SceneMetadataParams {
-  sceneName: string;
-  sceneComponent: any;
-  childScenes?: SceneEntry[];
-  navigationItemParams: {
-    link: string;         // Absolute link to use in LinkTo component
-    route: string;        // Relative route to the scene
-    showInMenu?: boolean; // Whether to show a menu item for the scene
-    className?: string;   // Class name for navigation item
-    withIcon?: boolean;
-    exact?: boolean;
-  };
-  authorized?: boolean;
-  permissionCheck: PermissionCheck;
-}
+export class SceneEntry {
 
-export class SceneEntry implements SceneMetadata {
-
-  readonly sceneName: string
-  readonly sceneComponent: any
+  readonly name: string
+  readonly match: string
+  readonly segment: string
+  readonly component: any
   readonly childScenes: SceneEntry[]
-  readonly navigationItem: NavigationItem
-  readonly authorized: boolean
   readonly permissionCheck: PermissionCheck
+  readonly navigationItem: NavigationItem
 
   constructor({
-                sceneName,
-                sceneComponent,
+                name,
+                segment,
+                component,
                 childScenes,
-                navigationItemParams,
-                authorized = true,
-                permissionCheck
-              }: SceneMetadataParams) {
+                permissionCheck,
+                showInMenu,
+                className,
+                withIcon
+              }: SceneParams,
+              match: string) {
 
-    this.sceneName = sceneName
-    this.sceneComponent = sceneComponent
-    this.childScenes = childScenes || []
+    this.name = name
+    this.match = match
+    this.segment = segment
+    this.component = component
+    this.childScenes = (childScenes || []).map(params => new SceneEntry(params, match + '/' + segment))
+    this.permissionCheck = permissionCheck || (() => true)
+
     this.navigationItem = new NavigationItem({
-      ...navigationItemParams,
-      name: sceneName
+      link: match,
+      showInMenu: showInMenu,
+      className: className,
+      withIcon: withIcon,
+      // TODO: Check if exact routes with children are needed
+      exact: !(childScenes && childScenes.length > 0),
+      name: name
     })
-    this.authorized = (authorized === undefined) ? true : authorized
-    this.permissionCheck = permissionCheck
   }
 }

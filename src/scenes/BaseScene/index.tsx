@@ -47,8 +47,8 @@ export default class BaseScene<P extends SceneProps = SceneProps> extends React.
     return this.allowedChildScenes.map(scene => {
       return (
         <Route path={scene.navigationItem.link}
-               component={scene.sceneComponent}
-               key={scene.sceneName}
+               component={scene.component}
+               key={scene.name}
                exact={scene.navigationItem.exact}/>
       )
     })
@@ -62,8 +62,9 @@ export default class BaseScene<P extends SceneProps = SceneProps> extends React.
 
   @computed
   protected get defaultRedirect() {
-    return this.allowedNavigationItems.length > 0 ?
-      <Redirect from={this.props.match.path} to={this.allowedNavigationItems[0].link}/> : undefined
+    return this.allowedChildScenes.length > 0 ?
+      <Redirect from={this.props.match.path}
+                to={this.props.match.url + '/' + this.allowedChildScenes[0].segment}/> : undefined
   }
 
 }

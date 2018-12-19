@@ -12,7 +12,7 @@ const SCENE_METADATA = Symbol('scene_metadata')
 export default class DefaultSceneRegistryService extends BaseService implements SceneRegistryService {
 
   postConstructor() {
-    this.scenes = SCENE_REGISTRY
+    this.scenes = SCENE_REGISTRY.map(params => new SceneEntry(params, ''))
     this.registerScenes(this.scenes)
 
     return Promise.resolve()
@@ -25,11 +25,11 @@ export default class DefaultSceneRegistryService extends BaseService implements 
   }
 
   registerScene = (sceneEntry: SceneEntry) => {
-    const sceneMetadata = Reflect.getMetadata(SCENE_METADATA, sceneEntry.sceneComponent) || []
+    const sceneMetadata = Reflect.getMetadata(SCENE_METADATA, sceneEntry.component) || []
 
     sceneMetadata.push(sceneEntry)
 
-    Reflect.set(sceneEntry.sceneComponent, SCENE_METADATA, sceneMetadata)
+    Reflect.set(sceneEntry.component, SCENE_METADATA, sceneMetadata)
     this.registerScenes(sceneEntry.childScenes)
   }
 
@@ -43,7 +43,7 @@ export default class DefaultSceneRegistryService extends BaseService implements 
     const metadata = Reflect.get(scene.constructor, SCENE_METADATA) as SceneEntry[] || []
 
     const currentScene = metadata.find((meta) => {
-      return meta.navigationItem.link === scene.props.match.path
+      return meta.match === scene.props.match.path
     })
 
     if (!currentScene) {
