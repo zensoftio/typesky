@@ -1,4 +1,4 @@
-import {configuration} from '../configs/index'
+import {configuration} from '../configs'
 
 const base = (rest: string) => `${configuration.remoteApi}/${rest}`
 

@@ -1,1 +1,1 @@
-export const layers = ['post', 'todo', 'auth', 'scene-registry']
+export const layers = ['post', 'todo', 'auth', 'scene-registry', 'config']
