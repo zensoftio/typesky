@@ -1,15 +1,15 @@
 import TodoView from './todo'
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import Todo from '../models/todo'
-import {PostService, TodoService} from '../services'
-import {PostMapper, TodoMapper} from '../mappers'
+import Todo from '../../models/todo'
+import {PostService, TodoService} from '../../services/index'
+import {PostMapper, TodoMapper} from '../../mappers/index'
 
-import Post from '../models/post'
+import Post from '../../models/post'
 import {action, computed, observable} from 'mobx'
-import Changeset from '../common/changeset'
-import ChangesetValidations from '../common/changeset-validations'
-import {Injectable, injectAware, injectProperty} from '../common/annotations/dependency-injection'
+import Changeset from '../../common/changeset'
+import ChangesetValidations from '../../common/changeset-validations'
+import {Injectable, injectAware, injectProperty} from '../../common/annotations/dependency-injection'
 
 type ReadonlyPostFields = 'userId' | 'id'
 

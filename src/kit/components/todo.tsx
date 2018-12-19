@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import Todo from '../models/todo'
+import Todo from '../../models/todo'
 
 interface Props {
   todo: Todo.Model,
