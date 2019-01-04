@@ -3,7 +3,7 @@ import * as React from 'react'
 
 export enum RegistrationType {
   TRANSIENT, // new instance is created on every resolution
-  CONTAINER  // instance created on resolution is retained by the container effectively becoming a singleton
+  CONTAINER  // instance created on first resolution is retained by the container becoming a container-wide singleton
 }
 
 export interface Injectable extends Object {
@@ -36,6 +36,11 @@ export class Container implements Resolver {
   private registrations: Map<string, RegistrationEntry<any>> = new Map()
   private instances: Map<string, Injectable> = new Map()
 
+  private getInstance<T extends Injectable>(qualifier: string): T {
+
+    return this.instances.get(qualifier) as T
+  }
+
   public resolve<T extends Injectable>(qualifier: string): T {
 
     const registration = this.registrations.get(qualifier)
@@ -46,9 +51,7 @@ export class Container implements Resolver {
 
     if (registration.type === RegistrationType.CONTAINER) {
 
-      let instance = this.instances.get(qualifier) || this.construct(registration, qualifier)
-
-      return instance as T
+      return this.getInstance(qualifier) || this.construct(registration, qualifier)
 
     } else if (registration.type === RegistrationType.TRANSIENT) {
 
@@ -68,7 +71,7 @@ export class Container implements Resolver {
       this.instances.set(qualifier, instance as Injectable)
     }
 
-    this.performInjection(instance)
+    performInjection(this, instance)
     instance.awakeAfterInjection()
 
     return instance
@@ -78,17 +81,23 @@ export class Container implements Resolver {
     this.registrations.set(qualifier, registration)
   }
 
-  performInjection(target: Injectable) {
-    const propertyInjections: PropertyInjectionRecord[] = Reflect.get(target, PROPERTY_INJECTIONS) || []
-    propertyInjections.forEach(injection => {
-      target[injection.propertyKey] = this.resolve(injection.qualifier)
-    })
-
-    const methodInjections: MethodInjectionRecord[] = Reflect.get(target, METHOD_INJECTIONS) || []
-    methodInjections.forEach(injection => {
-      target[injection.setterName](this.resolve(injection.qualifier))
-    })
+  public clear() {
+    this.registrations = new Map()
+    this.instances = new Map()
   }
+}
+
+// Moved to separate function for better access control
+function performInjection(resolver: Resolver, target: Injectable) {
+  const propertyInjections: PropertyInjectionRecord[] = Reflect.get(target, PROPERTY_INJECTIONS) || []
+  propertyInjections.forEach(injection => {
+    target[injection.propertyKey] = resolver.resolve(injection.qualifier)
+  })
+
+  const methodInjections: MethodInjectionRecord[] = Reflect.get(target, METHOD_INJECTIONS) || []
+  methodInjections.forEach(injection => {
+    target[injection.setterName](resolver.resolve(injection.qualifier))
+  })
 }
 
 const PROPERTY_INJECTIONS = Symbol('property_injection')
@@ -149,6 +158,8 @@ export const injectConstructor = (qualifier: string) => (target: any, _: any, in
 }
 
 export const injectable = (qualifier: string, registrationType: RegistrationType = RegistrationType.CONTAINER) => (target: any) => {
+
+  // NOTE: THis annotation WILL NOT work under testing conditions for isolation purposes.
   if (process.env.IS_MOCK) {
     return target
   }
@@ -179,15 +190,14 @@ export const storage = (storageName: string, registrationType: RegistrationType 
   injectable(storageName + 'RecordStorage', registrationType)
 
 export const injectAware = (target: { new(props: any, context: any): React.Component }) => {
-  if (process.env.IS_MOCK) {
-    return target
-  }
+
+  // NOTE: This annotation will work under testing conditions to allow proper component configuration under Jest
 
   return class extends target {
 
     constructor(props: any, context: any) {
       super(props, context)
-      Container.defaultContainer.performInjection(this as any)
+      performInjection(Container.defaultContainer, this as any)
     }
   } as any
 }
