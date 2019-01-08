@@ -21,7 +21,7 @@ export interface SceneProps {
 }
 
 @observer
-@injectAware
+@injectAware()
 export default class BaseScene<P extends SceneProps = SceneProps> extends React.Component<P, never> {
 
   @injectProperty('AccountMapper') accountMapper: AccountMapper

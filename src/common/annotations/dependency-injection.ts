@@ -16,15 +16,13 @@ export interface Injectable extends Object {
    * Called by container after all property/method injections
    */
   awakeAfterInjection(): void;
-
-  [key: string]: any;
 }
 
 export interface Resolver {
   resolve<T extends Injectable>(qualifier: string): T;
 }
 
-class RegistrationEntry<T extends Injectable> {
+export class RegistrationEntry<T extends Injectable> {
   constructor(readonly type: RegistrationType, readonly factory: (resolver: Resolver) => T) {
   }
 }
@@ -67,6 +65,15 @@ export class Container implements Resolver {
     }
   }
 
+  public register<T extends Injectable>(qualifier: string, registration: RegistrationEntry<T>) {
+    this.registrations.set(qualifier, registration)
+  }
+
+  public clear() {
+    this.registrations = new Map()
+    this.instances = new Map()
+  }
+
   private construct<T extends Injectable>(registration: RegistrationEntry<T>, qualifier: string) {
     const instance = registration.factory(this)
     instance.postConstructor()
@@ -80,27 +87,18 @@ export class Container implements Resolver {
 
     return instance
   }
-
-  public register<T extends Injectable>(qualifier: string, registration: RegistrationEntry<T>) {
-    this.registrations.set(qualifier, registration)
-  }
-
-  public clear() {
-    this.registrations = new Map()
-    this.instances = new Map()
-  }
 }
 
 // Moved to separate function for better access control
 function performInjection(resolver: Resolver, target: Injectable) {
   const propertyInjections: PropertyInjectionRecord[] = Reflect.get(target, PROPERTY_INJECTIONS) || []
   propertyInjections.forEach(injection => {
-    target[injection.propertyKey] = resolver.resolve(injection.qualifier)
+    (target as any)[injection.propertyKey] = resolver.resolve(injection.qualifier)
   })
 
   const methodInjections: MethodInjectionRecord[] = Reflect.get(target, METHOD_INJECTIONS) || []
   methodInjections.forEach(injection => {
-    target[injection.setterName](resolver.resolve(injection.qualifier))
+    (target as any)[injection.setterName](resolver.resolve(injection.qualifier))
   })
 }
 
@@ -154,8 +152,8 @@ export const injectable = (qualifier: string,
                            registrationType: RegistrationType = RegistrationType.CONTAINER,
                            container: Container = Container.defaultContainer) => (target: any) => {
 
-  // NOTE: This decorator is disabled for testing mode for isolation purposes
-  if (process.env.IS_MOCK) {
+  // NOTE: For isolation purposes this decorator is disabled in testing mode for default container
+  if (process.env.IS_MOCK && container === Container.defaultContainer) {
     return target
   }
 
@@ -191,15 +189,14 @@ export const storage = (storageName: string,
   injectable(storageName + 'RecordStorage', registrationType, container)
 
 // NOTE: This decorator DOES NOT support injectConstructor entries!
-export const injectAware = (target: { new(props: any, context: any): React.Component }) => {
+export const injectAware = (container: Container = Container.defaultContainer) => (target: { new(props: any, context: any): React.Component }) => {
 
   // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
-
   return class extends target {
 
     constructor(props: any, context: any) {
       super(props, context)
-      performInjection(Container.defaultContainer, this as any)
+      performInjection(container, this as any)
     }
   } as any
 }

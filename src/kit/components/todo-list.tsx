@@ -16,8 +16,8 @@ type ReadonlyPostFields = 'userId' | 'id'
 type EditablePostFields = 'title' | 'body'
 
 @observer
-@injectAware
-export default class TodoListView extends React.Component<{}, {}> implements Injectable {
+@injectAware()
+export default class TodoListView extends React.Component<{}, {}> {
 
   // fields
 
@@ -54,13 +54,6 @@ export default class TodoListView extends React.Component<{}, {}> implements Inj
       validateAutomatically: true
     })
   }
-
-  // constructor
-
-  // life circle
-  postConstructor() {}
-
-  awakeAfterInjection() {}
 
   componentDidMount() {
     this.loadPost()
