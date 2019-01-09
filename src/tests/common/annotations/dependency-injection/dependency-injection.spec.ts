@@ -1,9 +1,10 @@
 import {
+  CONSTRUCTOR_INJECTIONS,
   Container,
   injectable,
   Injectable,
-  injectAware, injectProperty,
-  mapper,
+  injectAware, injectConstructor, injectMethod, injectProperty,
+  mapper, METHOD_INJECTIONS, PROPERTY_INJECTIONS,
   RegistrationEntry,
   RegistrationType,
   service,
@@ -40,7 +41,7 @@ describe('Dependency Injection', () => {
     })
   })
 
-  describe('service decorators', () => {
+  describe('service decorator', () => {
 
     it('Registers a service', () => {
 
@@ -68,7 +69,7 @@ describe('Dependency Injection', () => {
     })
   })
 
-  describe('mapper decorators', () => {
+  describe('mapper decorator', () => {
 
     it('Registers a mapper', () => {
 
@@ -96,7 +97,7 @@ describe('Dependency Injection', () => {
     })
   })
 
-  describe('storage decorators', () => {
+  describe('storage decorator', () => {
 
     it('Registers a storage', () => {
 
@@ -124,9 +125,87 @@ describe('Dependency Injection', () => {
     })
   })
 
-  describe('injectProperty decorator', () => {})
-  describe('injectMethod decorator', () => {})
-  describe('injectConstructor decorator', () => {})
+  describe('injectProperty decorator', () => {
+
+    it('adds injection information to metadata', () => {
+
+      const testQualifier1 = 'TestInjection1'
+      const testQualifier2 = 'TestInjection1'
+
+      class InjectMock {
+
+        @injectProperty(testQualifier1) mock: any
+        @injectProperty(testQualifier2) test: any
+      }
+
+      const testObject = new InjectMock()
+
+      const metadata = Reflect.get(testObject, PROPERTY_INJECTIONS)
+
+      expect(metadata.length).toBe(2)
+
+      expect(metadata[0].qualifier).toBe(testQualifier1)
+      expect(metadata[0].propertyKey).toBe('mock')
+
+      expect(metadata[1].qualifier).toBe(testQualifier2)
+      expect(metadata[1].propertyKey).toBe('test')
+    })
+  })
+
+  describe('injectMethod decorator', () => {
+
+    it('adds injection information to metadata', () => {
+
+      const testQualifier1 = 'TestInjection1'
+      const testQualifier2 = 'TestInjection2'
+
+      class InjectMock {
+
+        @injectMethod(testQualifier1) setMock(mock: any) {
+        }
+
+        @injectMethod(testQualifier2) setTest(test: any) {
+        }
+      }
+
+      const testObject = new InjectMock()
+
+      const metadata = Reflect.get(testObject, METHOD_INJECTIONS)
+
+      expect(metadata.length).toBe(2)
+
+      expect(metadata[0].qualifier).toBe(testQualifier1)
+      expect(metadata[0].setterName).toBe('setMock')
+
+      expect(metadata[1].qualifier).toBe(testQualifier2)
+      expect(metadata[1].setterName).toBe('setTest')
+    })
+  })
+
+  describe('injectConstructor decorator', () => {
+
+    it('adds injection information to metadata', () => {
+
+      const testQualifier = 'TestInjection1'
+
+      class InjectMock {
+
+        mock: any
+
+        constructor(@injectConstructor(testQualifier) mock: any) {
+          this.mock = mock
+        }
+      }
+
+      const metadata = Reflect.get(InjectMock, CONSTRUCTOR_INJECTIONS)
+
+      expect(metadata.length).toBe(1)
+
+      expect(metadata[0].qualifier).toBe(testQualifier)
+      expect(metadata[0].index).toBe(0)
+
+    })
+  })
 
   describe('injectAware decorator', () => {
 

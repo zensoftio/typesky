@@ -102,9 +102,9 @@ function performInjection(resolver: Resolver, target: Injectable) {
   })
 }
 
-const PROPERTY_INJECTIONS = Symbol('property_injection')
-const METHOD_INJECTIONS = Symbol('method_injections')
-const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
+export const PROPERTY_INJECTIONS = Symbol('property_injection')
+export const METHOD_INJECTIONS = Symbol('method_injections')
+export const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 
 class PropertyInjectionRecord {
   constructor(public qualifier: string, public propertyKey: string) {
@@ -189,14 +189,15 @@ export const storage = (storageName: string,
   injectable(storageName + 'RecordStorage', registrationType, container)
 
 // NOTE: This decorator DOES NOT support injectConstructor entries!
-export const injectAware = (container: Container = Container.defaultContainer) => (target: { new(props: any, context: any): React.Component }) => {
+export const injectAware = (container: Container = Container.defaultContainer) =>
+  (target: { new(props: any, context: any): React.Component }) => {
 
-  // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
-  return class extends target {
+    // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
+    return class extends target {
 
-    constructor(props: any, context: any) {
-      super(props, context)
-      performInjection(container, this as any)
-    }
-  } as any
-}
+      constructor(props: any, context: any) {
+        super(props, context)
+        performInjection(container, this as any)
+      }
+    } as any
+  }
