@@ -39,6 +39,54 @@ describe('Dependency Injection', () => {
 
       expect(container.resolve(testQualifier)).toBeInstanceOf(InjectableMock)
     })
+
+    it('handles constructor injections', () => {
+
+      const container = new Container()
+
+      const testQualifier1 = 'TestQualifier1'
+      const testQualifier2 = 'TestQualifier2'
+
+      @injectable(testQualifier1, RegistrationType.TRANSIENT, container)
+      class TestInjection1 implements Injectable {
+        awakeAfterInjection(): void {
+        }
+
+        postConstructor(): void {
+        }
+      }
+
+      @injectable(testQualifier2, RegistrationType.TRANSIENT, container)
+      class TestInjection2 implements Injectable {
+        awakeAfterInjection(): void {
+        }
+
+        postConstructor(): void {
+        }
+      }
+
+      class InjectableMock implements Injectable {
+
+        constructor(@injectConstructor(testQualifier1) public testInjection1: TestInjection1,
+                    @injectConstructor(testQualifier2) public testInjection2: TestInjection2, ) {
+        }
+
+        awakeAfterInjection(): void {
+        }
+
+        postConstructor(): void {
+        }
+      }
+
+      const testQualifier = 'TestInjection'
+
+      injectable(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
+
+      const instance: InjectableMock = container.resolve(testQualifier)
+
+      expect(instance.testInjection1).toBeInstanceOf(TestInjection1)
+      expect(instance.testInjection2).toBeInstanceOf(TestInjection2)
+    })
   })
 
   describe('service decorator', () => {

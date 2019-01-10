@@ -1,5 +1,4 @@
 import 'reflect-metadata'
-import * as React from 'react'
 
 export enum RegistrationType {
   TRANSIENT, // new instance is created on every resolution
@@ -162,7 +161,10 @@ export const injectable = (qualifier: string,
     const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(target, CONSTRUCTOR_INJECTIONS)
 
     if (constructorInjectors && constructorInjectors.length > 0) {
-      return new target(...constructorInjectors.map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined))
+      return new target(...constructorInjectors
+        .sort((a, b) => (a.index - b.index))
+        .map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined)
+      )
     } else {
       return new target()
     }
@@ -190,14 +192,16 @@ export const storage = (storageName: string,
 
 // NOTE: This decorator DOES NOT support injectConstructor entries!
 export const injectAware = (container: Container = Container.defaultContainer) =>
-  (target: { new(props: any, context: any): React.Component }) => {
+  (target: any) => {
 
     // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
-    return class extends target {
+    return new Proxy(target, {
+      construct(clz, args) {
+        const instance = Reflect.construct(clz, args)
 
-      constructor(props: any, context: any) {
-        super(props, context)
-        performInjection(container, this as any)
+        performInjection(container, instance)
+
+        return instance
       }
-    } as any
+    })
   }
