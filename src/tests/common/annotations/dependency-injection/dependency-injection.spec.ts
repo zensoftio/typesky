@@ -1,12 +1,12 @@
 import {
-  CONSTRUCTOR_INJECTIONS,
+  CONSTRUCTOR_INJECTIONS, METHOD_INJECTIONS, PROPERTY_INJECTIONS, INJECT_AWARE,
   Container,
-  injectable,
-  Injectable,
-  injectAware, injectConstructor, injectMethod, injectProperty,
-  mapper, METHOD_INJECTIONS, PROPERTY_INJECTIONS,
   RegistrationEntry,
   RegistrationType,
+  Injectable,
+  injectable,
+  injectAware, injectConstructor, injectMethod, injectProperty,
+  mapper,
   service,
   storage
 } from '../../../../common/annotations/dependency-injection'
@@ -15,60 +15,59 @@ import * as React from 'react'
 
 describe('Dependency Injection', () => {
 
+  const testInjectionQualifier1 = 'testInjectionQualifier1'
+  const testInjectionQualifier2 = 'testInjectionQualifier2'
+
+  class DependencyMock1 implements Injectable {
+
+    awakeAfterInjection(): void {
+    }
+
+    postConstructor(): void {
+    }
+  }
+
+  class DependencyMock2 implements Injectable {
+
+    awakeAfterInjection(): void {
+    }
+
+    postConstructor(): void {
+    }
+  }
+
   describe('injectable decorator', () => {
 
-    it('registers injectable items in correct container', () => {
+    it('registers injectable items in provided container', () => {
 
       const container = new Container()
 
-      class InjectableMock implements Injectable {
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-        awakeAfterInjection(): void {
-        }
-
-        postConstructor(): void {
-        }
-      }
-
-      const testQualifier = 'TestInjection'
-
-      injectable(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
-
-      expect(() => Container.defaultContainer.resolve(testQualifier))
-        .toThrow(`No registration for qualifier '${testQualifier}'`)
-
-      expect(container.resolve(testQualifier)).toBeInstanceOf(InjectableMock)
+      expect(container.resolve(testInjectionQualifier1)).toBeInstanceOf(DependencyMock1)
     })
 
-    it('handles constructor injections', () => {
+    it('does not affect other containers', () => {
 
       const container = new Container()
 
-      const testQualifier1 = 'TestQualifier1'
-      const testQualifier2 = 'TestQualifier2'
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      @injectable(testQualifier1, RegistrationType.TRANSIENT, container)
-      class TestInjection1 implements Injectable {
-        awakeAfterInjection(): void {
-        }
+      expect(() => Container.defaultContainer.resolve(testInjectionQualifier1))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
+    })
 
-        postConstructor(): void {
-        }
-      }
+    it('works with container to handle constructor injections', () => {
 
-      @injectable(testQualifier2, RegistrationType.TRANSIENT, container)
-      class TestInjection2 implements Injectable {
-        awakeAfterInjection(): void {
-        }
+      const container = new Container()
 
-        postConstructor(): void {
-        }
-      }
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
+      injectable(testInjectionQualifier2, RegistrationType.TRANSIENT, container)(DependencyMock2)
 
-      class InjectableMock implements Injectable {
+      class DependentEntity implements Injectable {
 
-        constructor(@injectConstructor(testQualifier1) public testInjection1: TestInjection1,
-                    @injectConstructor(testQualifier2) public testInjection2: TestInjection2, ) {
+        constructor(@injectConstructor(testInjectionQualifier1) public testInjection1: DependencyMock1,
+                    @injectConstructor(testInjectionQualifier2) public testInjection2: DependencyMock2) {
         }
 
         awakeAfterInjection(): void {
@@ -80,12 +79,12 @@ describe('Dependency Injection', () => {
 
       const testQualifier = 'TestInjection'
 
-      injectable(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
+      injectable(testQualifier, RegistrationType.TRANSIENT, container)(DependentEntity)
 
-      const instance: InjectableMock = container.resolve(testQualifier)
+      const instance: DependentEntity = container.resolve(testQualifier)
 
-      expect(instance.testInjection1).toBeInstanceOf(TestInjection1)
-      expect(instance.testInjection2).toBeInstanceOf(TestInjection2)
+      expect(instance.testInjection1).toBeInstanceOf(DependencyMock1)
+      expect(instance.testInjection2).toBeInstanceOf(DependencyMock2)
     })
   })
 
@@ -95,25 +94,21 @@ describe('Dependency Injection', () => {
 
       const container = new Container()
 
-      const testQualifier = 'TestInjection'
+      service(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      class InjectableMock implements Injectable {
+      const resolvedService = container.resolve(`${testInjectionQualifier1}Service`)
 
-        awakeAfterInjection(): void {
-        }
+      expect(resolvedService).toBeInstanceOf(DependencyMock1)
+    })
 
-        postConstructor(): void {
-        }
-      }
+    it('Does not register a plain dependency', () => {
 
-      service(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
+      const container = new Container()
 
-      expect(() => container.resolve(testQualifier))
-        .toThrow(`No registration for qualifier '${testQualifier}'`)
+      service(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      const resolvedService = container.resolve(`${testQualifier}Service`)
-
-      expect(resolvedService).toBeInstanceOf(InjectableMock)
+      expect(() => container.resolve(testInjectionQualifier1))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
     })
   })
 
@@ -123,25 +118,21 @@ describe('Dependency Injection', () => {
 
       const container = new Container()
 
-      const testQualifier = 'TestInjection'
+      mapper(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      class InjectableMock implements Injectable {
+      const resolvedMapper = container.resolve(`${testInjectionQualifier1}Mapper`)
 
-        awakeAfterInjection(): void {
-        }
+      expect(resolvedMapper).toBeInstanceOf(DependencyMock1)
+    })
 
-        postConstructor(): void {
-        }
-      }
+    it('Does not register a plain dependency', () => {
 
-      mapper(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
+      const container = new Container()
 
-      expect(() => container.resolve(testQualifier))
-        .toThrow(`No registration for qualifier '${testQualifier}'`)
+      mapper(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      const resolvedMapper = container.resolve(`${testQualifier}Mapper`)
-
-      expect(resolvedMapper).toBeInstanceOf(InjectableMock)
+      expect(() => container.resolve(testInjectionQualifier1))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
     })
   })
 
@@ -151,25 +142,21 @@ describe('Dependency Injection', () => {
 
       const container = new Container()
 
-      const testQualifier = 'TestInjection'
+      storage(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      class InjectableMock implements Injectable {
+      const resolvedStorage = container.resolve(`${testInjectionQualifier1}RecordStorage`)
 
-        awakeAfterInjection(): void {
-        }
+      expect(resolvedStorage).toBeInstanceOf(DependencyMock1)
+    })
 
-        postConstructor(): void {
-        }
-      }
+    it('Does not register a plain dependency', () => {
 
-      storage(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
+      const container = new Container()
 
-      expect(() => container.resolve(testQualifier))
-        .toThrow(`No registration for qualifier '${testQualifier}'`)
+      storage(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      const resolvedStorage = container.resolve(`${testQualifier}RecordStorage`)
-
-      expect(resolvedStorage).toBeInstanceOf(InjectableMock)
+      expect(() => container.resolve(testInjectionQualifier1))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
     })
   })
 
@@ -177,13 +164,10 @@ describe('Dependency Injection', () => {
 
     it('adds injection information to metadata', () => {
 
-      const testQualifier1 = 'TestInjection1'
-      const testQualifier2 = 'TestInjection1'
-
       class InjectMock {
 
-        @injectProperty(testQualifier1) mock: any
-        @injectProperty(testQualifier2) test: any
+        @injectProperty(testInjectionQualifier1) mock: any
+        @injectProperty(testInjectionQualifier2) test: any
       }
 
       const testObject = new InjectMock()
@@ -192,10 +176,10 @@ describe('Dependency Injection', () => {
 
       expect(metadata.length).toBe(2)
 
-      expect(metadata[0].qualifier).toBe(testQualifier1)
+      expect(metadata[0].qualifier).toBe(testInjectionQualifier1)
       expect(metadata[0].propertyKey).toBe('mock')
 
-      expect(metadata[1].qualifier).toBe(testQualifier2)
+      expect(metadata[1].qualifier).toBe(testInjectionQualifier2)
       expect(metadata[1].propertyKey).toBe('test')
     })
   })
@@ -204,15 +188,12 @@ describe('Dependency Injection', () => {
 
     it('adds injection information to metadata', () => {
 
-      const testQualifier1 = 'TestInjection1'
-      const testQualifier2 = 'TestInjection2'
-
       class InjectMock {
 
-        @injectMethod(testQualifier1) setMock(mock: any) {
+        @injectMethod(testInjectionQualifier1) setMock(mock: any) {
         }
 
-        @injectMethod(testQualifier2) setTest(test: any) {
+        @injectMethod(testInjectionQualifier2) setTest(test: any) {
         }
       }
 
@@ -222,10 +203,10 @@ describe('Dependency Injection', () => {
 
       expect(metadata.length).toBe(2)
 
-      expect(metadata[0].qualifier).toBe(testQualifier1)
+      expect(metadata[0].qualifier).toBe(testInjectionQualifier1)
       expect(metadata[0].setterName).toBe('setMock')
 
-      expect(metadata[1].qualifier).toBe(testQualifier2)
+      expect(metadata[1].qualifier).toBe(testInjectionQualifier2)
       expect(metadata[1].setterName).toBe('setTest')
     })
   })
@@ -234,13 +215,11 @@ describe('Dependency Injection', () => {
 
     it('adds injection information to metadata', () => {
 
-      const testQualifier = 'TestInjection1'
-
       class InjectMock {
 
         mock: any
 
-        constructor(@injectConstructor(testQualifier) mock: any) {
+        constructor(@injectConstructor(testInjectionQualifier1) mock: any) {
           this.mock = mock
         }
       }
@@ -249,7 +228,7 @@ describe('Dependency Injection', () => {
 
       expect(metadata.length).toBe(1)
 
-      expect(metadata[0].qualifier).toBe(testQualifier)
+      expect(metadata[0].qualifier).toBe(testInjectionQualifier1)
       expect(metadata[0].index).toBe(0)
 
     })
@@ -257,25 +236,27 @@ describe('Dependency Injection', () => {
 
   describe('injectAware decorator', () => {
 
-    it('sets up injection support for component', () => {
+    it('marks decorated class as inject-aware', () => {
 
       const container = new Container()
 
-      class InjectableMock implements Injectable {
-
-        awakeAfterInjection(): void {
-        }
-
-        postConstructor(): void {
-        }
+      class ComponentClass extends React.Component {
+        @injectProperty(testInjectionQualifier1) mock: DependencyMock1
       }
 
-      const testQualifier = 'TestInjection'
+      const InjectAwareClass = injectAware(container)(ComponentClass)
 
-      injectable(testQualifier, RegistrationType.TRANSIENT, container)(InjectableMock)
+      expect(Reflect.get(InjectAwareClass, INJECT_AWARE)).toBeTruthy()
+    })
+
+    it('creates a valid proxy class from decorated component', () => {
+
+      const container = new Container()
+
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
       class ComponentClass extends React.Component {
-        @injectProperty(testQualifier) mock: InjectableMock
+        @injectProperty(testInjectionQualifier1) mock: DependencyMock1
       }
 
       const InjectAwareClass = injectAware(container)(ComponentClass)
@@ -283,115 +264,165 @@ describe('Dependency Injection', () => {
       const component = new InjectAwareClass()
 
       expect(component).toBeInstanceOf(ComponentClass)
-      expect(component.mock).toBeInstanceOf(InjectableMock)
+    })
+
+    it('sets up injection mechanism for decorated component', () => {
+
+      const container = new Container()
+
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
+
+      class ComponentClass extends React.Component {
+        @injectProperty(testInjectionQualifier1) mock: DependencyMock1
+      }
+
+      const InjectAwareClass = injectAware(container)(ComponentClass)
+
+      const component = new InjectAwareClass()
+
+      expect(component.mock).toBeInstanceOf(DependencyMock1)
+    })
+
+    it('is an idempotent operation', () => {
+
+      const container = new Container()
+
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
+
+      class ComponentClass extends React.Component {
+        @injectProperty(testInjectionQualifier1) mock: DependencyMock1
+      }
+
+      const InjectAwareClass1 = injectAware(container)(ComponentClass)
+
+      const InjectAwareClass2 = injectAware(container)(InjectAwareClass1)
+
+      expect(Reflect.get(InjectAwareClass1, INJECT_AWARE)).toBeTruthy()
+      expect(InjectAwareClass2).toBe(InjectAwareClass1)
+    })
+
+    it('works correctly for subclasses', () => {
+
+      const container = new Container()
+
+      injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
+      injectable(testInjectionQualifier2, RegistrationType.TRANSIENT, container)(DependencyMock2)
+
+      @injectAware(container)
+      class InjectAwareParent {
+        @injectProperty(testInjectionQualifier1) injection1: DependencyMock1
+      }
+
+      @injectAware(container)
+      class InjectAwareChild extends InjectAwareParent {
+        @injectProperty(testInjectionQualifier2) injection2: DependencyMock2
+      }
+
+      const childInstance = new InjectAwareChild()
+
+      expect(childInstance.injection1).toBeInstanceOf(DependencyMock1)
+      expect(childInstance.injection2).toBeInstanceOf(DependencyMock2)
     })
   })
 
   describe('Container', () => {
 
-    it('registers injectables', () => {
+    it('throws error if no registration provided', () => {
 
       const container = new Container()
 
-      class InjectableMock implements Injectable {
-
-        awakeAfterInjection(): void {
-        }
-
-        postConstructor(): void {
-        }
-      }
-
       const testQualifier = 'TestInjection'
+
+      expect(() => {
+        container.resolve(testQualifier)
+      }).toThrow(`No registration for qualifier '${testQualifier}'`)
+    })
+
+    it('registers injectable entities', () => {
+
+      const container = new Container()
 
       const registrationEntry =
         new RegistrationEntry(
           RegistrationType.TRANSIENT,
-          () => new InjectableMock()
+          () => new DependencyMock1()
         )
 
-      container.register(testQualifier, registrationEntry)
+      container.register(testInjectionQualifier1, registrationEntry)
 
-      expect(container.resolve(testQualifier)).toBeInstanceOf(InjectableMock)
+      expect(container.resolve(testInjectionQualifier1)).toBeInstanceOf(DependencyMock1)
+    })
+
+    it('calls \'postConstructor\' method during instance creation', () => {
+
+      const container = new Container()
+
+      const postConstructMock = jest.fn()
+
+      @injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)
+      class InjectableMock implements Injectable {
+
+        awakeAfterInjection() {
+        }
+
+        postConstructor = postConstructMock
+      }
+
+      container.resolve(testInjectionQualifier1)
+
+      expect(postConstructMock.mock.calls.length).toBe(1)
+    })
+
+    it('calls \'awakeAfterInjection\' method during instance creation', () => {
+
+      const container = new Container()
+
+      const awakeAfterInjectionMock = jest.fn()
+
+      @injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)
+      class InjectableMock implements Injectable {
+
+        awakeAfterInjection = awakeAfterInjectionMock
+
+        postConstructor() {
+        }
+      }
+
+      container.resolve(testInjectionQualifier1)
+
+      expect(awakeAfterInjectionMock.mock.calls.length).toBe(1)
     })
 
     it('stores container-wide instances', () => {
 
       const container = new Container()
 
-      const awakeAfterMock = jest.fn()
-      const postConstructMock = jest.fn()
-
-      class InjectableMock implements Injectable {
-
-        awakeAfterInjection(): void {
-          awakeAfterMock()
-        }
-
-        postConstructor(): void {
-          postConstructMock()
-        }
-      }
-
-      const testQualifier = 'TestInjection'
-
       const registrationEntry =
         new RegistrationEntry(
           RegistrationType.CONTAINER,
-          () => new InjectableMock()
+          () => new DependencyMock1()
         )
 
-      container.register(testQualifier, registrationEntry)
+      container.register(testInjectionQualifier1, registrationEntry)
 
-      const instance = container.resolve(testQualifier)
-
-      expect(instance).toBeInstanceOf(InjectableMock)
-
-      const otherInstance = container.resolve(testQualifier)
+      const instance = container.resolve(testInjectionQualifier1)
+      const otherInstance = container.resolve(testInjectionQualifier1)
 
       expect(otherInstance).toBe(instance)
-
-      expect(awakeAfterMock.mock.calls.length).toBe(1)
-      expect(awakeAfterMock.mock.calls.length).toBe(1)
     })
 
     it('constructs new transient instances', () => {
 
       const container = new Container()
-
-      const awakeAfterMock = jest.fn()
-      const postConstructMock = jest.fn()
-
-      class InjectableMock implements Injectable {
-
-        awakeAfterInjection(): void {
-          awakeAfterMock()
-        }
-
-        postConstructor(): void {
-          postConstructMock()
-        }
-      }
-
-      const testQualifier = 'TestInjection'
-
       const registrationEntry = new RegistrationEntry(RegistrationType.TRANSIENT,
-        () => new InjectableMock())
+        () => new DependencyMock1())
 
-      container.register(testQualifier, registrationEntry)
+      container.register(testInjectionQualifier1, registrationEntry)
 
-      const instance = container.resolve(testQualifier)
-
-      expect(instance).toBeInstanceOf(InjectableMock)
-
-      const otherInstance = container.resolve(testQualifier)
-
-      expect(otherInstance).toBeInstanceOf(InjectableMock)
+      const instance = container.resolve(testInjectionQualifier1)
+      const otherInstance = container.resolve(testInjectionQualifier1)
 
       expect(otherInstance).not.toBe(instance)
-
-      expect(awakeAfterMock.mock.calls.length).toBe(2)
-      expect(awakeAfterMock.mock.calls.length).toBe(2)
     })
   })
 })

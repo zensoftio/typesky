@@ -34,6 +34,21 @@ export class Container implements Resolver {
     return this.internalContainer
   }
 
+  private static componentContainers: Map<string, Container> = new Map();
+
+  static containerForComponent(componentName: string): Container {
+
+    // Under non-test environment (e.g. development, production) default container is used for all components.
+    if (process.env.NODE_ENV !== 'test') {
+      return this.defaultContainer
+    }
+
+    const container = this.componentContainers.get(componentName) || new Container()
+    this.componentContainers.set(componentName, container)
+
+    return container;
+  }
+
   private registrations: Map<string, RegistrationEntry<any>> = new Map()
   private instances: Map<string, Injectable> = new Map()
 
@@ -150,9 +165,8 @@ export const injectConstructor = (qualifier: string) => (target: any, _: any, in
 export const injectable = (qualifier: string,
                            registrationType: RegistrationType = RegistrationType.CONTAINER,
                            container: Container = Container.defaultContainer) => (target: any) => {
-
   // NOTE: For isolation purposes this decorator is disabled in testing mode for default container
-  if (process.env.IS_MOCK && container === Container.defaultContainer) {
+  if (process.env.NODE_ENV === 'test' && container === Container.defaultContainer) {
     return target
   }
 
@@ -161,9 +175,9 @@ export const injectable = (qualifier: string,
     const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(target, CONSTRUCTOR_INJECTIONS)
 
     if (constructorInjectors && constructorInjectors.length > 0) {
-      return new target(...constructorInjectors
+      return new target(...(constructorInjectors
         .sort((a, b) => (a.index - b.index))
-        .map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined)
+        .map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined))
       )
     } else {
       return new target()
@@ -190,18 +204,31 @@ export const storage = (storageName: string,
                         container: Container = Container.defaultContainer) =>
   injectable(storageName + 'RecordStorage', registrationType, container)
 
+export const INJECT_AWARE = Symbol('inject_aware')
+
 // NOTE: This decorator DOES NOT support injectConstructor entries!
-export const injectAware = (container: Container = Container.defaultContainer) =>
-  (target: any) => {
+export const injectAware = (container?: Container) => (target: any) => {
 
-    // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
-    return new Proxy(target, {
-      construct(clz, args) {
-        const instance = Reflect.construct(clz, args)
-
-        performInjection(container, instance)
-
-        return instance
-      }
-    })
+  // Same component class should not be decorated as inject-aware twice
+  if (target.hasOwnProperty(INJECT_AWARE) && Reflect.get(target, INJECT_AWARE)) {
+    return target
   }
+
+  // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
+  const proxy = new Proxy(target, {
+    construct(clz, args) {
+
+      const componentContainer = container || Container.containerForComponent(target.name)
+
+      const instance = Reflect.construct(clz, args)
+
+      performInjection(componentContainer, instance)
+
+      return instance
+    }
+  })
+
+  Reflect.set(proxy, INJECT_AWARE, true)
+
+  return proxy
+}
