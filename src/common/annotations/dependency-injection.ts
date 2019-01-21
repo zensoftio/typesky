@@ -1,127 +1,22 @@
 import 'reflect-metadata'
+import {Container, Injectable, RegistrationEntry, RegistrationType, Resolver} from '../dependency-container'
 
-export enum RegistrationType {
-  TRANSIENT, // new instance is created on every resolution
-  CONTAINER  // instance created on first resolution is retained by the container becoming a container-wide singleton
-}
-
-/**
- * Core protocol for injectable entities
- */
-export interface Injectable extends Object {
-  /**
-   * Called by container after constructor, but before property/method injections
-   */
-  postConstructor(): void;
-
-  /**
-   * Called by container after all property/method injections
-   */
-  awakeAfterInjection(): void;
-}
-
-export interface Resolver {
-  resolve<T extends Injectable>(qualifier: string): T;
-}
-
-export class RegistrationEntry<T extends Injectable> {
-  constructor(readonly type: RegistrationType, readonly factory: (resolver: Resolver) => T) {
-  }
-}
-
-export class Container implements Resolver {
-
-  private static internalContainer = new Container()
-
-  static get defaultContainer(): Container {
-    return this.internalContainer
-  }
-
-  private static componentContainers: Map<string, Container> = new Map();
-
-  static containerForComponent(componentName: string): Container {
-
-    // Under non-test environment (e.g. development, production) default container is used for all components.
-    if (process.env.NODE_ENV !== 'test') {
-      return this.defaultContainer
-    }
-
-    const container = this.componentContainers.get(componentName) || new Container()
-    this.componentContainers.set(componentName, container)
-
-    return container;
-  }
-
-  private registrations: Map<string, RegistrationEntry<any>> = new Map()
-  private instances: Map<string, Injectable> = new Map()
-
-  private getInstance<T extends Injectable>(qualifier: string): T {
-
-    return this.instances.get(qualifier) as T
-  }
-
-  public resolve<T extends Injectable>(qualifier: string): T {
-
-    const registration = this.registrations.get(qualifier)
-
-    if (!registration) {
-      throw new Error(`No registration for qualifier '${qualifier}'`)
-    }
-
-    if (registration.type === RegistrationType.CONTAINER) {
-
-      return this.getInstance(qualifier) || this.construct(registration, qualifier)
-
-    } else if (registration.type === RegistrationType.TRANSIENT) {
-
-      return this.construct(registration, qualifier)
-
-    } else {
-
-      throw new Error(`Invalid registration type ${registration.type}' for qualifier '${qualifier}'`)
-    }
-  }
-
-  public register<T extends Injectable>(qualifier: string, registration: RegistrationEntry<T>) {
-    this.registrations.set(qualifier, registration)
-  }
-
-  public clear() {
-    this.registrations = new Map()
-    this.instances = new Map()
-  }
-
-  private construct<T extends Injectable>(registration: RegistrationEntry<T>, qualifier: string) {
-    const instance = registration.factory(this)
-    instance.postConstructor()
-
-    if (registration.type === RegistrationType.CONTAINER) {
-      this.instances.set(qualifier, instance as Injectable)
-    }
-
-    performInjection(this, instance)
-    instance.awakeAfterInjection()
-
-    return instance
-  }
-}
+export const PROPERTY_INJECTIONS = Symbol('property_injections')
+export const METHOD_INJECTIONS = Symbol('method_injections')
+export const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 
 // Moved to separate function for better access control
 function performInjection(resolver: Resolver, target: Injectable) {
-  const propertyInjections: PropertyInjectionRecord[] = Reflect.get(target, PROPERTY_INJECTIONS) || []
+  const propertyInjections: PropertyInjectionRecord[] = Reflect.getMetadata(PROPERTY_INJECTIONS, target) || []
   propertyInjections.forEach(injection => {
     (target as any)[injection.propertyKey] = resolver.resolve(injection.qualifier)
   })
 
-  const methodInjections: MethodInjectionRecord[] = Reflect.get(target, METHOD_INJECTIONS) || []
+  const methodInjections: MethodInjectionRecord[] = Reflect.getMetadata(METHOD_INJECTIONS, target) || []
   methodInjections.forEach(injection => {
     (target as any)[injection.setterName](resolver.resolve(injection.qualifier))
   })
 }
-
-export const PROPERTY_INJECTIONS = Symbol('property_injection')
-export const METHOD_INJECTIONS = Symbol('method_injections')
-export const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 
 class PropertyInjectionRecord {
   constructor(public qualifier: string, public propertyKey: string) {
@@ -141,28 +36,28 @@ class ConstructorInjectionRecord {
 // NOTE: Qualifiers made required to survive minification
 
 export const injectProperty = (qualifier: string) => (target: any, propertyKey: string) => {
-  if (!Reflect.has(target, PROPERTY_INJECTIONS)) {
-    Reflect.set(target, PROPERTY_INJECTIONS, [])
+  if (!Reflect.hasOwnMetadata(PROPERTY_INJECTIONS, target)) {
+    Reflect.defineMetadata(PROPERTY_INJECTIONS, [], target)
   }
-  Reflect.get(target, PROPERTY_INJECTIONS)
-    .push(new PropertyInjectionRecord(qualifier, propertyKey))
+  const metadata = Reflect.getOwnMetadata(PROPERTY_INJECTIONS, target)
+  metadata.push(new PropertyInjectionRecord(qualifier, propertyKey))
 }
 
 export const injectMethod = (qualifier: string) => (target: any, setterName: string) => {
-  if (!Reflect.has(target, METHOD_INJECTIONS)) {
-    Reflect.set(target, METHOD_INJECTIONS, [])
+  if (!Reflect.hasOwnMetadata(METHOD_INJECTIONS, target)) {
+    Reflect.defineMetadata(METHOD_INJECTIONS, [], target)
   }
-  Reflect.get(target, METHOD_INJECTIONS)
-    .push(new MethodInjectionRecord(qualifier, setterName))
+  const metadata = Reflect.getOwnMetadata(METHOD_INJECTIONS, target)
+  metadata.push(new MethodInjectionRecord(qualifier, setterName))
 }
 
 // NOTE: This decorator SHOULD NOT be used for components!
 export const injectConstructor = (qualifier: string) => (target: any, _: any, index: number) => {
-  if (!Reflect.has(target, CONSTRUCTOR_INJECTIONS)) {
-    Reflect.set(target, CONSTRUCTOR_INJECTIONS, [])
+  if (!Reflect.hasOwnMetadata(CONSTRUCTOR_INJECTIONS, target)) {
+    Reflect.defineMetadata(CONSTRUCTOR_INJECTIONS, [], target)
   }
-  Reflect.get(target, CONSTRUCTOR_INJECTIONS)
-    .push(new ConstructorInjectionRecord(qualifier, index))
+  const metadata = Reflect.getOwnMetadata(CONSTRUCTOR_INJECTIONS, target)
+  metadata.push(new ConstructorInjectionRecord(qualifier, index))
 }
 
 export const injectable = (qualifier: string,
@@ -175,16 +70,26 @@ export const injectable = (qualifier: string,
 
   const registration = new RegistrationEntry(registrationType, (resolver: Resolver) => {
 
-    const constructorInjectors: ConstructorInjectionRecord[] = Reflect.get(target, CONSTRUCTOR_INJECTIONS)
+    const constructorInjectors: ConstructorInjectionRecord[] = Reflect.getOwnMetadata(CONSTRUCTOR_INJECTIONS, target)
+
+    let instance: Injectable
 
     if (constructorInjectors && constructorInjectors.length > 0) {
-      return new target(...(constructorInjectors
+      instance = new target(...(constructorInjectors
         .sort((a, b) => (a.index - b.index))
         .map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined))
       )
     } else {
-      return new target()
+      instance = new target()
     }
+
+    instance.postConstructor()
+
+    performInjection(resolver, instance)
+
+    instance.awakeAfterInjection()
+
+    return instance
   })
 
   container.register(qualifier, registration)
@@ -213,7 +118,7 @@ export const INJECT_AWARE = Symbol('inject_aware')
 export const injectAware = (container?: Container) => (target: any) => {
 
   // Same component class should not be decorated as inject-aware twice
-  if (target.hasOwnProperty(INJECT_AWARE) && Reflect.get(target, INJECT_AWARE)) {
+  if (Reflect.getOwnMetadata(INJECT_AWARE, target)) {
     return target
   }
 
@@ -227,13 +132,13 @@ export const injectAware = (container?: Container) => (target: any) => {
 
       performInjection(componentContainer, instance)
 
-      instance.awakeAfterInjection && instance.awakeAfterInjection();
+      instance.awakeAfterInjection && instance.awakeAfterInjection()
 
       return instance
     }
   })
 
-  Reflect.set(proxy, INJECT_AWARE, true)
+  Reflect.defineMetadata(INJECT_AWARE, true, proxy)
 
   return proxy
 }

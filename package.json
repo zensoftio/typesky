@@ -8,7 +8,8 @@
     "dev:mock": "webpack-dev-server --hot --inline --port 8080 --define process.env.IS_MOCK",
     "build": "webpack --config webpack.prod.js",
     "test": "jest --ci",
-    "test:local": "jest"
+    "test:local": "jest",
+    "cover": "jest --coverage"
   },
   "devDependencies": {
     "@types/args": "^3.0.0",
