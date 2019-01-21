@@ -1,7 +1,7 @@
 import {action, observable} from 'mobx'
 import {RecordStorage} from './index'
 import {instantiateJson} from '../../annotations/model'
-import {Injectable} from '../../annotations/dependency-injection'
+import {Injectable} from '../../dependency-container'
 
 export class RecordContainer<T> {
   @observable

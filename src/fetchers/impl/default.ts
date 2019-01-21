@@ -1,7 +1,8 @@
 import {Fetcher} from '../index'
 import {checkJson, instantiateJson} from '../../common/annotations/model'
 import {configuration} from '../../configs'
-import {Injectable, injectable} from '../../common/annotations/dependency-injection'
+import {injectable} from '../../common/annotations/dependency-injection'
+import {Injectable} from '../../common/dependency-container'
 
 interface HeadersContainer {
   [key: string]: string;

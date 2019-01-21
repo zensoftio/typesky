@@ -9,7 +9,7 @@ import Post from '../../models/post'
 import {action, computed} from 'mobx'
 import Changeset from '../../common/changeset'
 import ChangesetValidations from '../../common/changeset-validations'
-import {Injectable, injectAware, injectProperty} from '../../common/annotations/dependency-injection'
+import {injectAware, injectProperty} from '../../common/annotations/dependency-injection'
 
 type ReadonlyPostFields = 'userId' | 'id'
 
@@ -21,7 +21,7 @@ export default class TodoListView extends React.Component<{}, {}> {
 
   // fields
 
-  private postId = 1
+  private postId: number
 
   @injectProperty('TodoService')
   private todoService: TodoService;
@@ -53,6 +53,10 @@ export default class TodoListView extends React.Component<{}, {}> {
       ],
       validateAutomatically: true
     })
+  }
+
+  awakeAfterInjection() {
+
   }
 
   componentDidMount() {
