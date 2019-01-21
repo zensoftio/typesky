@@ -5,6 +5,9 @@ export enum RegistrationType {
   CONTAINER  // instance created on first resolution is retained by the container becoming a container-wide singleton
 }
 
+/**
+ * Core protocol for injectable entities
+ */
 export interface Injectable extends Object {
   /**
    * Called by container after constructor, but before property/method injections
@@ -214,7 +217,7 @@ export const injectAware = (container?: Container) => (target: any) => {
     return target
   }
 
-  // NOTE: This decorator WILL work under testing conditions to allow proper component configuration under Jest
+  // NOTE: This decorator WILL work during testing to allow component configuration under Jest and React Test Renderer
   const proxy = new Proxy(target, {
     construct(clz, args) {
 
@@ -223,6 +226,8 @@ export const injectAware = (container?: Container) => (target: any) => {
       const instance = Reflect.construct(clz, args)
 
       performInjection(componentContainer, instance)
+
+      instance.awakeAfterInjection && instance.awakeAfterInjection();
 
       return instance
     }
