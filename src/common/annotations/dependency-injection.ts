@@ -37,7 +37,9 @@ class ConstructorInjectionRecord {
 
 export const injectProperty = (qualifier: string) => (target: any, propertyKey: string) => {
   if (!Reflect.hasOwnMetadata(PROPERTY_INJECTIONS, target)) {
-    Reflect.defineMetadata(PROPERTY_INJECTIONS, [], target)
+    // Handling parent dependencies, if any
+    const parentDependencies = Reflect.getMetadata(PROPERTY_INJECTIONS, target) || []
+    Reflect.defineMetadata(PROPERTY_INJECTIONS, [...parentDependencies], target)
   }
   const metadata = Reflect.getOwnMetadata(PROPERTY_INJECTIONS, target)
   metadata.push(new PropertyInjectionRecord(qualifier, propertyKey))
@@ -45,7 +47,9 @@ export const injectProperty = (qualifier: string) => (target: any, propertyKey: 
 
 export const injectMethod = (qualifier: string) => (target: any, setterName: string) => {
   if (!Reflect.hasOwnMetadata(METHOD_INJECTIONS, target)) {
-    Reflect.defineMetadata(METHOD_INJECTIONS, [], target)
+    // Handling parent dependencies, if any
+    const parentDependencies = Reflect.getMetadata(METHOD_INJECTIONS, target) || []
+    Reflect.defineMetadata(METHOD_INJECTIONS, [...parentDependencies], target)
   }
   const metadata = Reflect.getOwnMetadata(METHOD_INJECTIONS, target)
   metadata.push(new MethodInjectionRecord(qualifier, setterName))

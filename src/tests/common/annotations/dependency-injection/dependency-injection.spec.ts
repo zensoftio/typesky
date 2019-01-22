@@ -458,6 +458,7 @@ describe('Dependency Injection', () => {
 
       @injectAware(container)
       class InjectAwareChild extends InjectAwareParent {
+        @injectProperty(testInjectionQualifier2) injection2: DependencyMock2
       }
 
       const instance = new InjectAwareChild()
