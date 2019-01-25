@@ -7,8 +7,8 @@ import {PostMapper, TodoMapper} from '../../mappers'
 
 import Post from '../../models/post'
 import {action, computed} from 'mobx'
-import Changeset from '../../common/changeset'
-import ChangesetValidations from '../../common/changeset-validations'
+import Changeset from '../../common/changeset/changeset'
+import ChangesetValidations from '../../common/changeset/changeset-validations'
 import {injectAware, injectProperty} from '../../common/annotations/dependency-injection'
 
 type ReadonlyPostFields = 'userId' | 'id'

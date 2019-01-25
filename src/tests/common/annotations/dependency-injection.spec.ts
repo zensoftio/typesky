@@ -5,9 +5,9 @@ import {
   mapper,
   service,
   storage
-} from '../../../../common/annotations/dependency-injection'
+} from '../../../common/annotations/dependency-injection'
 
-import {Container, Injectable, RegistrationType} from '../../../../common/dependency-container'
+import {Container, Injectable, RegistrationType} from '../../../common/dependency-container'
 
 import * as React from 'react'
 

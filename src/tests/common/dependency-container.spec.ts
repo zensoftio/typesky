@@ -3,7 +3,7 @@ import {
   RegistrationEntry,
   RegistrationType,
   Injectable
-} from '../../../common/dependency-container'
+} from '../../common/dependency-container'
 
 
 describe('Dependency Injection', () => {
