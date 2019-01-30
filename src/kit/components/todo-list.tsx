@@ -1,53 +1,63 @@
 import TodoView from './todo'
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import Todo from '../models/todo'
-import {PostService, TodoService} from '../services'
-import {PostMapper, TodoMapper} from '../mappers'
-import {instanceRegistry} from '../common/annotations/common'
-import Post from '../models/post'
-import {action, computed, observable} from 'mobx'
-import Changeset from '../common/changeset'
-import ChangesetValidations from '../common/changeset-validations'
+import Todo from '../../models/todo'
+import {PostService, TodoService} from '../../services'
+import {PostMapper, TodoMapper} from '../../mappers'
+
+import Post from '../../models/post'
+import {action, computed} from 'mobx'
+import Changeset from '../../common/changeset'
+import ChangesetValidations from '../../common/changeset-validations'
+import {injectAware, injectProperty} from '../../common/annotations/dependency-injection'
 
 type ReadonlyPostFields = 'userId' | 'id'
 
 type EditablePostFields = 'title' | 'body'
 
 @observer
+@injectAware()
 export default class TodoListView extends React.Component<{}, {}> {
 
   // fields
 
-  private postId = 1
+  private postId: number
 
-  private todoService: TodoService = instanceRegistry.get('TodoService')
-  private postService: PostService = instanceRegistry.get('PostService')
-  private todoMapper: TodoMapper = instanceRegistry.get('TodoMapper')
-  private postMapper: PostMapper = instanceRegistry.get('PostMapper')
+  @injectProperty('TodoService')
+  private todoService: TodoService;
+
+  @injectProperty('PostService')
+  private postService: PostService;
+
+  @injectProperty('TodoMapper')
+  private todoMapper: TodoMapper;
+
+  @injectProperty('PostMapper')
+  private postMapper: PostMapper;
 
   @computed
   private get changeset(): Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields> | undefined {
 
     const post = this.postMapper.postById
 
-    return post && new Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields>(
-      post,
-      {
+    return post && new Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields>({
+      hostObject: post,
+      rules: {
         title: ChangesetValidations.validateLength('Title', {min: 10, max: 50}),
-        body: ChangesetValidations.validateLength('Title', {min: 50})
+        body:
+          ChangesetValidations.validateLength('Title', {min: 50})
       },
-      [
+      proxyFields: [
         'userId',
         'id'
       ],
-      true
-    )
+      validateAutomatically: true
+    })
   }
 
-  // constructor
+  awakeAfterInjection() {
 
-  // life circle
+  }
 
   componentDidMount() {
     this.loadPost()
@@ -89,20 +99,20 @@ export default class TodoListView extends React.Component<{}, {}> {
           )}
           {changeset && (
             <div>
-              <div>Edit post #{changeset.proxy.id} by user #{changeset.proxy.userId}</div>
+              <div>Edit post #{changeset.context.id} by user #{changeset.context.userId}</div>
               <div>
                 <input value={changeset.fields.title.value || ''}
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
                          changeset.fields.title.value = e.target.value
                        })}/>
-                {changeset.fields.title.error && (<span>{changeset.fields.title.error}</span>)}
+                {changeset.fields.title.isInvalidAndDirty && (<span>{changeset.fields.title.validationResult!.error}</span>)}
               </div>
               <div>
                 <input value={changeset.fields.body.value || ''}
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
                          changeset.fields.body.value = e.target.value
                        })}/>
-                {changeset.fields.body.error && (<span>{changeset.fields.body.error}</span>)}
+                {changeset.fields.body.isInvalidAndDirty && (<span>{changeset.fields.body.validationResult!.error}</span>)}
               </div>
             </div>
           )}

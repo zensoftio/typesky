@@ -1,11 +1,9 @@
-import InjectableLifecycle from '../../injectable-lifecycle'
+import {Injectable} from '../../dependency-container'
 
-export default class BaseService implements InjectableLifecycle {
+export default class BaseService implements Injectable {
   postConstructor() {
-    return Promise.resolve()
   }
-  
-  onReady() {
-    return Promise.resolve()
+
+  awakeAfterInjection() {
   }
 }

@@ -1,10 +1,10 @@
 import {AuthService} from '../index'
 import {Fetcher} from '../../fetchers'
-import {injectMethod, service} from '../../common/annotations/common'
 import * as jwt from 'jwt-client'
 import {Maybe} from '../../common/types'
 import {configuration} from '../../configs'
 import BaseService from '../../common/services/base/base'
+import {injectMethod, service} from '../../common/annotations/dependency-injection'
 
 interface TokenContainer {
   token: Maybe<string>,
@@ -48,7 +48,7 @@ export default class DefaultAuthService extends BaseService implements AuthServi
   }
 
   async login(username: string, password: string) {
-    const tokenContainer: TokenContainer = await this.fetcher.post(configuration.tokenApi, {
+    const tokenContainer: TokenContainer = await this.fetcher.post<TokenContainer>(configuration.tokenApi, {
       username,
       password
     })
@@ -75,7 +75,7 @@ export default class DefaultAuthService extends BaseService implements AuthServi
   }
 
   private async refresh(refreshToken: Maybe<string> = this.tokenContainer.refreshToken) {
-    const tokenContainer: TokenContainer = await this.fetcher.post(configuration.refreshTokenApi, {
+    const tokenContainer: TokenContainer = await this.fetcher.post<TokenContainer>(configuration.refreshTokenApi, {
       refreshToken
     })
 

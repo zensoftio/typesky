@@ -1,6 +1,7 @@
 import * as React from 'react';
+import BaseScene from '../BaseScene'
 
-export class NotFoundScene extends React.Component<{}, {}> {
+export class NotFoundScene extends BaseScene {
 
   render() {
     return (
