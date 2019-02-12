@@ -16,6 +16,7 @@ describe('Dependency Injection', () => {
   const testInjectionQualifier1 = 'testInjectionQualifier1'
   const testInjectionQualifier2 = 'testInjectionQualifier2'
   const testTargetName = 'Target'
+  const testContainerName = 'TestContainer'
 
   class DependencyMock1 implements Injectable {
 
@@ -39,7 +40,7 @@ describe('Dependency Injection', () => {
 
     it('registers injectable items in provided container', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -50,23 +51,27 @@ describe('Dependency Injection', () => {
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT)(DependencyMock1)
 
+      const defaultContainerName = Container.defaultContainer.name
+
       expect(() => Container.defaultContainer.resolve(testInjectionQualifier1, testTargetName))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${defaultContainerName}' for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect other containers', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
+      const defaultContainerName = Container.defaultContainer.name
+
       expect(() => Container.defaultContainer.resolve(testInjectionQualifier1, testTargetName))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${defaultContainerName}' for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, undefined, container)(DependencyMock1)
 
@@ -78,7 +83,7 @@ describe('Dependency Injection', () => {
 
     it('works with container to handle constructor injections', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
       injectable(testInjectionQualifier2, RegistrationType.TRANSIENT, container)(DependencyMock2)
@@ -111,7 +116,7 @@ describe('Dependency Injection', () => {
 
     it('Registers a service', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       service(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -122,27 +127,29 @@ describe('Dependency Injection', () => {
 
     it('Does not register a plain dependency', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       service(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
       expect(() => container.resolve(testInjectionQualifier1, testTargetName))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${testContainerName}' for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect default container in test environment', () => {
 
       service(testInjectionQualifier1, RegistrationType.TRANSIENT)(DependencyMock1)
 
+      const defaultContainerName = Container.defaultContainer.name
+
       const expectedQualifier = testInjectionQualifier1 + 'Service'
 
       expect(() => Container.defaultContainer.resolve(expectedQualifier, testTargetName))
-        .toThrow(`No registration for qualifier '${expectedQualifier}'`)
+        .toThrow(`No registration in container '${defaultContainerName}' for qualifier '${expectedQualifier}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       service(testInjectionQualifier1, undefined, container)(DependencyMock1)
 
@@ -159,7 +166,7 @@ describe('Dependency Injection', () => {
 
     it('Registers a mapper', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       mapper(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -170,27 +177,29 @@ describe('Dependency Injection', () => {
 
     it('Does not register a plain dependency', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       mapper(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
       expect(() => container.resolve(testInjectionQualifier1, testTargetName))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${testContainerName}' for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect default container in test environment', () => {
 
       mapper(testInjectionQualifier1, RegistrationType.TRANSIENT)(DependencyMock1)
 
+      const defaultContainerName = Container.defaultContainer.name
+
       const expectedQualifier = testInjectionQualifier1 + 'Mapper'
 
       expect(() => Container.defaultContainer.resolve(expectedQualifier, testTargetName))
-        .toThrow(`No registration for qualifier '${expectedQualifier}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${defaultContainerName}' for qualifier '${expectedQualifier}' requested by '${testTargetName}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       mapper(testInjectionQualifier1, undefined, container)(DependencyMock1)
 
@@ -207,7 +216,7 @@ describe('Dependency Injection', () => {
 
     it('Registers a storage', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       storage(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -218,27 +227,29 @@ describe('Dependency Injection', () => {
 
     it('Does not register a plain dependency', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       storage(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
       expect(() => container.resolve(testInjectionQualifier1, testTargetName))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${testContainerName}' for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect default container in test environment', () => {
 
       storage(testInjectionQualifier1, RegistrationType.TRANSIENT)(DependencyMock1)
 
+      const defaultContainerName = Container.defaultContainer.name
+
       const expectedQualifier = testInjectionQualifier1 + 'RecordStorage'
 
       expect(() => Container.defaultContainer.resolve(expectedQualifier, testTargetName))
-        .toThrow(`No registration for qualifier '${expectedQualifier}' requested by '${testTargetName}'`)
+        .toThrow(`No registration in container '${defaultContainerName}' for qualifier '${expectedQualifier}' requested by '${testTargetName}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       storage(testInjectionQualifier1, undefined, container)(DependencyMock1)
 
@@ -329,7 +340,7 @@ describe('Dependency Injection', () => {
 
     it('marks decorated class as inject-aware', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       class ComponentClass extends React.Component {
         @injectProperty(testInjectionQualifier1) mock: DependencyMock1
@@ -342,7 +353,7 @@ describe('Dependency Injection', () => {
 
     it('creates a valid proxy class from decorated component', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -375,7 +386,7 @@ describe('Dependency Injection', () => {
 
     it('handles injectProperty decorators', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -392,7 +403,7 @@ describe('Dependency Injection', () => {
 
     it('handles injectMethod decorators', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -412,7 +423,7 @@ describe('Dependency Injection', () => {
 
     it('calls awakeAfterInjection hook', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       const awakeAfterInjectionMock = jest.fn()
 
@@ -429,7 +440,7 @@ describe('Dependency Injection', () => {
 
     it('is an idempotent operation', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
@@ -447,7 +458,7 @@ describe('Dependency Injection', () => {
 
     it('Handles parent class dependencies', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
       injectable(testInjectionQualifier2, RegistrationType.TRANSIENT, container)(DependencyMock2)
@@ -469,7 +480,7 @@ describe('Dependency Injection', () => {
 
     it('Handles child class dependencies', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
       injectable(testInjectionQualifier2, RegistrationType.TRANSIENT, container)(DependencyMock2)
@@ -491,7 +502,7 @@ describe('Dependency Injection', () => {
 
     it('Does not inject child dependencies into parent class', () => {
 
-      const container = new Container()
+      const container = new Container(testContainerName)
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
       injectable(testInjectionQualifier2, RegistrationType.TRANSIENT, container)(DependencyMock2)
