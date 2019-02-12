@@ -9,6 +9,7 @@ import {
 describe('Dependency Injection', () => {
 
   const testInjectionQualifier1 = 'testInjectionQualifier1'
+  const testTargetName = 'Target'
 
   class DependencyMock1 implements Injectable {
 
@@ -43,8 +44,8 @@ describe('Dependency Injection', () => {
       const testQualifier = 'TestInjection'
 
       expect(() => {
-        container.resolve(testQualifier)
-      }).toThrow(`No registration for qualifier '${testQualifier}'`)
+        container.resolve(testQualifier, testTargetName)
+      }).toThrow(`No registration for qualifier '${testQualifier}' requested by '${testTargetName}'`)
     })
 
     it('registers injectable entities', () => {
@@ -59,7 +60,7 @@ describe('Dependency Injection', () => {
 
       container.register(testInjectionQualifier1, registrationEntry)
 
-      expect(container.resolve(testInjectionQualifier1)).toBeInstanceOf(DependencyMock1)
+      expect(container.resolve(testInjectionQualifier1, testTargetName)).toBeInstanceOf(DependencyMock1)
     })
 
     it('clears injectable entities', () => {
@@ -77,7 +78,7 @@ describe('Dependency Injection', () => {
       container.clear()
 
       expect(() => {
-        container.resolve(testInjectionQualifier1)
+        container.resolve(testInjectionQualifier1, testTargetName)
       }).toThrow()
     })
 
@@ -93,8 +94,8 @@ describe('Dependency Injection', () => {
 
       container.register(testInjectionQualifier1, registrationEntry)
 
-      const instance = container.resolve(testInjectionQualifier1)
-      const otherInstance = container.resolve(testInjectionQualifier1)
+      const instance = container.resolve(testInjectionQualifier1, testTargetName)
+      const otherInstance = container.resolve(testInjectionQualifier1, testTargetName)
 
       expect(otherInstance).toBe(instance)
     })
@@ -107,8 +108,8 @@ describe('Dependency Injection', () => {
 
       container.register(testInjectionQualifier1, registrationEntry)
 
-      const instance = container.resolve(testInjectionQualifier1)
-      const otherInstance = container.resolve(testInjectionQualifier1)
+      const instance = container.resolve(testInjectionQualifier1, testTargetName)
+      const otherInstance = container.resolve(testInjectionQualifier1, testTargetName)
 
       expect(otherInstance).not.toBe(instance)
     })

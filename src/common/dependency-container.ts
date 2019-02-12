@@ -21,7 +21,7 @@ export interface Injectable extends Object {
 }
 
 export interface Resolver {
-  resolve<T extends Injectable>(qualifier: string): T;
+  resolve<T extends Injectable>(qualifier: string, targetName: string): T;
 }
 
 export class RegistrationEntry<T extends Injectable> {
@@ -60,12 +60,12 @@ export class Container implements Resolver {
     return this.instances.get(qualifier) as T
   }
 
-  public resolve<T extends Injectable>(qualifier: string): T {
+  public resolve<T extends Injectable>(qualifier: string, targetName: string): T {
 
     const registration = this.registrations.get(qualifier)
 
     if (!registration) {
-      throw new Error(`No registration for qualifier '${qualifier}'`)
+      throw new Error(`No registration for qualifier '${qualifier}' requested by '${targetName}'`)
     }
 
     return this.getInstance(qualifier) || this.construct(registration, qualifier)

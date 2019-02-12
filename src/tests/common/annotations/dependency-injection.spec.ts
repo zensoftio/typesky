@@ -15,6 +15,7 @@ describe('Dependency Injection', () => {
 
   const testInjectionQualifier1 = 'testInjectionQualifier1'
   const testInjectionQualifier2 = 'testInjectionQualifier2'
+  const testTargetName = 'Target'
 
   class DependencyMock1 implements Injectable {
 
@@ -42,15 +43,15 @@ describe('Dependency Injection', () => {
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      expect(container.resolve(testInjectionQualifier1)).toBeInstanceOf(DependencyMock1)
+      expect(container.resolve(testInjectionQualifier1, testTargetName)).toBeInstanceOf(DependencyMock1)
     })
 
     it('does not affect default container in test environment', () => {
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT)(DependencyMock1)
 
-      expect(() => Container.defaultContainer.resolve(testInjectionQualifier1))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
+      expect(() => Container.defaultContainer.resolve(testInjectionQualifier1, testTargetName))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect other containers', () => {
@@ -59,8 +60,8 @@ describe('Dependency Injection', () => {
 
       injectable(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      expect(() => Container.defaultContainer.resolve(testInjectionQualifier1))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
+      expect(() => Container.defaultContainer.resolve(testInjectionQualifier1, testTargetName))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
@@ -69,8 +70,8 @@ describe('Dependency Injection', () => {
 
       injectable(testInjectionQualifier1, undefined, container)(DependencyMock1)
 
-      const instance = container.resolve(testInjectionQualifier1)
-      const otherInstance = container.resolve(testInjectionQualifier1)
+      const instance = container.resolve(testInjectionQualifier1, testTargetName)
+      const otherInstance = container.resolve(testInjectionQualifier1, testTargetName)
 
       expect(otherInstance).toBe(instance)
     })
@@ -99,7 +100,7 @@ describe('Dependency Injection', () => {
 
       injectable(testQualifier, RegistrationType.TRANSIENT, container)(DependentEntity)
 
-      const instance: DependentEntity = container.resolve(testQualifier)
+      const instance: DependentEntity = container.resolve(testQualifier, testTargetName)
 
       expect(instance.testInjection1).toBeInstanceOf(DependencyMock1)
       expect(instance.testInjection2).toBeInstanceOf(DependencyMock2)
@@ -114,7 +115,7 @@ describe('Dependency Injection', () => {
 
       service(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      const resolvedService = container.resolve(`${testInjectionQualifier1}Service`)
+      const resolvedService = container.resolve(`${testInjectionQualifier1}Service`, testTargetName)
 
       expect(resolvedService).toBeInstanceOf(DependencyMock1)
     })
@@ -125,8 +126,8 @@ describe('Dependency Injection', () => {
 
       service(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      expect(() => container.resolve(testInjectionQualifier1))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
+      expect(() => container.resolve(testInjectionQualifier1, testTargetName))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect default container in test environment', () => {
@@ -135,7 +136,7 @@ describe('Dependency Injection', () => {
 
       const expectedQualifier = testInjectionQualifier1 + 'Service'
 
-      expect(() => Container.defaultContainer.resolve(expectedQualifier))
+      expect(() => Container.defaultContainer.resolve(expectedQualifier, testTargetName))
         .toThrow(`No registration for qualifier '${expectedQualifier}'`)
     })
 
@@ -147,8 +148,8 @@ describe('Dependency Injection', () => {
 
       const expectedQualifier = testInjectionQualifier1 + 'Service'
 
-      const instance = container.resolve(expectedQualifier)
-      const otherInstance = container.resolve(expectedQualifier)
+      const instance = container.resolve(expectedQualifier, testTargetName)
+      const otherInstance = container.resolve(expectedQualifier, testTargetName)
 
       expect(otherInstance).toBe(instance)
     })
@@ -162,7 +163,7 @@ describe('Dependency Injection', () => {
 
       mapper(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      const resolvedMapper = container.resolve(`${testInjectionQualifier1}Mapper`)
+      const resolvedMapper = container.resolve(`${testInjectionQualifier1}Mapper`, testTargetName)
 
       expect(resolvedMapper).toBeInstanceOf(DependencyMock1)
     })
@@ -173,8 +174,8 @@ describe('Dependency Injection', () => {
 
       mapper(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      expect(() => container.resolve(testInjectionQualifier1))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
+      expect(() => container.resolve(testInjectionQualifier1, testTargetName))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect default container in test environment', () => {
@@ -183,8 +184,8 @@ describe('Dependency Injection', () => {
 
       const expectedQualifier = testInjectionQualifier1 + 'Mapper'
 
-      expect(() => Container.defaultContainer.resolve(expectedQualifier))
-        .toThrow(`No registration for qualifier '${expectedQualifier}'`)
+      expect(() => Container.defaultContainer.resolve(expectedQualifier, testTargetName))
+        .toThrow(`No registration for qualifier '${expectedQualifier}' requested by '${testTargetName}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
@@ -195,8 +196,8 @@ describe('Dependency Injection', () => {
 
       const expectedQualifier = testInjectionQualifier1 + 'Mapper'
 
-      const instance = container.resolve(expectedQualifier)
-      const otherInstance = container.resolve(expectedQualifier)
+      const instance = container.resolve(expectedQualifier, testTargetName)
+      const otherInstance = container.resolve(expectedQualifier, testTargetName)
 
       expect(otherInstance).toBe(instance)
     })
@@ -210,7 +211,7 @@ describe('Dependency Injection', () => {
 
       storage(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      const resolvedStorage = container.resolve(`${testInjectionQualifier1}RecordStorage`)
+      const resolvedStorage = container.resolve(`${testInjectionQualifier1}RecordStorage`, testTargetName)
 
       expect(resolvedStorage).toBeInstanceOf(DependencyMock1)
     })
@@ -221,8 +222,8 @@ describe('Dependency Injection', () => {
 
       storage(testInjectionQualifier1, RegistrationType.TRANSIENT, container)(DependencyMock1)
 
-      expect(() => container.resolve(testInjectionQualifier1))
-        .toThrow(`No registration for qualifier '${testInjectionQualifier1}'`)
+      expect(() => container.resolve(testInjectionQualifier1, testTargetName))
+        .toThrow(`No registration for qualifier '${testInjectionQualifier1}' requested by '${testTargetName}'`)
     })
 
     it('does not affect default container in test environment', () => {
@@ -231,8 +232,8 @@ describe('Dependency Injection', () => {
 
       const expectedQualifier = testInjectionQualifier1 + 'RecordStorage'
 
-      expect(() => Container.defaultContainer.resolve(expectedQualifier))
-        .toThrow(`No registration for qualifier '${expectedQualifier}'`)
+      expect(() => Container.defaultContainer.resolve(expectedQualifier, testTargetName))
+        .toThrow(`No registration for qualifier '${expectedQualifier}' requested by '${testTargetName}'`)
     })
 
     it('registers container-wide dependencies by default', () => {
@@ -243,8 +244,8 @@ describe('Dependency Injection', () => {
 
       const expectedQualifier = testInjectionQualifier1 + 'RecordStorage'
 
-      const instance = container.resolve(expectedQualifier)
-      const otherInstance = container.resolve(expectedQualifier)
+      const instance = container.resolve(expectedQualifier, testTargetName)
+      const otherInstance = container.resolve(expectedQualifier, testTargetName)
 
       expect(otherInstance).toBe(instance)
     })

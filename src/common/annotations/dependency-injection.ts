@@ -9,12 +9,12 @@ export const CONSTRUCTOR_INJECTIONS = Symbol('constructor_injections')
 function performInjection(resolver: Resolver, target: Injectable) {
   const propertyInjections: PropertyInjectionRecord[] = Reflect.getMetadata(PROPERTY_INJECTIONS, target) || []
   propertyInjections.forEach(injection => {
-    (target as any)[injection.propertyKey] = resolver.resolve(injection.qualifier)
+    (target as any)[injection.propertyKey] = resolver.resolve(injection.qualifier, target.constructor.name)
   })
 
   const methodInjections: MethodInjectionRecord[] = Reflect.getMetadata(METHOD_INJECTIONS, target) || []
   methodInjections.forEach(injection => {
-    (target as any)[injection.setterName](resolver.resolve(injection.qualifier))
+    (target as any)[injection.setterName](resolver.resolve(injection.qualifier, target.constructor.name))
   })
 }
 
@@ -81,7 +81,7 @@ export const injectable = (qualifier: string,
     if (constructorInjectors && constructorInjectors.length > 0) {
       instance = new target(...(constructorInjectors
         .sort((a, b) => (a.index - b.index))
-        .map(it => it !== undefined ? resolver.resolve(it.qualifier) : undefined))
+        .map(it => it !== undefined ? resolver.resolve(it.qualifier, target.name) : undefined))
       )
     } else {
       instance = new target()
