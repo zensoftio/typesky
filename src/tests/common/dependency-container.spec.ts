@@ -5,7 +5,6 @@ import {
   Injectable
 } from '../../common/dependency-container'
 
-
 describe('Dependency Injection', () => {
 
   const testInjectionQualifier1 = 'testInjectionQualifier1'
