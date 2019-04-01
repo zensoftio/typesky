@@ -21,7 +21,7 @@ export interface Injectable extends Object {
 }
 
 export interface Resolver {
-  resolve<T extends Injectable>(qualifier: string): T;
+  resolve<T extends Injectable>(qualifier: string, targetName: string): T;
 }
 
 export class RegistrationEntry<T extends Injectable> {
@@ -31,7 +31,7 @@ export class RegistrationEntry<T extends Injectable> {
 
 export class Container implements Resolver {
 
-  private static internalContainer = new Container()
+  private static internalContainer = new Container('DefaultContainer')
 
   static get defaultContainer(): Container {
     return this.internalContainer
@@ -46,11 +46,13 @@ export class Container implements Resolver {
       return this.defaultContainer
     }
 
-    const container = this.componentContainers.get(componentName) || new Container()
+    const container = this.componentContainers.get(componentName) || new Container(`${componentName}::Container`)
     this.componentContainers.set(componentName, container)
 
     return container
   }
+
+  constructor(readonly name: string) { }
 
   private registrations: Map<string, RegistrationEntry<any>> = new Map()
   private instances: Map<string, Injectable> = new Map()
@@ -60,12 +62,12 @@ export class Container implements Resolver {
     return this.instances.get(qualifier) as T
   }
 
-  public resolve<T extends Injectable>(qualifier: string): T {
+  public resolve<T extends Injectable>(qualifier: string, targetName: string): T {
 
     const registration = this.registrations.get(qualifier)
 
     if (!registration) {
-      throw new Error(`No registration for qualifier '${qualifier}'`)
+      throw new Error(`No registration in container '${this.name}' for qualifier '${qualifier}' requested by '${targetName}'`)
     }
 
     return this.getInstance(qualifier) || this.construct(registration, qualifier)
