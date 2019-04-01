@@ -2,22 +2,22 @@ import {Container, Injectable} from '../dependency-container'
 import * as React from 'react'
 import {Omit} from '../types'
 
-interface Dependencies {
+export interface ComponentDependencies {
   [key: string]: Injectable
 }
 
-type DependencyList<D extends Dependencies> = {
+type DependencyList<D extends ComponentDependencies> = {
   [Key in keyof D]: string
 }
 
-export interface WithDependencies<D extends Dependencies> {
+export interface WithDependencies<D extends ComponentDependencies> {
   deps: D
 }
 
-export const withDependencies = <D extends Dependencies>(dependencies: DependencyList<D>,
-                                                                          container: Container = Container.defaultContainer) => {
+export const withDependencies = <D extends ComponentDependencies>(dependencies: DependencyList<D>,
+                                                                  container: Container = Container.defaultContainer): <P extends WithDependencies<D>>(WrappedComponent: React.ComponentType<P>) => React.ComponentClass<Omit<P, keyof WithDependencies<D>>> => {
 
-  return <P extends WithDependencies<D>>(WrappedComponent: React.ComponentType<P>): React.ComponentType<Omit<P, keyof WithDependencies<D>>> => {
+  return <P extends WithDependencies<D>>(WrappedComponent: React.ComponentType<P>): React.ComponentClass<Omit<P, keyof WithDependencies<D>>> => {
 
     return class extends React.Component<Omit<P, keyof WithDependencies<D>>> {
 

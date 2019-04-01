@@ -9,36 +9,33 @@ import Post from '../../models/post'
 import {action, computed} from 'mobx'
 import Changeset from '../../common/changeset'
 import ChangesetValidations from '../../common/changeset-validations'
-import {injectAware, injectProperty} from '../../common/annotations/dependency-injection'
+import {ComponentDependencies, withDependencies, WithDependencies} from '../../common/HOC/with-dependencies'
 
 type ReadonlyPostFields = 'userId' | 'id'
 
 type EditablePostFields = 'title' | 'body'
 
+interface Dependencies extends ComponentDependencies {
+  todoService: TodoService
+  postService: PostService
+  todoMapper: TodoMapper
+  postMapper: PostMapper
+}
+
+interface Props extends WithDependencies<Dependencies> {
+
+}
+
 @observer
-@injectAware()
-export default class TodoListView extends React.Component<{}, {}> {
+export class TodoListView extends React.Component<Props, {}> {
 
   // fields
-
   private postId: number
-
-  @injectProperty('TodoService')
-  private todoService: TodoService;
-
-  @injectProperty('PostService')
-  private postService: PostService;
-
-  @injectProperty('TodoMapper')
-  private todoMapper: TodoMapper;
-
-  @injectProperty('PostMapper')
-  private postMapper: PostMapper;
 
   @computed
   private get changeset(): Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields> | undefined {
 
-    const post = this.postMapper.postById
+    const post = this.props.deps.postMapper.postById
 
     return post && new Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields>({
       hostObject: post,
@@ -80,8 +77,8 @@ export default class TodoListView extends React.Component<{}, {}> {
   // render
 
   render() {
-    const todoLast = this.todoMapper.lastOne
-    const single = this.postMapper.postById
+    const todoLast = this.props.deps.todoMapper.lastOne
+    const single = this.props.deps.postMapper.postById
 
     const changeset = this.changeset
 
@@ -105,28 +102,30 @@ export default class TodoListView extends React.Component<{}, {}> {
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
                          changeset.fields.title.value = e.target.value
                        })}/>
-                {changeset.fields.title.isInvalidAndDirty && (<span>{changeset.fields.title.validationResult!.error}</span>)}
+                {changeset.fields.title.isInvalidAndDirty && (
+                  <span>{changeset.fields.title.validationResult!.error}</span>)}
               </div>
               <div>
                 <input value={changeset.fields.body.value || ''}
                        onChange={action((e: React.ChangeEvent<HTMLInputElement>) => {
                          changeset.fields.body.value = e.target.value
                        })}/>
-                {changeset.fields.body.isInvalidAndDirty && (<span>{changeset.fields.body.validationResult!.error}</span>)}
+                {changeset.fields.body.isInvalidAndDirty && (
+                  <span>{changeset.fields.body.validationResult!.error}</span>)}
               </div>
             </div>
           )}
         </div>
         <ul>
 
-          {this.todoMapper.all.map(todo =>
+          {this.props.deps.todoMapper.all.map(todo =>
             <TodoView todo={todo} key={todo.id} onClick={() => this.onTodoCheckboxClick(todo)}/>
           )}
 
           {todoLast && <TodoView todo={todoLast} key={todoLast.id} onClick={() => this.onTodoCheckboxClick(todoLast)}/>}
 
         </ul>
-        Tasks left: {this.todoMapper.unfinishedTodoCount}
+        Tasks left: {this.props.deps.todoMapper.unfinishedTodoCount}
       </div>
     )
   }
@@ -134,15 +133,22 @@ export default class TodoListView extends React.Component<{}, {}> {
   // private methods
 
   private create() {
-    this.todoService.createNew()
+    this.props.deps.todoService.createNew()
   }
 
   private toggleCheckbox(todo: Todo.Model) {
-    this.todoService.toggleTodo(todo)
+    this.props.deps.todoService.toggleTodo(todo)
   }
 
   private loadPost() {
     this.postId++
-    return this.postService.loadPost(this.postId)
+    return this.props.deps.postService.loadPost(this.postId)
   }
 }
+
+export default withDependencies<Dependencies>({
+  todoService: 'TodoService',
+  postService: 'PostService',
+  todoMapper: 'TodoMapper',
+  postMapper: 'PostMapper'
+})(TodoListView)

@@ -29,7 +29,8 @@
     ],
     "strict": true,
     "locale": "ru",
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
