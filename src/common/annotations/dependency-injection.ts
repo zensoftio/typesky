@@ -126,6 +126,9 @@ export const injectAware = (container?: Container) => (target: any) => {
     return target
   }
 
+  console.warn('injectAware decorator is deprecated and will be removed in upcoming version. ' +
+    'Please, migrate your code to withDependencies HOC')
+
   // NOTE: This decorator WILL work during testing to allow component configuration under Jest and React Test Renderer
   const proxy = new Proxy(target, {
     construct(clz, args) {
