@@ -1,7 +1,7 @@
 import {Container, Injectable, RegistrationEntry, RegistrationType} from '../../../common/dependency-container'
 
 import * as React from 'react'
-import {ComponentDependencies, withDependencies, WithDependencies} from '../../../common/HOC/with-dependencies'
+import {ComponentDependencies, withDependencies, WithDependencies} from '../../../common/hoc/with-dependencies'
 
 import * as Enzyme from 'enzyme'
 import * as Adapter from 'enzyme-adapter-react-16'
