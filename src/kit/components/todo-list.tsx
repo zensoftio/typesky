@@ -9,7 +9,7 @@ import Post from '../../models/post'
 import {action, computed} from 'mobx'
 import Changeset from '../../common/changeset'
 import ChangesetValidations from '../../common/changeset-validations'
-import {ComponentDependencies, withDependencies, WithDependencies} from '../../common/HOC/with-dependencies'
+import {ComponentDependencies, withDependencies, WithDependencies} from '../../common/hoc/with-dependencies'
 
 type ReadonlyPostFields = 'userId' | 'id'
 
