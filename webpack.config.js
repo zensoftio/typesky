@@ -1,133 +1,83 @@
-const Webpack = require('webpack');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Path = require('path');
 
-// variables
-const isProduction = process.argv.indexOf('-p') >= 0;
 const sourcePath = Path.join(__dirname, './src');
 const outPath = Path.join(__dirname, './dist');
 
-// plugins
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
 module.exports = {
-  context: sourcePath,
   entry: {
-    main: './index.tsx',
-    vendor: [
-      'react',
-      'react-dom',
-    ]
+    main: './src/index.tsx',
   },
   output: {
+    filename: "bundle.js",
     path: outPath,
-    filename: 'bundle.js',
-    publicPath: '/',
-    chunkFilename: '[name].bundle.js'
   },
-  target: 'web',
-  resolve: {
-    extensions: ['.js', '.ts', '.tsx'],
-    // Fix webpack's default behavior to not load packages with jsnext:main module
-    // (jsnext:main directs not usually distributable es6 format, but es6 sources)
-    mainFields: ['module', 'browser', 'main']
-  },
-  devtool: 'inline-cheap-source-map',
-  module: {
-    loaders: [
-      // .ts, .tsx
-      {
-        test: /\.tsx?$/,
-        use: isProduction
-          ? 'awesome-typescript-loader?module=es6'
-          : [
-            'react-hot-loader/webpack',
-            'awesome-typescript-loader'
-          ]
-      },
-      // css
-      {
-        test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              query: {
-                modules: true,
-                sourceMap: !isProduction,
-                importLoaders: 1,
-                localIdentName: '[local]__[hash:base64:5]'
-              }
-            },
-          ]
-        })
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          require.resolve('style-loader'),
-          {
-            loader: require.resolve('css-loader'),
-            options: {
-              importLoaders: 1,
-            },
-          },
-          require.resolve('sass-loader')
-        ],
-      },
-      // static assets
-      {test: /\.(html|json)$/, use: 'html-loader'},
-      {
-        test: /\.(jpg|png|svg)$/,
-        use: {
-          loader: "url-loader",
-          options: {
-            limit: 25000,
-            name: "[path][name].[hash].[ext]",
-          },
-        },
-      },
-    ],
-  },
+  devtool: 'eval',
   plugins: [
-    new Webpack.DefinePlugin({
-      'process.env.NODE_ENV': isProduction === true ? JSON.stringify('production') : JSON.stringify('development')
-    }),
-
-    new Webpack.LoaderOptionsPlugin({
-      options: {
-        context: sourcePath
-      }
-    }),
-    new Webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.bundle.js',
-      minChunks: Infinity
-    }),
-    new Webpack.optimize.AggressiveMergingPlugin(),
-    new ExtractTextPlugin({
-      filename: 'styles.css',
-      disable: !isProduction
-    }),
-    new Webpack.optimize.ModuleConcatenationPlugin(),
-    new Webpack.HotModuleReplacementPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      template: 'index.html'
-    })
+      // inject: true,
+      template: './src/index.html'
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('development'),
+      },
+    }),
   ],
-  devServer: {
-    contentBase: sourcePath,
-    historyApiFallback: true,
-    hot: true,
-    stats: {
-      warnings: false
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx', '.css', '.scss'],
+    modules: ['node_modules'],
+    alias: {
+      Scenes: Path.resolve(sourcePath, 'scenes'),
+      Components: Path.resolve(sourcePath, 'kit/components'),
+      Modules: Path.resolve(sourcePath, 'kit/modules'),
+      Services: Path.resolve(sourcePath, 'services/index'),
+      Mappers: Path.resolve(sourcePath, 'mappers/index'),
+      Models: Path.resolve(sourcePath, 'models')
     },
   },
-  node: {
-    // workaround for webpack-dev-server issue
-    // https://github.com/webpack/webpack-dev-server/issues/60#issuecomment-103411179
-    fs: 'empty',
-    net: 'empty'
-  }
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /(node_modules)/,
+        loader: 'awesome-typescript-loader'
+      },
+      {
+        test: /\.(css|scss)$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              discardDuplicates: true,
+              importLoaders: 1,
+              modules: true,
+              localIdentName: '[name]__[local]___[hash:base64:5]',
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(png|svg|jpg)$/,
+        use: ['file-loader'],
+      }
+    ],
+  },
+  devServer: {
+    port: 8080,
+    contentBase: sourcePath,
+    historyApiFallback: true,
+    inline: true,
+  },
 };

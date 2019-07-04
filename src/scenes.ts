@@ -1,6 +1,6 @@
-import {SceneParams} from './common/scenes/scenes'
-import {TestScene} from './scenes/TestScene'
-import {HomeScene} from './scenes/HomeScene'
+import {SceneParams} from './common/scenes/scenes';
+import {TestScene} from './scenes/TestScene';
+import {HomeScene} from './scenes/HomeScene';
 
 const SCENE_REGISTRY: SceneParams[] = [
   {
@@ -24,6 +24,6 @@ const SCENE_REGISTRY: SceneParams[] = [
       }
     ]
   }
-]
+];
 
 export default SCENE_REGISTRY
