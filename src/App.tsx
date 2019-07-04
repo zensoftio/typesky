@@ -1,28 +1,34 @@
 import * as React from 'react';
-import {Route, Router, Switch} from 'react-router-dom';
-import {createBrowserHistory} from 'history'
-import {NotFoundScene} from './scenes/NotFoundScene';
-import {TestScene} from './scenes/TestScene';
-import {HomeScene} from './scenes/HomeScene';
+import {Router} from 'react-router-dom';
+import {createBrowserHistory} from 'history';
+import {ComponentDependencies, withDependencies, WithDependencies} from './common/hoc/with-dependencies';
+import {AuthService} from 'Services';
+import {AccountMapper} from 'Mappers';
+import {observer} from 'mobx-react';
+import {ROUTES} from './routes';
+import {renderRoutes} from 'react-router-config';
 
 const history = createBrowserHistory();
 
-export default class App extends React.Component<any, any> {
+interface AppDependencies extends ComponentDependencies {
+  authService: AuthService;
+  accountMapper: AccountMapper;
+}
 
-  constructor(props: any, context?: any) {
-    super(props, context);
-  }
+interface AppProps extends WithDependencies<AppDependencies> {
+}
 
+@observer
+class App extends React.Component<AppProps> {
   render() {
     return (
       <Router history={history}>
-        <Switch>
-          <Route path="/" exact component={TestScene}/>
-          <Route path="/home" exact component={HomeScene}/>
-          <Route path="**" component={NotFoundScene}/>
-        </Switch>
+        {renderRoutes(ROUTES)}
       </Router>
     )
   }
 }
+
+export default withDependencies({authService: 'AuthService', accountMapper: 'AccountMapper'})(App);
+
 
