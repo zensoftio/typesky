@@ -1,136 +1,68 @@
-const Webpack = require('webpack');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const Path = require('path');
 
-// variables
 const sourcePath = Path.join(__dirname, './src');
 const outPath = Path.join(__dirname, './dist');
 
-// plugins
-const isProduction = false;
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
-const PLUGIN_FOR_PRODUCTION = [new UglifyJsPlugin()];
-
 module.exports = {
-  context: sourcePath,
   entry: {
-    main: './index.tsx',
-    vendor: [
-      'react',
-      'react-dom',
-    ]
+    main: './src/index.tsx',
   },
   output: {
     path: outPath,
-    filename: 'bundle.js',
-    publicPath: '/',
-    chunkFilename: '[name].bundle.js'
+    filename: 'bundle.[hash].js',
+    publicPath: '/'
   },
-  target: 'web',
+  devtool: 'eval',
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production'),
+      },
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'style.[hash].css'
+    })
+  ],
   resolve: {
-    extensions: ['.js', '.ts', '.tsx'],
-    // Fix webpack's default behavior to not load packages with jsnext:main module
-    // (jsnext:main directs not usually distributable es6 format, but es6 sources)
-    mainFields: ['module', 'browser', 'main']
+    extensions: ['.js', '.ts', '.tsx', '.css', '.scss'],
+    modules: ['node_modules'],
+    alias: {
+      Scenes: Path.resolve(sourcePath, 'scenes'),
+      Components: Path.resolve(sourcePath, 'kit/components'),
+      Modules: Path.resolve(sourcePath, 'kit/modules'),
+      Services: Path.resolve(sourcePath, 'services/index'),
+      Mappers: Path.resolve(sourcePath, 'mappers/index'),
+      Models: Path.resolve(sourcePath, 'models')
+    },
   },
+  mode: 'production',
   module: {
-    loaders: [
-      // .ts, .tsx
+    rules: [
       {
         test: /\.tsx?$/,
-        use: isProduction
-          ? 'awesome-typescript-loader'
-          : [
-            'react-hot-loader/webpack',
-            'awesome-typescript-loader'
-          ]
-      },
-      // css
-      {
-        test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              query: {
-                modules: true,
-                sourceMap: !isProduction,
-                importLoaders: 1,
-                localIdentName: '[local]__[hash:base64:5]'
-              }
-            },
-          ]
-        })
+        exclude: /(node_modules)/,
+        loader: 'awesome-typescript-loader'
       },
       {
         test: /\.scss$/,
         use: [
-          require.resolve('style-loader'),
-          {
-            loader: require.resolve('css-loader'),
-            options: {
-              importLoaders: 1,
-            },
-          },
-          require.resolve('sass-loader')
+          MiniCssExtractPlugin.loader,
+          { loader: 'css-loader', options: { url: false, sourceMap: true } },
+          { loader: 'sass-loader', options: { sourceMap: true } }
         ],
       },
-      // static assets
-      {test: /\.(html|json)$/, use: 'html-loader'},
       {
-        test: /\.(jpg|png|svg)$/,
-        use: {
-          loader: "url-loader",
-          options: {
-            limit: 25000,
-            name: "[path][name].[hash].[ext]",
-          },
-        },
-      },
-    ],
-  },
-  plugins: [
-    new Webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-
-    new Webpack.LoaderOptionsPlugin({
-      options: {
-        context: sourcePath
+        test: /\.(png|svg|jpg)$/,
+        use: ['file-loader'],
       }
-    }),
-    new Webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.bundle.js',
-      minChunks: Infinity
-    }),
-    new Webpack.optimize.AggressiveMergingPlugin(),
-    new ExtractTextPlugin({
-      filename: 'styles.css',
-      disable: !isProduction
-    }),
-    new Webpack.optimize.ModuleConcatenationPlugin(),
-    new Webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-      template: 'index.html'
-    }),
-    ...PLUGIN_FOR_PRODUCTION
-  ],
-  devServer: {
-    contentBase: sourcePath,
-    historyApiFallback: true,
-    hot: true,
-    stats: {
-      warnings: false
-    },
-  },
-  node: {
-    // workaround for webpack-dev-server issue
-    // https://github.com/webpack/webpack-dev-server/issues/60#issuecomment-103411179
-    fs: 'empty',
-    net: 'empty'
+    ],
   }
 };
+

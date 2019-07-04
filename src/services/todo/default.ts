@@ -1,9 +1,8 @@
-import {TodoService} from '../index'
-import Todo from '../../models/todo'
-// import {injectConst, service} from '../../common/annotations/common'
-import BaseService from '../../common/services/base/base'
-import {TodoRecordStorage} from '../../storages'
-import {injectConstructor, service} from '../../common/annotations/dependency-injection'
+import {TodoService} from '../index';
+import Todo from '../../models/todo';
+import BaseService from '../../common/services/base/base';
+import {TodoRecordStorage} from '../../storages';
+import {injectConstructor, service} from '../../common/annotations/dependency-injection';
 
 @service('Todo')
 export default class DefaultTodoService extends BaseService implements TodoService {
@@ -13,15 +12,12 @@ export default class DefaultTodoService extends BaseService implements TodoServi
   }
 
   createNew() {
-    const todo = this.store.newModel()
-
-    this.store.set('lastTodo', todo)
-
-    this.store.addNewToAllList(todo)
+    const todo = this.store.newModel();
+    this.store.set('lastTodo', todo);
+    this.store.addNewToAllList(todo);
   }
 
   toggleTodo(todo: Todo.Model) {
-    this.store.toggleTodo(todo)
+    this.store.toggleTodo(todo);
   }
-
 }

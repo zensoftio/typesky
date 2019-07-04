@@ -66,7 +66,7 @@ export class TodoListView extends React.Component<Props, {}> {
 
   onTodoCheckboxClick = (todo: Todo.Model) => {
     this.toggleCheckbox(todo)
-  };;
+  };
 
   onReloadPostButtonClick = () => {
     this.loadPost()

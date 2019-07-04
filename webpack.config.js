@@ -75,6 +75,7 @@ module.exports = {
     ],
   },
   devServer: {
+    hot: true,
     port: 8080,
     contentBase: sourcePath,
     historyApiFallback: true,
