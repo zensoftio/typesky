@@ -1,6 +1,9 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const Path = require('path');
 
 const sourcePath = Path.join(__dirname, './src');
@@ -11,23 +14,23 @@ module.exports = {
     main: './src/index.tsx',
   },
   output: {
+    filename: "bundle.[hash].js",
     path: outPath,
-    filename: 'bundle.[hash].js',
-    publicPath: '/'
   },
-  devtool: 'eval',
   plugins: [
+    new CleanWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html'
     }),
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('production'),
+        NODE_ENV: JSON.stringify('development'),
       },
     }),
     new MiniCssExtractPlugin({
-      filename: 'style.[hash].css'
+      filename: 'styles.[hash].css',
+      chunkFilename: '[id].css',
     })
   ],
   resolve: {
@@ -42,7 +45,9 @@ module.exports = {
       Models: Path.resolve(sourcePath, 'models')
     },
   },
-  mode: 'production',
+  optimization: {
+    minimizer: [new TerserPlugin({extractComments: true}), new OptimizeCSSAssetsPlugin({})]
+  },
   module: {
     rules: [
       {
@@ -51,12 +56,38 @@ module.exports = {
         loader: 'awesome-typescript-loader'
       },
       {
-        test: /\.scss$/,
+        test: /\.(css|scss)$/,
         use: [
-          MiniCssExtractPlugin.loader,
-          { loader: 'css-loader', options: { url: false, sourceMap: true } },
-          { loader: 'sass-loader', options: { sourceMap: true } }
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: false,
+            },
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              discardDuplicates: true,
+              importLoaders: 1,
+              modules: true,
+              localIdentName: 'aer__[local]___[hash:base64:5]'
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
         ],
+      },
+      {
+        test:   /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+      },
+      {
+        test:   /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader?limit=10000&mimetype=application/octet-stream'
       },
       {
         test: /\.(png|svg|jpg)$/,
@@ -65,4 +96,3 @@ module.exports = {
     ],
   }
 };
-

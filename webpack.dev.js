@@ -10,14 +10,13 @@ module.exports = {
     main: './src/index.tsx',
   },
   output: {
-    filename: "bundle.js",
+    filename: "bundle.[hash].js",
     path: outPath,
   },
   devtool: 'eval',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      // inject: true,
       template: './src/index.html'
     }),
     new webpack.DefinePlugin({
@@ -57,7 +56,7 @@ module.exports = {
               discardDuplicates: true,
               importLoaders: 1,
               modules: true,
-              localIdentName: '[name]__[local]___[hash:base64:5]',
+              localIdentName: '[local]',
             },
           },
           {
@@ -69,13 +68,20 @@ module.exports = {
         ],
       },
       {
+        test:   /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+      },
+      {
+        test:   /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader?limit=10000&mimetype=application/octet-stream'
+      },
+      {
         test: /\.(png|svg|jpg)$/,
         use: ['file-loader'],
       }
     ],
   },
   devServer: {
-    hot: true,
     port: 8080,
     contentBase: sourcePath,
     historyApiFallback: true,
