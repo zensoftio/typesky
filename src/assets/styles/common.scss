@@ -1,0 +1,39 @@
+/* Uncomment to include custom font
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url('../fonts/font-name.woff2') format('woff2'),
+      url('../fonts/font-name.woff') format('woff'),
+      url('../fonts/font-name.ttf')  format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+
+* {
+  font-family: Arial, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol,
+li {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+
+  &:visited {
+    color: currentColor;
+  }
+}

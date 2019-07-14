@@ -7,6 +7,7 @@ import {AccountMapper} from 'Mappers';
 import {observer} from 'mobx-react';
 import {ROUTES} from './routes';
 import {renderRoutes} from 'react-router-config';
+import './assets/styles/common.scss';
 
 const history = createBrowserHistory();
 
