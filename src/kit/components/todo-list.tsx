@@ -1,25 +1,23 @@
-import TodoView from './todo'
-import * as React from 'react'
-import {observer} from 'mobx-react'
-import Todo from '../../models/todo'
-import {PostService, TodoService} from '../../services'
-import {PostMapper, TodoMapper} from '../../mappers'
+import TodoView from './todo';
+import * as React from 'react';
+import {observer} from 'mobx-react';
+import Todo from '../../models/todo';
+import {PostService, TodoService} from 'Services';
+import {PostMapper, TodoMapper} from 'Mappers';
+import Post from '../../models/post';
+import {action, computed} from 'mobx';
+import Changeset from '../../common/changeset';
+import ChangesetValidations from '../../common/changeset-validations';
+import {ComponentDependencies, withDependencies, WithDependencies} from '../../common/hoc/with-dependencies';
 
-import Post from '../../models/post'
-import {action, computed} from 'mobx'
-import Changeset from '../../common/changeset'
-import ChangesetValidations from '../../common/changeset-validations'
-import {ComponentDependencies, withDependencies, WithDependencies} from '../../common/hoc/with-dependencies'
-
-type ReadonlyPostFields = 'userId' | 'id'
-
-type EditablePostFields = 'title' | 'body'
+type ReadonlyPostFields = 'userId' | 'id';
+type EditablePostFields = 'title' | 'body';
 
 interface Dependencies extends ComponentDependencies {
-  todoService: TodoService
-  postService: PostService
-  todoMapper: TodoMapper
-  postMapper: PostMapper
+  todoService: TodoService;
+  postService: PostService;
+  todoMapper: TodoMapper;
+  postMapper: PostMapper;
 }
 
 interface Props extends WithDependencies<Dependencies> {
@@ -30,7 +28,7 @@ interface Props extends WithDependencies<Dependencies> {
 export class TodoListView extends React.Component<Props, {}> {
 
   // fields
-  private postId: number
+  private postId: number;
 
   @computed
   private get changeset(): Changeset.Changeset<Post.Model, EditablePostFields, ReadonlyPostFields> | undefined {
@@ -64,23 +62,23 @@ export class TodoListView extends React.Component<Props, {}> {
 
   onCreateNewButtonClick = () => {
     this.create()
-  }
+  };
 
   onTodoCheckboxClick = (todo: Todo.Model) => {
     this.toggleCheckbox(todo)
-  }
+  };
 
   onReloadPostButtonClick = () => {
     this.loadPost()
-  }
+  };
 
   // render
 
   render() {
-    const todoLast = this.props.deps.todoMapper.lastOne
-    const single = this.props.deps.postMapper.postById
+    const todoLast = this.props.deps.todoMapper.lastOne;
+    const single = this.props.deps.postMapper.postById;
 
-    const changeset = this.changeset
+    const changeset = this.changeset;
 
     return (
       <div>

@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "Scenes/*": ["./scenes/*"],
+      "Components/*": ["./kit/components/*"],
+      "Modules/*": ["./kit/modules/*"],
+      "Services": ["./services/index"],
+      "Mappers": ["./mappers/index"],
+      "Models": ["./models/*"]
+    },
     "outDir": "build",
     "module": "commonjs",
     "target": "es5",

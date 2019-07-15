@@ -1,9 +1,5 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const Path = require('path');
 
 const sourcePath = Path.join(__dirname, './src');
@@ -17,8 +13,8 @@ module.exports = {
     filename: "bundle.[hash].js",
     path: outPath,
   },
+  devtool: 'eval',
   plugins: [
-    new CleanWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html'
@@ -28,10 +24,6 @@ module.exports = {
         NODE_ENV: JSON.stringify('development'),
       },
     }),
-    new MiniCssExtractPlugin({
-      filename: 'styles.[hash].css',
-      chunkFilename: '[id].css',
-    })
   ],
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.css', '.scss'],
@@ -45,9 +37,6 @@ module.exports = {
       Models: Path.resolve(sourcePath, 'models')
     },
   },
-  optimization: {
-    minimizer: [new TerserPlugin({extractComments: true}), new OptimizeCSSAssetsPlugin({})]
-  },
   module: {
     rules: [
       {
@@ -59,10 +48,7 @@ module.exports = {
         test: /\.(css|scss)$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: false,
-            },
+            loader: 'style-loader',
           },
           {
             loader: 'css-loader',
@@ -70,7 +56,7 @@ module.exports = {
               discardDuplicates: true,
               importLoaders: 1,
               modules: true,
-              localIdentName: 'aer__[local]___[hash:base64:5]'
+              localIdentName: '[local]',
             },
           },
           {
@@ -94,5 +80,11 @@ module.exports = {
         use: ['file-loader'],
       }
     ],
-  }
+  },
+  devServer: {
+    port: 8080,
+    contentBase: sourcePath,
+    historyApiFallback: true,
+    inline: true,
+  },
 };
