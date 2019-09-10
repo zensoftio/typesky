@@ -4,9 +4,11 @@ import BaseScene from '../scenes/BaseScene';
 import ProcessEnv = NodeJS.ProcessEnv;
 
 export interface PostService extends BaseService {
-  getPosts(): void;
+  getPosts(params?: {_limit: number}): void;
 
   getPost(id: number): void;
+
+  addPost(body: {title: string, body: string, userId: number}): void;
 }
 
 export interface AuthService extends BaseService {

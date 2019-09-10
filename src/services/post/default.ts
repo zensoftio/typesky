@@ -20,8 +20,8 @@ export default class DefaultPostService extends BaseService implements PostServi
     this.fetcher = fetch
   }
 
-  async getPosts() {
-    const response = await this.fetcher.get<Array<Post.PostItem>>(Pathes.Posts.posts);
+  async getPosts(params?: {_limit: number}) {
+    const response = await this.fetcher.get<Array<Post.PostItem>>(Pathes.Posts.posts, params);
     this.store.set('postList', response)
   }
 
@@ -30,4 +30,8 @@ export default class DefaultPostService extends BaseService implements PostServi
     this.store.set('post', response)
   }
 
+  async addPost(body: {title: string, body: string, userId: number}) {
+    await this.fetcher.post(Pathes.Posts.posts, body);
+    this.getPosts();
+  }
 }

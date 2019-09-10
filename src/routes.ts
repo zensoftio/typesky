@@ -4,6 +4,8 @@ import {TestScene} from 'Scenes/TestScene';
 import {NotFoundScene} from 'Scenes/NotFoundScene';
 import {RootScene} from 'Scenes/RootScene';
 import {PostsScene} from 'Scenes/PostsScene';
+import PostsList from 'Modules/posts/posts-list';
+import PostAdd from 'Modules/posts/post-add';
 
 export interface NavigationEntryComponentProps<Params = any> extends RouteConfigComponentProps<Params> {
   route?: NavigationEntry
@@ -31,11 +33,15 @@ export const ROUTES: NavigationEntry[] = [
       {
         path: '/posts',
         component: PostsScene,
-        exact: true,
         routes: [
           {
+            path: '/posts',
+            component: PostsList,
+            exact: true,
+          },
+          {
             path: '/posts/add',
-            component: HomeScene,
+            component: PostAdd,
           },
           {
             path: '/posts/:id',

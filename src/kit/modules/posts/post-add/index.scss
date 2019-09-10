@@ -1,0 +1,30 @@
+.post_add_wrapper {
+  padding: 15px;
+
+  form {
+    width: 300px;
+  }
+  input[type='text'],
+  textarea {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #a3a3a3;
+    border-radius: 2px;
+    resize: none;
+    box-sizing: border-box;
+  }
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #008CE4;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+}
