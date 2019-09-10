@@ -20,9 +20,14 @@ export default class DefaultPostService extends BaseService implements PostServi
     this.fetcher = fetch
   }
 
-  async loadPost(postId: number) {
-    const post = await this.fetcher.get<Post.Model>(Pathes.Post.byId(postId), undefined, Post.Model);
-    this.store.set('postById', post)
+  async getPosts() {
+    const response = await this.fetcher.get<Array<Post.PostItem>>(Pathes.Posts.posts);
+    this.store.set('postList', response)
+  }
+
+  async getPost(id: number) {
+    const response = await this.fetcher.get<Post.PostItem>(Pathes.Posts.post(id));
+    this.store.set('post', response)
   }
 
 }

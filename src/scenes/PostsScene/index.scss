@@ -1,0 +1,17 @@
+.posts_scene {
+  &_wrapper {
+    display: flex;
+    justify-content: flex-start;
+  }
+  &_nav_link {
+    display: block;
+    padding: 15px;
+    font-size: 14px;
+    text-decoration: underline;
+
+    &__active {
+      font-weight: bold;
+      text-decoration: none;
+    }
+  }
+}

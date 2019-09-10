@@ -1,10 +1,10 @@
-import {AuthService} from '../index'
-import {Fetcher} from '../../fetchers'
-import * as jwt from 'jwt-client'
-import {Maybe} from '../../common/types'
-import {configuration} from '../../configs'
-import BaseService from '../../common/services/base/base'
-import {injectMethod, service} from '../../common/annotations/dependency-injection'
+import {AuthService} from '../index';
+import {Fetcher} from '../../fetchers';
+import * as jwt from 'jwt-client';
+import {Maybe} from '../../common/types';
+import {config} from '../../configs';
+import BaseService from '../../common/services/base/base';
+import {injectMethod, service} from '../../common/annotations/dependency-injection';
 
 interface TokenContainer {
   token: Maybe<string>,
@@ -19,12 +19,12 @@ enum JWT_STORAGE_NAMES {
 @service('Auth')
 export default class DefaultAuthService extends BaseService implements AuthService {
 
-  private fetcher: Fetcher
-  private tokenContainer: TokenContainer
+  private fetcher: Fetcher;
+  private tokenContainer: TokenContainer;
 
   constructor() {
-    super()
-    this.tokenContainer = DefaultAuthService.loadTokenContainer()
+    super();
+    this.tokenContainer = DefaultAuthService.loadTokenContainer();
   }
 
   @injectMethod('Fetcher')
@@ -48,10 +48,10 @@ export default class DefaultAuthService extends BaseService implements AuthServi
   }
 
   async login(username: string, password: string) {
-    const tokenContainer: TokenContainer = await this.fetcher.post<TokenContainer>(configuration.tokenApi, {
+    const tokenContainer: TokenContainer = await this.fetcher.post<TokenContainer>(config.tokenApi, {
       username,
       password
-    })
+    });
 
     if (this.validateToken(tokenContainer.token)) {
       this.persistTokenContainer(tokenContainer)
@@ -75,9 +75,9 @@ export default class DefaultAuthService extends BaseService implements AuthServi
   }
 
   private async refresh(refreshToken: Maybe<string> = this.tokenContainer.refreshToken) {
-    const tokenContainer: TokenContainer = await this.fetcher.post<TokenContainer>(configuration.refreshTokenApi, {
+    const tokenContainer: TokenContainer = await this.fetcher.post<TokenContainer>(config.refreshTokenApi, {
       refreshToken
-    })
+    });
 
     if (this.validateToken(tokenContainer.token)) {
       this.persistTokenContainer(tokenContainer)

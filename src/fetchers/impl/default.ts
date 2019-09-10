@@ -1,6 +1,6 @@
 import {Fetcher} from '../index'
 import {checkJson, instantiateJson} from '../../common/annotations/model'
-import {configuration} from '../../configs'
+import {config} from '../../configs'
 import {injectable} from '../../common/annotations/dependency-injection'
 import {Injectable} from '../../common/dependency-container'
 
@@ -97,7 +97,7 @@ export default class DefaultFetcher implements Fetcher, Injectable {
       if (errorHandler) {
         errorHandler(res)
       } else if (res.status === 401) {
-        window.location.assign(configuration.remoteApi + '/login')
+        window.location.assign(config.remoteApi + '/login')
       }
       throw res
     }

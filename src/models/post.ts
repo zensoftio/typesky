@@ -2,27 +2,28 @@ import {observable} from 'mobx'
 import {attr} from '../common/annotations/model'
 
 namespace Post {
-  export class Model {
+  export class PostItem {
     @attr()
     @observable
-    id: number
+    id: number;
     
     @attr()
     @observable
-    userId: number
+    userId: number;
     
     @attr()
     @observable
-    title: string
+    title: string;
     
     @attr()
     @observable
-    body: string
+    body: string;
   }
   
   export interface Records {
-    postById: Post.Model
+    post: Post.PostItem;
+    postList: Array<Post.PostItem>;
   }
 }
 
-export default Post
+export default Post;

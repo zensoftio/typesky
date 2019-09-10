@@ -1,6 +1,10 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Path = require('path');
+const APP_PORT = 8080;
+const HOST = process.env.API_URL
+  ? process.env.API_URL.replace(/\d{4}/gi, '')
+  : `http://localhost:${APP_PORT}`;
 
 const sourcePath = Path.join(__dirname, './src');
 const outPath = Path.join(__dirname, './dist');
@@ -10,8 +14,9 @@ module.exports = {
     main: './src/index.tsx',
   },
   output: {
-    filename: "bundle.[hash].js",
+    filename: 'bundle.[hash].js',
     path: outPath,
+    publicPath: '/'
   },
   devtool: 'eval',
   plugins: [
@@ -82,7 +87,7 @@ module.exports = {
     ],
   },
   devServer: {
-    port: 8080,
+    port: APP_PORT,
     contentBase: sourcePath,
     historyApiFallback: true,
     inline: true,
