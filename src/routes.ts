@@ -26,11 +26,6 @@ export const ROUTES: NavigationEntry[] = [
     routes: [
       {
         path: '/',
-        component: TestScene,
-        exact: true
-      },
-      {
-        path: '/home',
         component: HomeScene,
         exact: true
       },
@@ -52,11 +47,6 @@ export const ROUTES: NavigationEntry[] = [
             component: PostDetails,
           }
         ]
-      },
-      {
-        path: '/test',
-        component: TestScene,
-        exact: true
       },
       {
         path: '**',

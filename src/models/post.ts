@@ -1,5 +1,6 @@
 import {observable} from 'mobx'
 import {attr} from '../common/annotations/model'
+import {Maybe} from '../common/types';
 
 namespace Post {
   export class PostItem {
@@ -21,7 +22,7 @@ namespace Post {
   }
   
   export interface Records {
-    post: Post.PostItem;
+    post: Maybe<Post.PostItem>;
     postList: Array<Post.PostItem>;
   }
 }

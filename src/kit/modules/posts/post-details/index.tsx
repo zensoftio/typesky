@@ -25,6 +25,7 @@ class PostDetails extends React.Component<PostDetailsProps> {
   }
 
   componentWillUnmount(): void {
+    this.props.deps.postService.clearPost();
   }
 
   render() {

@@ -8,6 +8,8 @@ export interface PostService extends BaseService {
 
   getPost(id: string): void;
 
+  clearPost(): void;
+
   addPost(body: {title: string, body: string, userId: number}): void;
 }
 

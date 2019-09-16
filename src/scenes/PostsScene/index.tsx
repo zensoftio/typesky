@@ -11,7 +11,7 @@ export class PostsScene extends BaseScene {
     return <div className={styles.posts_scene_wrapper}>
       <aside>
         <nav>
-          <Link className={styles.posts_scene_nav_link} to='/home'>Home</Link>
+          <Link className={styles.posts_scene_nav_link} to='/'>Home</Link>
           <Link className={styles.posts_scene_nav_link} to='/posts'>Posts</Link>
           <Link className={styles.posts_scene_nav_link} to='/posts/add'>Add post</Link>
         </nav>
