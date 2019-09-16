@@ -5,6 +5,7 @@ import {PostService} from 'Services';
 import {match} from 'react-router';
 import {observer} from 'mobx-react';
 import {Link} from 'react-router-dom';
+import {Loading} from 'Components/Loading';
 
 const styles = require('./index.scss');
 
@@ -31,14 +32,16 @@ class PostDetails extends React.Component<PostDetailsProps> {
   render() {
     const data = this.props.deps.postMapper.post;
 
-    if (!data) {
-      return null;
-    }
-
     return <div className={styles.post_details_wrapper}>
-      <h1 className={styles.post_details_title}>{data.title}</h1>
-      <div className={styles.post_details_content}>{data.body}</div>
-      <Link to={'/posts'} className={styles.post_details_back}>&lsaquo; Back</Link>
+      {
+        !data
+          ? <Loading />
+          : <React.Fragment>
+              <h1 className={styles.post_details_title}>{data.title}</h1>
+              <div className={styles.post_details_content}>{data.body}</div>
+              <Link to={'/posts'} className={styles.post_details_back}>&lsaquo; Back</Link>
+            </React.Fragment>
+      }
     </div>;
   }
 }

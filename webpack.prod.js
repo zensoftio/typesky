@@ -17,15 +17,17 @@ module.exports = {
     filename: "bundle.[hash].js",
     path: outPath,
   },
+  mode: 'production',
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
+      favicon: './src/assets/images/favicon.ico'
     }),
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('development'),
+        NODE_ENV: JSON.stringify('production'),
       },
     }),
     new MiniCssExtractPlugin({
@@ -70,7 +72,7 @@ module.exports = {
               discardDuplicates: true,
               importLoaders: 1,
               modules: true,
-              localIdentName: 'aer__[local]___[hash:base64:5]'
+              localIdentName: 'zen__[local]___[hash:base64:5]'
             },
           },
           {
@@ -90,7 +92,7 @@ module.exports = {
         loader: 'url-loader?limit=10000&mimetype=application/octet-stream'
       },
       {
-        test: /\.(png|svg|jpg)$/,
+        test: /\.(png|svg|jpg|ico)$/,
         use: ['file-loader'],
       }
     ],

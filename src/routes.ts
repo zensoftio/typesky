@@ -1,6 +1,5 @@
 import {RouteConfig, RouteConfigComponentProps} from 'react-router-config';
 import {HomeScene} from 'Scenes/HomeScene';
-import {TestScene} from 'Scenes/TestScene';
 import {NotFoundScene} from 'Scenes/NotFoundScene';
 import {RootScene} from 'Scenes/RootScene';
 import {PostsScene} from 'Scenes/PostsScene';

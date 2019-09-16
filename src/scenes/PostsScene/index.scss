@@ -2,6 +2,13 @@
   &_wrapper {
     display: flex;
     justify-content: flex-start;
+    aside {
+      flex-basis: 10%;
+      flex-shrink: 0;
+    }
+    main {
+      flex-grow: 1;
+    }
   }
   &_nav_link {
     display: block;
