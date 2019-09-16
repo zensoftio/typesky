@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Link} from 'react-router-dom';
 import {ComponentDependencies, withDependencies, WithDependencies} from '../../../../common/hoc/with-dependencies';
 import {PostService} from 'Services';
 import {PostMapper} from 'Mappers';
@@ -29,6 +30,7 @@ class PostsList extends React.Component<PostsListProps> {
           <div key={post.id} className={styles.post_list_item}>
             <div className={styles.post_list_item_title}>{post.title}</div>
             <div className={styles.post_list_item_content}>{post.body}</div>
+            <Link to={`/posts/${post.id}`} className={styles.post_list_item_more}>more</Link>
           </div>
         )
       }

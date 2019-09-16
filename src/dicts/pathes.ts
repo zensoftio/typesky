@@ -6,6 +6,6 @@ const base = (rest: string) => `https://jsonplaceholder.typicode.com/${rest}`;
 export default class Pathes {
   static Posts = class {
     static posts = base(`posts`);
-    static post = (id: number) => base(`posts/${id}`);
+    static post = (id: string) => base(`posts/${id}`);
   }
 }

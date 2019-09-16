@@ -6,13 +6,17 @@ import {RootScene} from 'Scenes/RootScene';
 import {PostsScene} from 'Scenes/PostsScene';
 import PostsList from 'Modules/posts/posts-list';
 import PostAdd from 'Modules/posts/post-add';
+import PostDetails from 'Modules/posts/post-details';
 
 export interface NavigationEntryComponentProps<Params = any> extends RouteConfigComponentProps<Params> {
   route?: NavigationEntry
 }
 
 export interface NavigationEntry extends RouteConfig {
-  component?: React.ComponentType<NavigationEntryComponentProps<any>> | React.ComponentType;
+  component?:
+    React.ComponentType<NavigationEntryComponentProps<any>>
+    | React.ComponentType<any>
+    | React.ComponentClass<any>;
   routes?: NavigationEntry[];
 }
 
@@ -45,7 +49,7 @@ export const ROUTES: NavigationEntry[] = [
           },
           {
             path: '/posts/:id',
-            // component: PostDetailsScene,
+            component: PostDetails,
           }
         ]
       },

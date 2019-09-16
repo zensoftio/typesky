@@ -8,10 +8,18 @@
     &:last-child {
       margin-bottom: 0;
     }
-
     &_title {
       font-size: 18px;
       font-weight: bold;
+    }
+    &_more {
+      font-size: 14px;
+      color: dodgerblue;
+      text-decoration: underline;
+
+      &:visited {
+        color: dodgerblue;
+      }
     }
   }
 }

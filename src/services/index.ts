@@ -6,7 +6,7 @@ import ProcessEnv = NodeJS.ProcessEnv;
 export interface PostService extends BaseService {
   getPosts(params?: {_limit: number}): void;
 
-  getPost(id: number): void;
+  getPost(id: string): void;
 
   addPost(body: {title: string, body: string, userId: number}): void;
 }
