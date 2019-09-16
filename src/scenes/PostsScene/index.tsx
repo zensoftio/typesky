@@ -10,6 +10,7 @@ export class PostsScene extends BaseScene {
   render() {
     return <div className={styles.posts_scene_wrapper}>
       <aside>
+        <Link to='/' className={styles.posts_scene_logo} />
         <nav>
           <Link className={styles.posts_scene_nav_link} to='/'>Home</Link>
           <Link className={styles.posts_scene_nav_link} to='/posts'>Posts</Link>

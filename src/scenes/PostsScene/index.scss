@@ -10,6 +10,13 @@
       flex-grow: 1;
     }
   }
+  &_logo {
+    display: block;
+    padding: 15px;
+    width: 105px;
+    height: 19px;
+    background: url('../../assets/images/logo.svg') 50%/105px 19px no-repeat;
+  }
   &_nav_link {
     display: block;
     padding: 15px;

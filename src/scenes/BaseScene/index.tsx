@@ -20,6 +20,6 @@ export default class BaseScene<P extends SceneProps = SceneProps> extends React.
   }
 
   render() {
-    return <div>{this.props.match.url}</div>
+    return <React.Fragment>{this.props.match.url}</React.Fragment>
   }
 }

@@ -1,16 +1,7 @@
-/* Uncomment to include custom font
-@font-face {
-  font-family: 'Source Sans Pro';
-  src: url('../fonts/font-name.woff2') format('woff2'),
-      url('../fonts/font-name.woff') format('woff'),
-      url('../fonts/font-name.ttf')  format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-*/
+@import './fonts';
 
 * {
-  font-family: Arial, sans-serif;
+  font-family: PTSans, Arial, sans-serif;
   color: #333;
 }
 
