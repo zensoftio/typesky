@@ -5,6 +5,7 @@ import {PostService} from 'Services';
 import {PostMapper} from 'Mappers';
 import Post from '../../../../models/post';
 import {observer} from 'mobx-react';
+import {Loading} from 'Components/Loading';
 const styles = require('./index.scss');
 
 interface PostsListDependencies extends ComponentDependencies {
@@ -26,12 +27,14 @@ class PostsList extends React.Component<PostsListProps> {
 
     return <div className={styles.post_list_wrapper}>
       {
-        data.map((post: Post.PostItem) =>
-          <div key={post.id} className={styles.post_list_item}>
-            <div className={styles.post_list_item_title}>{post.title}</div>
-            <div className={styles.post_list_item_content}>{post.body}</div>
-            <Link to={`/posts/${post.id}`} className={styles.post_list_item_more}>more</Link>
-          </div>
+        data.length === 0
+        ? <Loading />
+        : data.map((post: Post.PostItem) =>
+            <div key={post.id} className={styles.post_list_item}>
+              <div className={styles.post_list_item_title}>{post.title}</div>
+              <div className={styles.post_list_item_content}>{post.body}</div>
+              <Link to={`/posts/${post.id}`} className={styles.post_list_item_more}>more</Link>
+            </div>
         )
       }
 
