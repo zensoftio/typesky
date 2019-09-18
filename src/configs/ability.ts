@@ -1,5 +1,5 @@
-import {AbilityBuilder} from '@casl/ability'
-import {Account} from '../models/account'
+import {AbilityBuilder} from '@casl/ability';
+import {Account} from '../models/account';
 
 export default function defineAbilitiesFor(account: Account.CurrentUser) {
 

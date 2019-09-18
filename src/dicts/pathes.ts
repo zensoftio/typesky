@@ -1,10 +1,11 @@
-import {configuration} from '../configs'
+import {config} from '../configs';
 
-const base = (rest: string) => `${configuration.remoteApi}/${rest}`
+// const base = (rest: string) => `${config.remoteApi}/${rest}`;
+const base = (rest: string) => `https://jsonplaceholder.typicode.com/${rest}`;
 
 export default class Pathes {
-  static Post = class {
-    static byId = (postId: number) => base(`posts/${postId}`)
-    static all = base('posts')
+  static Posts = class {
+    static posts = base(`posts`);
+    static post = (id: string) => base(`posts/${id}`);
   }
 }

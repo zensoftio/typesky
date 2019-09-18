@@ -1,7 +1,11 @@
-export const configuration = Object.freeze(
+export const BACKEND_PORT = 5000;
+
+export const API_HOST = process.env.API_URL || `http://localhost:${BACKEND_PORT}`;
+
+export const config = Object.freeze(
   {
-    remoteApi: 'https://jsonplaceholder.typicode.com',
-    tokenApi: 'http://localhost:8081/api/auth/login',
-    refreshTokenApi: 'http://localhost:8081/api/auth/token'
+    remoteApi: API_HOST,
+    tokenApi: `${API_HOST}/api/auth/login`,
+    refreshTokenApi: `${API_HOST}/api/auth/token`
   }
-)
+);

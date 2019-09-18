@@ -1,0 +1,14 @@
+.home_scene {
+  &_wrapper {
+    padding: 15px;
+
+    a {
+      color: dodgerblue;
+      text-decoration: underline;
+
+      &:visited {
+        color: dodgerblue;
+      }
+    }
+  }
+}
