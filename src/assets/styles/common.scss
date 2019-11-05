@@ -1,0 +1,31 @@
+@import './fonts';
+
+* {
+  font-family: PTSans, Arial, sans-serif;
+  color: #333;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol,
+li {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+
+  &:visited {
+    color: currentColor;
+  }
+}
