@@ -1,13 +1,10 @@
-import {AbilityBuilder} from '@casl/ability';
-import {Account} from '../models/account';
+import {AbilityBuilder} from '@casl/ability'
+import {CurrentUser} from '@Entities/auth'
 
-export default function defineAbilitiesFor(account: Account.CurrentUser) {
-
-  return AbilityBuilder.define((can: Function, cannot: Function) => {
-
-    account.permissions.forEach((permission) => {
-        can('view', permission)
-      }
-    )
-  })
+export default function defineAbilitiesFor(currentUser?: CurrentUser) {
+    return AbilityBuilder.define((can: Function) => {
+        if (currentUser) {
+            can('view', currentUser.role)
+        }
+    })
 }

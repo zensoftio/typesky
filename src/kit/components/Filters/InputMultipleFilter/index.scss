@@ -1,0 +1,91 @@
+@import '../../../../assets/styles/variables';
+
+.multiple-filter {
+  &__wrapper {
+    margin-bottom: 15px;
+  }
+  &__form {
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    &-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      padding: 5px;
+      margin-bottom: 6px;
+      justify-content: flex-end;
+    }
+    &-label {
+      color: #11195B;
+      flex: 1;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    &-inner {
+      display: flex;
+      flex: 3;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    &-input {
+      padding: 5px;
+      font-size: 14px;
+      background: rgb(255, 255, 255);
+      border: none;
+      border-bottom: 1px solid gray;
+      outline: none;
+      width: 100%;
+    }
+    &-add, &-reset {
+      width: 25px;
+      height: 25px;
+      border-radius: 6px;
+      margin-left: 5px;
+      text-align: center;
+      font-weight: bold;
+      padding-top: 2px;
+      border: none;
+      outline: none;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    &-add {
+      background: #259825;
+      color: #fff;
+    }
+    &-reset {
+      background: #fb6868;
+      color: #fff;
+      display: inline-block;
+    }
+  }
+  &__current {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    &-item {
+      border-radius: 3px;
+      color: $adminPrimaryTextColor;
+      margin: 3px;
+      padding: 3px 8px;
+      font-size: 1em;
+      vertical-align: middle;
+      box-shadow: 0 1px 4px #c6c6c6,
+      0 2px 17px #d1d1d1;
+      &-remove {
+        color: #505050;
+        font-weight: bold;
+        font-style: normal;
+        margin-left: 10px;
+      }
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+}

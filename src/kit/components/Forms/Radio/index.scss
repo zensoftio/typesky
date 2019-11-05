@@ -1,0 +1,21 @@
+.radio {
+  padding: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-bottom: 25px;
+  &__title {
+    font-size: 16px;
+    color: #9B9EBB;
+    margin-bottom: 10px;
+  }
+  &__input {
+    outline: none;
+  }
+  &__label {
+    margin-left: 5px;
+  }
+  &__item {
+    margin-bottom: 10px;
+    color: #11195B;
+  }
+}

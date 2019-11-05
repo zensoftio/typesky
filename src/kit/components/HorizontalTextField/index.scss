@@ -1,0 +1,36 @@
+.ht-field {
+  &__content {
+    display: flex;
+    justify-content: center;
+    background: #FBFCFF;
+    font-size: 14px;
+    line-height: 22px;
+    font-style: normal;
+    font-weight: normal;
+    &-left, &-right {
+      flex: 1;
+      padding: 1rem;
+    }
+    &-left {
+      color: #9B9EBB;
+    }
+
+    &-striped:nth-child(odd) {
+      background: #FFF;
+    }
+  }
+
+  &__input {
+    text-align: right;
+    width: 100%;
+    background: transparent;
+    outline: none;
+    color: #11195B;
+    border: none;
+    border-bottom: 1px solid #7e8baf;
+    padding: 5px 15px;
+    &:disabled {
+      border: none;
+    }
+  }
+}

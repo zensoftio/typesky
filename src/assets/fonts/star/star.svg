@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+<metadata>
+Created by FontForge 20190801 at Sat Oct 19 16:37:25 2019
+ By Jimmy Wärting
+Copyright (C) 2019 by original authors @ fontello.com
+</metadata>
+<defs>
+<font id="star" horiz-adv-x="1000" >
+  <font-face 
+    font-family="star"
+    font-weight="400"
+    font-stretch="normal"
+    units-per-em="1000"
+    panose-1="2 0 5 3 0 0 0 0 0 0"
+    ascent="850"
+    descent="-150"
+    bbox="1 -109 930 786"
+    underline-thickness="0"
+    underline-position="10"
+    unicode-range="U+2022-2022"
+  />
+<missing-glyph 
+ />
+    <glyph glyph-name=".notdef" 
+ />
+    <glyph glyph-name="_" unicode="&#x2022;" 
+d="M558 786l-42 -385l389 108l25 -178l-372 -30l243 -319l-168 -91l-172 353l-157 -353l-171 91l236 319l-368 30l28 178l382 -108l-42 385h189z" />
+  </font>
+</defs></svg>

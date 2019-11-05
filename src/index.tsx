@@ -1,19 +1,24 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import registerServiceWorker from './registerServiceWorker';
-import * as mobx from 'mobx';
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import * as mobx from 'mobx'
+import App from './App'
+import {Assembler, Container, ResolverProvider} from 'type-injector'
+import ASSEMBLIES from './assemblies'
+import {Resolver} from 'type-injector'
+import './index.scss'
+import './i18n'
 
-import App from './App';
-import {translationReady} from './common/translate';
-import {dependencyRegistration} from './common/dependency-registration';
+mobx.configure({enforceActions: 'observed'})
 
-mobx.useStrict(true);
+const assembler = new Assembler(ASSEMBLIES, Container.defaultContainer)
 
-dependencyRegistration()
-  .then(() => translationReady)
-  .then(() => ReactDOM.render(
-    <App/>,
+assembler
+  .assemble()
+  .then((resolver: Resolver) => ReactDOM.render(
+    (
+      <ResolverProvider resolver={resolver}>
+        <App/>
+      </ResolverProvider>
+    ),
     document.getElementById('root')
-  ));
-
-registerServiceWorker();
+  ))

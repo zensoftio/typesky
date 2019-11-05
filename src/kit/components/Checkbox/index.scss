@@ -1,0 +1,40 @@
+.checkbox {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 0.5px solid rgba(0, 0, 0, 0.2);
+  transition: .1s;
+
+  &__label {
+    display: block;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__icon {
+    top: 10px;
+    left: 50%;
+    font-size: 0;
+    display: none;
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+
+  &__input {
+    display: none;
+
+    &:checked + .checkbox__icon {
+      display: flex;
+    }
+  }
+}
+
+.checkbox.highlight {
+  border: 0.5px solid #4254F9;
+}
+
+.check-icon {
+  margin-top: 17px;
+}
