@@ -1,0 +1,22 @@
+.select-wrapper {
+  position: relative;
+  cursor: pointer;
+
+  .legend {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    z-index: 2;
+    color: #9B9EBB;
+    transition: 0.2s;
+    padding-left: 6px;
+    padding-right: 10px;
+    pointer-events: none;
+    background-color: #fff;
+    transform: translate(0, -170%) scale(.95);
+    display: none;
+    &--active {
+      display: block;
+    }
+  }
+}

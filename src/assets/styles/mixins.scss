@@ -1,0 +1,72 @@
+/******************************************************
+Break Point (width): >= 1280px
+ - MacBook Pro 15' (retina display): 1440px x 900px
+ - MacBook Air 13':                  1440px x 900px
+-------------------------------------------------------
+Break Point (width): >= 1600px
+ - MacBook Pro 17':                  1920px x 1200px
+ - iMac 21.5':                       1920px x 1080px
+ - AOC(Resolution of our display):   1920px x 1080px
+-------------------------------------------------------
+Break Point (width): >= 2000px
+ - iMac 27' and 4K:                  2560px x 1440px
+******************************************************/
+
+/* ----------- Non-Retina Screens ----------- */
+@mixin for-desktop-screen-up {
+  @media screen and (min-width: 1440px) {
+    @content;
+  }
+}
+
+/* ----------- Retina Screens ----------- */
+@mixin for-retina-desktop-screen-up {
+  @media screen
+  and (min-width: 1440px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (min-resolution: 192dpi) {
+    @content;
+  }
+}
+
+/* ----------- Non-Retina Screens ----------- */
+@mixin for-big-desktop-screen-up {
+  @media screen and (min-width: 1920px) {
+    @content;
+  }
+}
+
+/* ----------- Retina Screens ----------- */
+@mixin for-retina-big-desktop-screen-up {
+  @media screen
+  and (min-width: 1920px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (min-resolution: 192dpi) {
+    @content;
+  }
+}
+
+/*------------------------------------------------------------------------------------------*/
+
+@mixin for-max-width-1024 {
+  @media screen and (max-width: 1024px){
+    @content
+  }
+}
+
+@mixin for-max-width-699 {
+  @media screen and (max-width: 699px){
+    @content
+  }
+}
+
+/* ------------------- Text Styles ---------------------------------------------------------*/
+@mixin module-title {
+  letter-spacing: -0.02em;
+  color: #11195B;
+  font-family: nunitosemibold, sans-serif;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 36px;
+}

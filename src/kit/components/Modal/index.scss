@@ -1,0 +1,33 @@
+:global #modal-root {
+  position: relative;
+  z-index: 999;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: stretch;
+  background-color: rgba(89, 94, 141, 0.5);
+
+  .modal-container {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    .modal {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+}

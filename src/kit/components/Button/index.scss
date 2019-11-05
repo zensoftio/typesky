@@ -1,0 +1,41 @@
+.button {
+  display: block;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid #4254F9;
+  background-color: #E0E3FF;
+  border-radius: 8px;
+  height: 56px;
+  color: #4254F9;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  .children-element {
+    font-size: 16px;
+    color: #4254F9;
+    font-weight: bold;
+    pointer-events: none;
+    font-family: quicksand_lightregular, sans-serif;
+  }
+}
+
+.button-wrapper .button.disabled {
+  border: 1px solid rgba(66, 84, 249, 0.2) !important;
+  background: rgba(224, 227, 255, 0.1) !important;
+
+  .children-element {
+    letter-spacing: -0.02em;
+    font-size: 16px;
+    line-height: 7px;
+    pointer-events: none;
+    color: rgba(66, 84, 249, .5) !important;
+    font-family: quicksand_lightregular, sans-serif;
+  }
+}
+
+.button-wrapper {
+  background: #fff;
+  width: 100%;
+}

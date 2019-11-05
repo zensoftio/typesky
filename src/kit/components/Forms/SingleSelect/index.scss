@@ -1,0 +1,27 @@
+.single-select {
+  &__inner {
+    position: relative;
+  }
+
+  &__suggestions {
+    margin-top: 3px;
+    border-radius: 6px;
+    left: 0;
+    width: 100%;
+    background: #FFF;
+    border: 1px solid lavender;
+  }
+
+  &__list {
+    &-item {
+      color: #11195B;
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 16px;
+      &:hover {
+        background: #fbfbfb;
+        cursor: pointer;
+      }
+    }
+  }
+}

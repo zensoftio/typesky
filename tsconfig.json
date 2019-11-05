@@ -2,12 +2,16 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "Scenes/*": ["./scenes/*"],
-      "Components/*": ["./kit/components/*"],
-      "Modules/*": ["./kit/modules/*"],
-      "Services": ["./services/index"],
-      "Mappers": ["./mappers/index"],
-      "Models": ["./models/*"]
+      "@App/*": ["./*"],
+      "@Scenes/*": ["./kit/scenes/*"],
+      "@Components/*": ["./kit/components/*"],
+      "@Modules/*": ["./kit/modules/*"],
+      "@Services": ["./model/services/index"],
+      "@Mappers": ["./model/mappers/index"],
+      "@Storages": ["./model/storages/index"],
+      "@Entities/*": ["./entities/*"],
+      "@Const/*": ["./const/*"],
+      "@Types": ["./common/types"]
     },
     "outDir": "build",
     "module": "commonjs",
@@ -15,13 +19,14 @@
     "lib": [
       "es6",
       "es7",
-      "dom"
+      "dom",
+      "dom.iterable",
+      "esnext"
     ],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
     "rootDirs": [
-      "./",
       "./src"
     ],
     "moduleResolution": "node",
@@ -45,10 +50,13 @@
     "node_modules",
     "build",
     "dist",
-    "scripts",
-    "webpack"
-  ],
-  "types": [
-    "typePatches"
+    "webpack.**",
+    "jest.**",
+    "./src/__mocks__/",
+    "./coverage/",
+    "./**/*.test.ts",
+    "./**/*.test.tsx",
+    "./**/*.spec.ts",
+    "./**/*.spec.tsx"
   ]
 }

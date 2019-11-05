@@ -1,0 +1,94 @@
+.text-field {
+  position: relative;
+
+  .icon {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+
+  &__wrapper {
+    position: relative;
+  }
+
+  &__show-hide-password {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    z-index: 1;
+    padding: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    margin-right: 15px;
+    letter-spacing: -0.2px;
+    color: #4254F9 !important;
+    transform: translateY(-50%);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__input:focus {
+    border: 0.5px solid #4254F9;
+    box-shadow: 0 4px 20px rgba(71, 89, 250, 0.1);
+  }
+
+  &__input.password {
+    text-security: disc !important;
+    -webkit-text-security: disc !important;
+    -mox-text-security: disc !important;
+    -moz-text-security: disc !important;
+    -ms-text-security: disc !important;
+  }
+
+  &__input {
+    position: relative;
+    color: #11195B;
+    outline: none;
+    -webkit-text-fill-color: #11195B;
+    -webkit-box-shadow: inset 0 0 0 50px #fff;
+    border: 0.5px solid rgba(0, 0, 0, 0.2);
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus + legend {
+      transform: translate(0, -170%) scale(.95);
+      color: #9B9EBB;
+    }
+
+    &:not(:placeholder-shown) + legend {
+      transform: translate(0, -170%) scale(.95);
+      color: #9B9EBB;
+    }
+
+    &:-webkit-autofill {
+      background: #fff !important;
+    }
+
+    &:-webkit-autofill + legend {
+      transform: translate(0, -170%) scale(.95);
+      color: #9B9EBB;
+    }
+  }
+
+  legend {
+    color: #9B9EBB;
+  }
+
+  &__input + legend {
+    top: 50%;
+    left: 16px;
+    transition: 0.2s;
+    padding-left: 6px;
+    position: absolute;
+    padding-right: 10px;
+    pointer-events: none;
+    background-color: #fff;
+    transform: translate(0, -50%);
+  }
+}

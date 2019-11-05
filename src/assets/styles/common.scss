@@ -1,8 +1,58 @@
-@import './fonts';
+@font-face {
+  font-family: 'nunitosemibold';
+  src: url('../fonts/nunitosemibold/nunito-semibold-webfont.woff2') format('woff2'),
+  url('../fonts/nunitosemibold/nunito-semibold-webfont.woff') format('woff'),
+  url('../fonts/nunitosemibold/nunito-semibold-webfont.ttf') format('truetype'),
+  url('../fonts/nunitosemibold/nunito-semibold-webfont.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'open_sansregular';
+  src: url('../fonts/open_sansregular/opensans-regular-webfont.woff2') format('woff2'),
+  url('../fonts/open_sansregular/opensans-regular-webfont.woff') format('woff'),
+  url('../fonts/open_sansregular/opensans-regular-webfont.ttf') format('truetype'),
+  url('../fonts/open_sansregular/opensans-regular-webfont.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'quicksand_lightregular';
+  src: url('../fonts/quicksand/quicksand.woff2') format('woff2'),
+  url('../fonts/quicksand/quicksand.woff') format('woff'),
+  url('../fonts/quicksand/quicksand.ttf') format('truetype'),
+  url('../fonts/quicksand/quicksand.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'nunitoregular';
+  src: url('../fonts/nunitoregular/nunito-regular-webfont.woff2') format('woff2'),
+  url('../fonts/nunitoregular/nunito-regular-webfont.woff') format('woff'),
+  url('../fonts/nunitoregular/nunito-regular-webfont.ttf') format('truetype'),
+  url('../fonts/nunitoregular/nunito-regular-webfont.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'star';
+  src: url('../fonts/star/star.eot');
+  src: url('../fonts/star/star.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/star/star.svg#star') format('svg'),
+  url('../fonts/star/star.ttf') format('truetype'),
+  url('../fonts/star/star.woff') format('woff'),
+  url('../fonts/star/star.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 
 * {
-  font-family: PTSans, Arial, sans-serif;
-  color: #333;
+  font-family: open_sansregular, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {

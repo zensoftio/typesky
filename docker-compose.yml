@@ -1,0 +1,17 @@
+#for first run create docker network called lan
+# docker create network lan
+
+version: '3.2'
+
+services:
+
+  client:
+    container_name: client
+    build: ./
+    ports:
+      - '8000:80'
+
+networks:
+  default:
+    external:
+      name: lan
